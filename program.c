@@ -24,18 +24,20 @@ void z7(void){}
 // Возвращает: код ошибки.
 // 0 - нет ошибок.
 // 1 - на входе пустая строка.
-// 2 - В строке встретилось не число.
+// 2 - В строке встретилась не цифра.
 // 3 - В строке две точки или запятых.
 // 4 - Точка или запятая не может быть в начале или в конце строки.
 // 5 - Входные указатели аргумента указывают на NULL.
+// 6 - Число не может быть без целой части.
 int z1(double * output, const char * input, size_t length)
 {
 	if (output == NULL || input == NULL)
 		return 5;
 	double out = 0;
 	double outF = 0; // Хранит в себе часть после запятой. Создано для оптимизации.
+	size_t numbersLeft = 0; // Количество цифр слева точки.
+	size_t numberRight = 0; // Количество цифр справа точки.
 	if (length < 1) return 1;
-	length--; // Не обрабатываем символ \0
 	size_t i = 0;
 	if (input[0] == '-')
 	{
@@ -43,48 +45,70 @@ int z1(double * output, const char * input, size_t length)
 		if (length < 2) return 1;
 	}
 	size_t isFloat = false; // true, если точка или запятая встречались.
-	if (input[i] == '.' || input[i] == ',' || input[length] == '.' || input[length] == ',')
-		return 4;
-	for (; i < length; i += isFloat ? -1 : +1)
+	//if (input[i] == '.' || input[i] == ',' || input[length - 1] == '.' || input[length - 1] == ',')
+	//	return 4;
+	for (; i < length && i != ~(size_t)0; i += isFloat ? -1 : +1)
 	{
+		if (input[i] == '\0') continue;
 		if (input[i] == '.' || input[i] == ',') // Если встретилась точка или запятая
 		{
-			if (isFloat != i && isFloat != 0)
-				return 3;
+			if (isFloat != i && isFloat != false)
+				if (numbersLeft == 0)
+					return 4;
+				else
+					return 3;
 			else
 			{
+				if (isFloat == i)
+					if (numberRight == 0)
+						return 4;
+					else
+						break;
 				isFloat = i;
+				i = length - 1 + 1; // Индексация на последний символ + 1 для цикла for.
+				continue;
 			}
 		}
 		else if (input[i] < '0' || input[i] > '9') return 2;
 		if (isFloat)
 		{
 			outF = outF / 10 + input[i] - '0';
+			numberRight++;
 		}
 		else
+		{
 			out = out * 10 + input[i] - '0';
+			numbersLeft++;
+		}
 	}
-	out += outF;
+	out += outF / 10;
 	if (input[0] == '-')
 	{
 		out *= -1;
 	}
 	*output = out;
-	return 0;
+	if (numberRight == 0 && numbersLeft == 0)
+		return 1;
+	else if (numbersLeft == 0)
+		return 6;
+	else 
+		return 0;
 }
 
 void z1_interface(void)
 {
 	char input[256];
-	size_t length = UserInterface_GetStr("Input number in decimal format.", input, sizeof(input) / sizeof(char));
+	size_t length = UserInterface_GetStr("Input number in decimal format: ", input, sizeof(input) / sizeof(char));
 	double output = 0;
 	int err;
 	switch (err = z1(&output, input, length))
 	{
 	case 0:
 		printf("Number: %lf\n", output);
+		break;
 	default:
 		printf("Error %d\n", err);
+		break;
 	}
 }
 
@@ -108,6 +132,7 @@ void z1_test(void)
 	if ((err = z1(o, "-0123456789.0123456789", sizeof("-0123456789.0123456789"))) != 0 || output != -0123456789.0123456789) printf("z1:\tError[%d]: -0123456789.0123456789 but %lf\n", err, output);
 	if ((err = z1(o, "-123456789.0123456789", sizeof("-123456789.0123456789"))) != 0 || output != -123456789.0123456789) printf("z1:\tError[%d]: -123456789.0123456789 but %lf\n", err, output);
 	if ((err = z1(o, "-", sizeof("-"))) != 1) printf("z1:\tError[%d] but need 1. res? %lf\n", err, output);
+	if ((err = z1(o, "-.1", sizeof("-.1"))) != 6) printf("z1:\tError[%d] but need 6. res? %lf\n", err, output);
 	printf("z1:\tTest end.\n");
 }
 
@@ -195,9 +220,9 @@ size_t z2_isPrefixFunction(const char * in, size_t inL)
 // 1 - Не хватило место в выходной строке.
 int z2(char * out, size_t outL, const char * in, size_t inL)
 {
-	char * stack = (char*) malloc((intL + 1)*sizeof(char));
+	char * stack = (char*) malloc((inL + 1)*sizeof(char));
 	char buffer;
-	size_t outI; // Индекс, который указывает местоположение в выходной строке.
+	size_t outI = 0; // Индекс, который указывает местоположение в выходной строке.
 	for(size_t i = 0; i < inL; i++)
 	{
 		if(outI == outL - 2 || outL < 2)
@@ -231,4 +256,5 @@ void main(void)
 {
 	z1_test();
 	z1_interface();
+	UserInterface_Pause("Press any key...");
 }
