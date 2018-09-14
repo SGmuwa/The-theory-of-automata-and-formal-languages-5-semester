@@ -94,7 +94,6 @@ int z1(double * output, const char * input, size_t length)
 	else 
 		return 0;
 }
-
 void z1_interface(void)
 {
 	char input[256];
@@ -112,6 +111,7 @@ void z1_interface(void)
 	}
 }
 
+#if _DEBUG == 1
 void z1_test(void)
 {
 	printf("z1:\tTest start.\n");
@@ -135,6 +135,7 @@ void z1_test(void)
 	if ((err = z1(o, "-.1", sizeof("-.1"))) != 6) printf("z1:\tError[%d] but need 6. res? %lf\n", err, output);
 	printf("z1:\tTest end.\n");
 }
+#endif
 
 // Определяет, содержится ли в входной строке до пробела или скобки оператор.
 // const char * in - укащатель на начало поиска.
@@ -254,7 +255,9 @@ void z8(void)
 
 void main(void)
 {
+#if _DEBUG == 1
 	z1_test();
+#endif
 	z1_interface();
 	UserInterface_Pause("Press any key...");
 }
