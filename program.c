@@ -1,4 +1,8 @@
 #include "UserInterface.h"
+#include <stdlib.h>
+#if _DEBUG == 1
+	#include <string.h>
+#endif
 
 #define false 0
 #define true !0
@@ -219,6 +223,7 @@ size_t z2_isPrefixFunction(const char * in, size_t inL)
 // size_t inL - количество доступных для чтения арифметической записи символов.
 // Возвращает: код ошибки.
 // 1 - Не хватило место в выходной строке.
+// 2 - Не верный входной формат.
 int z2(char * out, size_t outL, const char * in, size_t inL)
 {
 	char * stack = (char*) malloc((inL + 1)*sizeof(char));
@@ -243,6 +248,76 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 	}
 	free(stack);
 }
+
+#if _DEBUG == 1
+// Тестирование задания z2.
+void z2_test(void)
+{
+	printf("z2\tStart test...\n");
+	char out[256] = ""; // 256 - не менять.
+	int err = 0;
+
+	err = z2(out, 256, "(10 − 15) * 3", sizeof("(10 − 15) * 3"));
+	if (err != 0)
+		printf("z2.1\tError[%d], res %256s", err, out);
+	if (strcmp("10 15 − 3 *", out) != 0)
+		printf("z2.1\tError[%d], exp. %s but %256s", "10 15 − 3 *", out);
+
+	err = z2(out, 256, "", sizeof(""));
+	if (err != 0)
+		printf("z2.2\tError[%d], res %256s", err, out);
+	if (strcmp("", out) != 0)
+		printf("z2.2\tError[%d], exp. %s but %256s", "", out);
+
+	err = z2(out, 256, "sin(2)", sizeof("sin(2)"));
+	if (err != 0)
+		printf("z2.3\tError[%d], res %256s", err, out);
+	if (strcmp("2 sin", out) != 0)
+		printf("z2.3\tError[%d], exp. %s but %256s", "2 sin", out);
+
+	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)", sizeof("anywhere(1, 2 + 5 * 3)"));
+	if (err != 0)
+		printf("z2.4\tError[%d], res %256s", err, out);
+	if (strcmp("1 2 3 5 * + anywhere", out) != 0)
+		printf("z2.4\tError[%d], exp. %s but %256s", "1 2 3 5 * + anywhere", out);
+
+	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)wejfwioe", sizeof("anywhere(1, 2 + 5 * 3)wejfwioe"));
+	if (err != 2)
+		printf("z2.5\tError[%d] but need 2, res %256s", err, out);
+
+	err = z2(out, 256, "iju34098gu25gug", sizeof("iju34098gu25gug"));
+	if (err != 2)
+		printf("z2.6\tError[%d] but need 2, res %256s", err, out);
+
+	err = z2(out, 256, "0", sizeof("0"));
+	if (err != 0)
+		printf("z2.7\tError[%d], res %256s", err, out);
+	if (strcmp("0", out) != 0)
+		printf("z2.7\tError[%d], exp. %s but %256s", "0", out);
+
+	err = z2(out, 256, "-1", sizeof("-1"));
+	if (err != 0)
+		printf("z2.8\tError[%d], res %256s", err, out);
+	if (strcmp("-1", out) != 0)
+		printf("z2.8\tError[%d], exp. %s but %256s", "-1", out);
+
+	err = z2(out, 256, "2 * -1", sizeof("2 * -1"));
+	if (err != 0)
+		printf("z2.9\tError[%d], res %256s", err, out);
+	if (strcmp("2 -1 *", out) != 0)
+		printf("z2.9\tError[%d], exp. %s but %256s", "2 -1 *", out);
+
+	err = z2(out, 256, "2 * -)1", sizeof("2 * -)1"));
+	if (err != 2)
+		printf("z2.10\tError[%d] but need 2, res %256s", err, out);
+
+	err = z2(out, 256, "2 * - 1", sizeof("2 * - 1"));
+	if (err != 2)
+		printf("z2.11\tError[%d] but need 2, res %256s", err, out);
+
+	printf("z2\tFinish test!\n");
+}
+#endif
 
 // Вычислить значение арифметической формулы, используя обратную польскую запись.
 void z3(void){}
