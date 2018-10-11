@@ -7,6 +7,8 @@
 #define false 0
 #define true !0
 
+typedef unsigned char byte;
+
 // Создать обратную польскую запись для логической формулы.
 void z4(void){}
 // Вычислить значение логической формулы, используя обратную польскую запись.
@@ -141,61 +143,29 @@ void z1_test(void)
 }
 #endif
 
-// Определяет, содержится ли в входной строке до пробела или скобки оператор.
-// const char * in - укащатель на начало поиска.
-// size_t inL - количество доступных символов для поиска.
-// Возвращает: 0 - если не содержится оператор. Иначе - количество занимаемых символов функцией.
-size_t z2_isOperator(const char * in, size_t inL)
-{
-	if(in == NULL || inL < 1)
-		return 0;
-	size_t i = 0;
-	for(; in[i] == ' ' && i < inL; i++);
-	if(i == inL)
-		return 0;
-	if(in[i] == '+' || in[i] == '-' || in[i] == '*' || in[i] == '/' || in[i] == '^' || in[i] == '|' || in[i] == '&' || in[i] == '=' || in[i] == '%' || in[i] == '>' || in[i] == '>')
-		return i + 1;
+// Определяет, является ли входной символ скобками.
+inline byte z2_isParentheses(char in) {
+	return in == '(' || in == ')' || in == '[' || in == ']' || in == '{' || in == '}';
+}
 
-/*
-+
--
-/
-*
-%
-==
-!=
->
-<
->=
-<=
-!a
-&&
-||
-~a
-&
-|
-^
-<<
->>
-+=
--=
-*=
-/=
-%=
-&=
-|=
-^=
-<<=
->>=
-a[b]
-*a
-&b
-->
-.
-->*
-.*
+// Определяет, является ли входной символ разделителем.
+inline byte z2_isSeparator(char in) {
+	return in == ',' || in == '.' || in == ';';
+}
 
-*/
+// Определяет, принадлежит ли входной символ множеству десятичных цифр.
+inline byte z2_is10Number(char in) {
+	return '0' <= in && in <= '9';
+}
+
+// Пропускает все символы пробела.
+// Возвращает: на следующий символ не-пробел. В случае, если пробелы до конца - то указатель на недоступный символ (следующий за доступным).
+inline const char * z2_skipSpace(char * in, size_t inL) {
+	if (in == NULL) return NULL;
+	for (const char * i = in; i < in + inL; i++)
+		if (*i == ' ')
+			continue;
+		else return i;
 }
 
 // Опредеоляет, содержится ли в входной строке до пробела или оператора или скобки постфиксная функция.
@@ -204,16 +174,32 @@ a[b]
 // Возвращает: 0 - если не содержится постфиксная функция. Иначе - количество занимаемых символов функцией.
 size_t z2_isPostfixFunction(const char * in, size_t inL)
 {
-	
+	if (*in == '!')
+		for (const char * i = in + 1; i < in + inL; i++)
+			if (*i == ' ') continue;
+			else return i - in;
+	if(inL )
 }
 
-// Определяет, содержится ли в входной строке префиксная функция.
+// Определяет, содержится ли в входной строке префиксная функция или оператор.
 // const char * in - указатель на начало поиска.
 // size_t inL - количество доступных символов для поиска.
 // Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
-size_t z2_isPrefixFunction(const char * in, size_t inL)
+size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 {
-
+	const char * i = z2_skipSpace(in, inL);
+	for (; i < in + inL; i++)
+	{
+		if (z2_is10Number(i, inL - (size_t)i + in) || *i == '(' || *i == ')' || *i == '[' || *i == ']' || *i == '{' || *i == '}')
+			return 0; // it's number or Parentheses!
+	} // Find first simbol.
+	for (i++; i < in + inL; i++)
+	{
+		if (z2_isParentheses(*in) || *in == ' ') {
+			break;
+		}
+	}
+	return z2_skipSpace(i, inL) - in;
 }
 
 // Создать обратную польскую запись для арифметической формулы.
@@ -241,7 +227,7 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 		{
 			out[outI++] = buffer;
 		}
-		else if(z2_isPrefixFunction(in + i, inL - i))
+		else if(z2_isFunctionOrOperator(in + i, inL - i))
 		{
 			
 		}
