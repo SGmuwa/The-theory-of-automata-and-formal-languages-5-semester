@@ -1,11 +1,15 @@
 #include "UserInterface.h"
 #include <stdlib.h>
-#if _DEBUG == 1
-	#include <string.h>
-#endif
+#include <string.h>
+#include "Stack.h"
 
 #define false 0
 #define true !0
+
+typedef struct {
+	char * first;
+	size_t length;
+} String;
 
 typedef unsigned char byte;
 
@@ -143,9 +147,17 @@ void z1_test(void)
 }
 #endif
 
+inline byte z2_isParenthesOpen(char in) {
+	return in == '(' || in == '[' || in == '{';
+}
+
+inline byte z2_isParenthesClose(char in) {
+	return in == ')' || in == ']' || in == '}';
+}
+
 // Определяет, является ли входной символ скобками.
-inline byte z2_isParentheses(char in) {
-	return in == '(' || in == ')' || in == '[' || in == ']' || in == '{' || in == '}';
+inline byte z2_isParenthes(char in) {
+	return z2_isParenthesOpen(in) || z2_isParenthesClose(in);
 }
 
 // Определяет, является ли входной символ разделителем.
@@ -168,6 +180,7 @@ inline const char * z2_skipSpace(char * in, size_t inL) {
 		else return i;
 }
 
+/*
 // Опредеоляет, содержится ли в входной строке до пробела или оператора или скобки постфиксная функция.
 // const char * in - указатель на начало поиска.
 // size_t inL - количество доступных символов для поиска.
@@ -179,7 +192,7 @@ size_t z2_isPostfixFunction(const char * in, size_t inL)
 			if (*i == ' ') continue;
 			else return i - in;
 	if(inL )
-}
+}*/
 
 // Определяет, содержится ли в входной строке префиксная функция или оператор.
 // const char * in - указатель на начало поиска.
@@ -190,12 +203,12 @@ size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 	const char * i = z2_skipSpace(in, inL);
 	for (; i < in + inL; i++)
 	{
-		if (z2_is10Number(i, inL - (size_t)i + in) || *i == '(' || *i == ')' || *i == '[' || *i == ']' || *i == '{' || *i == '}')
+		if (z2_is10Number(i, inL + (size_t)i - (size_t)in) || z2_isParenthes(*i))
 			return 0; // it's number or Parentheses!
 	} // Find first simbol.
 	for (i++; i < in + inL; i++)
 	{
-		if (z2_isParentheses(*in) || *in == ' ') {
+		if (z2_isParenthes(*i) || *i == ' ') {
 			break;
 		}
 	}
@@ -210,29 +223,69 @@ size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 // Возвращает: код ошибки.
 // 1 - Не хватило место в выходной строке.
 // 2 - Не верный входной формат.
+// 3 - Неизвестная ошибка при перемещении из стека в выходную строку.
 int z2(char * out, size_t outL, const char * in, size_t inL)
 {
-	char * stack = (char*) malloc((inL + 1)*sizeof(char));
-	char buffer;
-	size_t outI = 0; // Индекс, который указывает местоположение в выходной строке.
-	for(size_t i = 0; i < inL; i++)
+	struct StackMemory stk = Stack_malloc(outL, sizeof(String));
+	while(inL > 1)
 	{
-		if(outI == outL - 2 || outL < 2)
+		if(outL < 2)
 		{
-			if(outL > 0) out[outI++] = '\0';
+			if(outL > 0) *out = '\0';
+			out++; outL--;
+			Stack_free(stk);
 			return 1;
 		}
-		buffer = in[i];
-		if((buffer >= '0' && buffer <= '9') || z2_isPostfixFunction(in + i, inL - i))
+		if (z2_is10Number(*in) /*|| z2_isPostfixFunction(in + i, inL - i)*/)
 		{
-			out[outI++] = buffer;
+			*out = *in;
+			in++; out++; outL--; inL--;
+			continue;
 		}
-		else if(z2_isFunctionOrOperator(in + i, inL - i))
+		size_t countOfFun = z2_isFunctionOrOperator(in, inL);
+		if(countOfFun)
 		{
-			
+			Stack_push(&stk, &((String) { in, countOfFun }));
+			in += countOfFun;
+			inL += countOfFun;
+			continue;
+		}
+		if (z2_isParenthesOpen(*in))
+		{
+			Stack_push(&stk, &((String) { in, 1 }));
+			in += 1;
+			inL += 1;
+			continue;
+		}
+		if (z2_isParenthesClose(*in))
+		{
+			String stk_elm;
+			while(1)
+			{
+				if (Stack_pop(&stk, &stk_elm))
+				{ // error
+					Stack_free(stk);
+					return 1;
+				}
+				if (z2_isParenthesOpen(*stk_elm.first))
+				{ // find end.
+					break;
+				}
+				int error;
+				#ifndef _MSC_VER
+					error = memcpy(out, stk_elm.first, stk_elm.length) == NULL ? 1 : 0;
+				#else
+					error = memcpy_s(out, outL, stk_elm.first, stk_elm.length);
+				#endif
+				if (error)
+				{
+					Stack_free(stk);
+					return 3;
+				}
+			}
 		}
 	}
-	free(stack);
+	Stack_free(stk);
 }
 
 #if _DEBUG == 1
