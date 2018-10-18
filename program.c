@@ -121,6 +121,17 @@ void z1_interface(void)
 	}
 }
 
+void z2_interface(void)
+{
+	String input = { malloc(sizeof(char)*1024), UserInterface_GetStr("Input arithmetic expression:", input.first, 1024) };
+	if (input.first == NULL) return;
+	String output = { malloc(input.length * sizeof(char) * 2), input.length * sizeof(char) * 2 };
+	int err = z2(output.first, output.length, input.first, input.length);
+	if (err != 0) printf("error %d.\n", err);
+	printf("%s", output.first);
+	free(input.first);
+}
+
 #if _DEBUG == 1
 void z1_test(void)
 {
@@ -201,14 +212,15 @@ size_t z2_isPostfixFunction(const char * in, size_t inL)
 size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 {
 	const char * i = z2_skipSpace(in, inL);
-	for (; i < in + inL; i++)
+	if (z2_is10Number(*i) || z2_isParenthes(*i))
+		return 0; // it's number or Parentheses!
+	for ( ; i < in + inL; i++)
 	{
-		if (z2_is10Number(i, inL + (size_t)i - (size_t)in) || z2_isParenthes(*i))
-			return 0; // it's number or Parentheses!
-	} // Find first simbol.
-	for (i++; i < in + inL; i++)
-	{
-		if (z2_isParenthes(*i) || *i == ' ') {
+		if (z2_isSeparator(*i)) {
+			i++;
+			break;
+		}
+		if (z2_isParenthes(*i) || *i == ' ' || *i == '\0') {
 			break;
 		}
 	}
@@ -224,41 +236,61 @@ size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 // 1 - Не хватило место в выходной строке.
 // 2 - Не верный входной формат.
 // 3 - Неизвестная ошибка при перемещении из стека в выходную строку.
+// 4 - не верные входные данные.
 int z2(char * out, size_t outL, const char * in, size_t inL)
 {
+	if (out == NULL || outL == 0 || in == NULL || inL == 0)
+		return 4;
+	const char * oldOut = out;
 	struct StackMemory stk = Stack_malloc(outL, sizeof(String));
 	while(inL > 1)
-	{
+	{ // Пока мы ещё имеем входную строку
 		if(outL < 2)
-		{
+		{ // В выходной строке кончается место!
 			if(outL > 0) *out = '\0';
 			out++; outL--;
 			Stack_free(stk);
 			return 1;
 		}
-		if (z2_is10Number(*in) /*|| z2_isPostfixFunction(in + i, inL - i)*/)
 		{
-			*out = *in;
-			in++; out++; outL--; inL--;
-			continue;
+			char * NewIn = z2_skipSpace(in, inL);
+			inL = inL - (NewIn - in);
+			in = NewIn;
+			if (inL > ~(size_t)0 - 1)
+			{
+				break;
+			}
+		}
+		if (z2_is10Number(*in) /*|| z2_isPostfixFunction(in + i, inL - i) нет времени или идей разработки*/)
+		{ // Это оказалось десятичное число
+			while (z2_is10Number(*in) && inL > 1 && outL > 2)
+			{
+				*out = *in;
+				in++; out++; outL--; inL--;
+			}
+			if (inL > 0 && outL > 2)
+			{
+				*out = ' ';
+				in++; out++; outL--; inL--;
+			}
 		}
 		size_t countOfFun = z2_isFunctionOrOperator(in, inL);
 		if(countOfFun)
-		{
+		{ // Ого! Найдена функция!
 			Stack_push(&stk, &((String) { in, countOfFun }));
 			in += countOfFun;
-			inL += countOfFun;
+			inL -= countOfFun;
 			continue;
 		}
 		if (z2_isParenthesOpen(*in))
-		{
+		{ // Найдена открытая скобка. Что делать?
 			Stack_push(&stk, &((String) { in, 1 }));
 			in += 1;
-			inL += 1;
+			inL -= 1;
 			continue;
 		}
 		if (z2_isParenthesClose(*in))
-		{
+		{ // Найдена закрытая скобка. Что делать?
 			String stk_elm;
 			while(1)
 			{
@@ -269,6 +301,8 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 				}
 				if (z2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
+					in++;
+					inL--;
 					break;
 				}
 				int error;
@@ -277,15 +311,51 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 				#else
 					error = memcpy_s(out, outL, stk_elm.first, stk_elm.length);
 				#endif
+				out += stk_elm.length;
+				outL -= stk_elm.length;
 				if (error)
 				{
 					Stack_free(stk);
 					return 3;
 				}
+
 			}
 		}
 	}
+
+	String stk_elm;
+	while (!Stack_pop(&stk, &stk_elm))
+	{
+		if (z2_isParenthesOpen(*stk_elm.first))
+		{ // find end. ????
+			in++;
+			inL--;
+			break;
+		}
+		int error;
+		#ifndef _MSC_VER
+			error = memcpy(out, stk_elm.first, stk_elm.length) == NULL ? 1 : 0;
+		#else
+			error = memcpy_s(out, outL, stk_elm.first, stk_elm.length);
+		#endif
+		out += stk_elm.length;
+		outL -= stk_elm.length;
+		if (error)
+		{
+			Stack_free(stk);
+			return 3;
+		}
+
+	}
+	if (out > oldOut && *(out - 1) == ' ')
+	{ // delete end space.
+		out--;
+		outL++;
+	}
+	if (outL > 0) *out = '\0';
+	out++; outL--;
 	Stack_free(stk);
+	return 0;
 }
 
 #if _DEBUG == 1
@@ -296,63 +366,80 @@ void z2_test(void)
 	char out[256] = ""; // 256 - не менять.
 	int err = 0;
 
-	err = z2(out, 256, "(10 − 15) * 3", sizeof("(10 − 15) * 3"));
+	err = z2(out, 256, "5", sizeof("5"));
 	if (err != 0)
-		printf("z2.1\tError[%d], res %256s", err, out);
-	if (strcmp("10 15 − 3 *", out) != 0)
-		printf("z2.1\tError[%d], exp. %s but %256s", "10 15 − 3 *", out);
+		printf("z2.0\tError[%d], res %s", err, out);
+	if (strcmp("5", out) != 0)
+		printf("z2.0\tError[%d], exp. %s but %s", err, "5", out);
+
+	err = z2(out, 256, "5 - 2", sizeof("5 - 2"));
+	if (err != 0)
+		printf("z2.0.5\tError[%d], res %s", err, out);
+	if (strcmp("5 2 -", out) != 0)
+		printf("z2.0.5\tError[%d], exp. %s but %s", err, "5 2 -", out);
+
+	err = z2(out, 256, "(10 - 15) * 3", sizeof("(10 - 15) * 3"));
+	if (err != 0)
+		printf("z2.1\tError[%d], res %s", err, out);
+	if (strcmp("10 15 - 3 *", out) != 0)
+		printf("z2.1\tError[%d], exp. %s but %s", err, "10 15 - 3 *", out);
 
 	err = z2(out, 256, "", sizeof(""));
 	if (err != 0)
-		printf("z2.2\tError[%d], res %256s", err, out);
+		printf("z2.2\tError[%d], res %s", err, out);
 	if (strcmp("", out) != 0)
-		printf("z2.2\tError[%d], exp. %s but %256s", "", out);
+		printf("z2.2\tError[%d], exp. %s but %s", err, "", out);
 
 	err = z2(out, 256, "sin(2)", sizeof("sin(2)"));
 	if (err != 0)
-		printf("z2.3\tError[%d], res %256s", err, out);
+		printf("z2.3\tError[%d], res %s", err, out);
 	if (strcmp("2 sin", out) != 0)
-		printf("z2.3\tError[%d], exp. %s but %256s", "2 sin", out);
+		printf("z2.3\tError[%d], exp. %s but %s", err, "2 sin", out);
 
 	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)", sizeof("anywhere(1, 2 + 5 * 3)"));
 	if (err != 0)
-		printf("z2.4\tError[%d], res %256s", err, out);
+		printf("z2.4\tError[%d], res %s", err, out);
 	if (strcmp("1 2 3 5 * + anywhere", out) != 0)
-		printf("z2.4\tError[%d], exp. %s but %256s", "1 2 3 5 * + anywhere", out);
+		printf("z2.4\tError[%d], exp. %s but %s", err, "1 2 3 5 * + anywhere", out);
 
 	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)wejfwioe", sizeof("anywhere(1, 2 + 5 * 3)wejfwioe"));
 	if (err != 2)
-		printf("z2.5\tError[%d] but need 2, res %256s", err, out);
+		printf("z2.5\tError[%d] but need 2, res %s", err, out);
 
 	err = z2(out, 256, "iju34098gu25gug", sizeof("iju34098gu25gug"));
 	if (err != 2)
-		printf("z2.6\tError[%d] but need 2, res %256s", err, out);
+		printf("z2.6\tError[%d] but need 2, res %s", err, out);
 
 	err = z2(out, 256, "0", sizeof("0"));
 	if (err != 0)
-		printf("z2.7\tError[%d], res %256s", err, out);
+		printf("z2.7\tError[%d], res %s", err, out);
 	if (strcmp("0", out) != 0)
-		printf("z2.7\tError[%d], exp. %s but %256s", "0", out);
+		printf("z2.7\tError[%d], exp. %s but %s", err, "0", out);
 
 	err = z2(out, 256, "-1", sizeof("-1"));
 	if (err != 0)
-		printf("z2.8\tError[%d], res %256s", err, out);
+		printf("z2.8\tError[%d], res %s", err, out);
 	if (strcmp("-1", out) != 0)
-		printf("z2.8\tError[%d], exp. %s but %256s", "-1", out);
+		printf("z2.8\tError[%d], exp. %s but %s", err, "-1", out);
 
 	err = z2(out, 256, "2 * -1", sizeof("2 * -1"));
 	if (err != 0)
-		printf("z2.9\tError[%d], res %256s", err, out);
+		printf("z2.9\tError[%d], res %s", err, out);
 	if (strcmp("2 -1 *", out) != 0)
-		printf("z2.9\tError[%d], exp. %s but %256s", "2 -1 *", out);
+		printf("z2.9\tError[%d], exp. %s but %s", err, "2 -1 *", out);
 
 	err = z2(out, 256, "2 * -)1", sizeof("2 * -)1"));
 	if (err != 2)
-		printf("z2.10\tError[%d] but need 2, res %256s", err, out);
+		printf("z2.10\tError[%d] but need 2, res %s", err, out);
 
 	err = z2(out, 256, "2 * - 1", sizeof("2 * - 1"));
 	if (err != 2)
-		printf("z2.11\tError[%d] but need 2, res %256s", err, out);
+		printf("z2.11\tError[%d] but need 2, res %s", err, out);
+
+
+	err = z2(out, 256, "(10 − 15) * 3", sizeof("(10 − 15) * 3"));
+	if (err != 2)
+		printf("z2.11\tError[%d] but need 2, res %s", err, out);
 
 	printf("z2\tFinish test!\n");
 }
@@ -370,8 +457,10 @@ void z8(void)
 void main(void)
 {
 #if _DEBUG == 1
-	z1_test();
+	//z1_test();
+	z2_test();
 #endif
-	z1_interface();
+	//z1_interface();
+	//z2_interface();
 	UserInterface_Pause("Press any key...");
 }
