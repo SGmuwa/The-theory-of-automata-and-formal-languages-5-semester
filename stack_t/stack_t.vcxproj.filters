@@ -15,12 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="program.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\UserInterface-CLanguage\UserInterface.h">
+    <ClInclude Include="stack_t.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,17 +1,9 @@
 #include "..\UserInterface-CLanguage\UserInterface.h"
 #include <stdlib.h>
 #include <string.h>
-#include "Stack.h"
-
-#define false 0
-#define true !0
-
-typedef struct {
-	char * first;
-	size_t length;
-} String;
-
-typedef unsigned char byte;
+#include "..\stack_t\stack_t.h"
+#include "..\byte_t\byte_t.h"
+#include "..\string_t\string_t.h"
 
 // Создать обратную польскую запись для логической формулы.
 void lab4(void){}
@@ -158,26 +150,26 @@ void lab1_test(void)
 }
 #endif
 
-inline byte lab2_isParenthesOpen(char in) {
+inline byte_t lab2_isParenthesOpen(char in) {
 	return in == '(' || in == '[' || in == '{';
 }
 
-inline byte lab2_isParenthesClose(char in) {
+inline byte_t lab2_isParenthesClose(char in) {
 	return in == ')' || in == ']' || in == '}';
 }
 
 // Определяет, является ли входной символ скобками.
-inline byte lab2_isParenthes(char in) {
+inline byte_t lab2_isParenthes(char in) {
 	return lab2_isParenthesOpen(in) || lab2_isParenthesClose(in);
 }
 
 // Определяет, является ли входной символ разделителем.
-inline byte lab2_isSeparator(char in) {
+inline byte_t lab2_isSeparator(char in) {
 	return in == ',' || in == '.' || in == ';';
 }
 
 // Определяет, принадлежит ли входной символ множеству десятичных цифр.
-inline byte lab2_is10Number(char in) {
+inline byte_t lab2_is10Number(char in) {
 	return '0' <= in && in <= '9';
 }
 
