@@ -48,7 +48,7 @@ struct StackMemory Stack_malloc(size_t countElements, size_t sizeElement)
 /// <param name="stack">Стек, который нужно освободить.</param>
 void Stack_free(struct StackMemory stack)
 {
-	return free(stack.bottom);
+	free(stack.bottom);
 }
 
 /// <summary>Добавить элемент в стек.</summary>
@@ -58,7 +58,7 @@ void Stack_free(struct StackMemory stack)
 unsigned short int Stack_push(struct StackMemory * stack, void * element)
 {
 	size_t i;
-	if ((char*)stack->top - (char*)stack->current >= stack->sizeElement)
+	if ((size_t)stack->top - (size_t)stack->current >= stack->sizeElement)
 	{
 		for (i = 0; i < stack->sizeElement; i++)
 		{
@@ -77,7 +77,7 @@ unsigned short int Stack_push(struct StackMemory * stack, void * element)
 unsigned short int Stack_pop(struct StackMemory * stack, void * output)
 {
 	size_t i;
-	if ((char*)stack->current - (char*)stack->bottom >= stack->sizeElement)
+	if ((size_t)stack->current - (size_t)stack->bottom >= stack->sizeElement)
 	{
 		for (i = stack->sizeElement - 1; i != ~(size_t)0; i--)
 		{

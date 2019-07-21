@@ -14,13 +14,13 @@ typedef struct {
 typedef unsigned char byte;
 
 // Создать обратную польскую запись для логической формулы.
-void z4(void){}
+void lab4(void){}
 // Вычислить значение логической формулы, используя обратную польскую запись.
-void z5(void){}
+void lab5(void){}
 // Создать обратную польскую запись для условного оператора.
-void z6(void){}
+void lab6(void){}
 // Создать обратную польскую запись для оператора цикла.
-void z7(void){}
+void lab7(void){}
 // Перечислить пути в ациклическом графе между двумя заданными вершинами.
 // Выполнить топографическую сортировать ациклического графа
 // *Перечислить пути в неориентированном графе между двумя заданными вершинами. Использовать простые пути.
@@ -39,7 +39,7 @@ void z7(void){}
 // 4 - Точка или запятая не может быть в начале или в конце строки.
 // 5 - Входные указатели аргумента указывают на NULL.
 // 6 - Число не может быть без целой части.
-int z1(double * output, const char * input, size_t length)
+int lab1(double * output, const char * input, size_t length)
 {
 	if (output == NULL || input == NULL)
 		return 5;
@@ -104,13 +104,13 @@ int z1(double * output, const char * input, size_t length)
 	else 
 		return 0;
 }
-void z1_interface(void)
+void lab1_interface(void)
 {
 	char input[256];
 	size_t length = UserInterface_GetStr("Input number in decimal format: ", input, sizeof(input) / sizeof(char));
 	double output = 0;
 	int err;
-	switch (err = z1(&output, input, length))
+	switch (err = lab1(&output, input, length))
 	{
 	case 0:
 		printf("Number: %lf\n", output);
@@ -121,69 +121,69 @@ void z1_interface(void)
 	}
 }
 
-void z2_interface(void)
+void lab2_interface(void)
 {
 	String input = { malloc(sizeof(char)*1024), UserInterface_GetStr("Input arithmetic expression:", input.first, 1024) };
 	if (input.first == NULL) return;
 	String output = { malloc(input.length * sizeof(char) * 2), input.length * sizeof(char) * 2 };
-	int err = z2(output.first, output.length, input.first, input.length);
+	int err = lab2(output.first, output.length, input.first, input.length);
 	if (err != 0) printf("error %d.\n", err);
 	printf("%s", output.first);
 	free(input.first);
 }
 
 #if _DEBUG == 1
-void z1_test(void)
+void lab1_test(void)
 {
-	printf("z1:\tTest start.\n");
+	printf("lab1:\tTest start.\n");
 	double output = 0;
 	double * o = &output;
 	int err = 0;
-	if((err = z1(o, "0", sizeof("0"))) != 0 || output != 0) printf("z1:\tError[%d]: 0 but %lf\n", err, output);
-	if ((err = z1(o, "1", sizeof("1"))) != 0 || output != 1) printf("z1:\tError[%d]: 1 but %lf\n", err, output);
-	if ((err = z1(o, "123", sizeof("123"))) != 0 || output != 123) printf("z1:\tError[%d]: 123 but %lf\n", err, output);
-	if ((err = z1(o, "123.123", sizeof("123.123"))) != 0 || output != 123.123) printf("z1:\tError[%d]: 123 but %lf\n", err, output);
-	if ((err = z1(o, "", sizeof(""))) != 1) printf("z1:\tError[%d] but need err 1. res? %lf\n", err, output);
-	if ((err = z1(o, "123.1a23", sizeof("123.1a23"))) != 2) printf("z1:\tError[%d] but need err 2. res? %lf\n", err, output);
-	if ((err = z1(o, "123..123", sizeof("123..123"))) != 3) printf("z1:\tError[%d] but need err 3. res? %lf\n", err, output);
-	if ((err = z1(o, ".123", sizeof(".123"))) != 4) printf("z1:\tError[%d] but need err 4. res? %lf\n", err, output);
-	if ((err = z1(NULL, "123", sizeof("123"))) != 5) printf("z1:\tError[%d] but need err 5. res? %lf\n", err, output);
-	if ((err = z1(o, NULL, 12)) != 5) printf("z1:\tError[%d] but need err 5. res? %lf\n", err, output);
-	if ((err = z1(o, "0123456789.0123456789", sizeof("0123456789.0123456789"))) != 0 || output != 0123456789.0123456789) printf("z1:\tError[%d]: 0123456789.0123456789 but %lf\n", err, output);
-	if ((err = z1(o, "-0123456789.0123456789", sizeof("-0123456789.0123456789"))) != 0 || output != -0123456789.0123456789) printf("z1:\tError[%d]: -0123456789.0123456789 but %lf\n", err, output);
-	if ((err = z1(o, "-123456789.0123456789", sizeof("-123456789.0123456789"))) != 0 || output != -123456789.0123456789) printf("z1:\tError[%d]: -123456789.0123456789 but %lf\n", err, output);
-	if ((err = z1(o, "-", sizeof("-"))) != 1) printf("z1:\tError[%d] but need 1. res? %lf\n", err, output);
-	if ((err = z1(o, "-.1", sizeof("-.1"))) != 6) printf("z1:\tError[%d] but need 6. res? %lf\n", err, output);
-	printf("z1:\tTest end.\n");
+	if((err = lab1(o, "0", sizeof("0"))) != 0 || output != 0) printf("lab1:\tError[%d]: 0 but %lf\n", err, output);
+	if ((err = lab1(o, "1", sizeof("1"))) != 0 || output != 1) printf("lab1:\tError[%d]: 1 but %lf\n", err, output);
+	if ((err = lab1(o, "123", sizeof("123"))) != 0 || output != 123) printf("lab1:\tError[%d]: 123 but %lf\n", err, output);
+	if ((err = lab1(o, "123.123", sizeof("123.123"))) != 0 || output != 123.123) printf("lab1:\tError[%d]: 123 but %lf\n", err, output);
+	if ((err = lab1(o, "", sizeof(""))) != 1) printf("lab1:\tError[%d] but need err 1. res? %lf\n", err, output);
+	if ((err = lab1(o, "123.1a23", sizeof("123.1a23"))) != 2) printf("lab1:\tError[%d] but need err 2. res? %lf\n", err, output);
+	if ((err = lab1(o, "123..123", sizeof("123..123"))) != 3) printf("lab1:\tError[%d] but need err 3. res? %lf\n", err, output);
+	if ((err = lab1(o, ".123", sizeof(".123"))) != 4) printf("lab1:\tError[%d] but need err 4. res? %lf\n", err, output);
+	if ((err = lab1(NULL, "123", sizeof("123"))) != 5) printf("lab1:\tError[%d] but need err 5. res? %lf\n", err, output);
+	if ((err = lab1(o, NULL, 12)) != 5) printf("lab1:\tError[%d] but need err 5. res? %lf\n", err, output);
+	if ((err = lab1(o, "0123456789.0123456789", sizeof("0123456789.0123456789"))) != 0 || output != 0123456789.0123456789) printf("lab1:\tError[%d]: 0123456789.0123456789 but %lf\n", err, output);
+	if ((err = lab1(o, "-0123456789.0123456789", sizeof("-0123456789.0123456789"))) != 0 || output != -0123456789.0123456789) printf("lab1:\tError[%d]: -0123456789.0123456789 but %lf\n", err, output);
+	if ((err = lab1(o, "-123456789.0123456789", sizeof("-123456789.0123456789"))) != 0 || output != -123456789.0123456789) printf("lab1:\tError[%d]: -123456789.0123456789 but %lf\n", err, output);
+	if ((err = lab1(o, "-", sizeof("-"))) != 1) printf("lab1:\tError[%d] but need 1. res? %lf\n", err, output);
+	if ((err = lab1(o, "-.1", sizeof("-.1"))) != 6) printf("lab1:\tError[%d] but need 6. res? %lf\n", err, output);
+	printf("lab1:\tTest end.\n");
 }
 #endif
 
-inline byte z2_isParenthesOpen(char in) {
+inline byte lab2_isParenthesOpen(char in) {
 	return in == '(' || in == '[' || in == '{';
 }
 
-inline byte z2_isParenthesClose(char in) {
+inline byte lab2_isParenthesClose(char in) {
 	return in == ')' || in == ']' || in == '}';
 }
 
 // Определяет, является ли входной символ скобками.
-inline byte z2_isParenthes(char in) {
-	return z2_isParenthesOpen(in) || z2_isParenthesClose(in);
+inline byte lab2_isParenthes(char in) {
+	return lab2_isParenthesOpen(in) || lab2_isParenthesClose(in);
 }
 
 // Определяет, является ли входной символ разделителем.
-inline byte z2_isSeparator(char in) {
+inline byte lab2_isSeparator(char in) {
 	return in == ',' || in == '.' || in == ';';
 }
 
 // Определяет, принадлежит ли входной символ множеству десятичных цифр.
-inline byte z2_is10Number(char in) {
+inline byte lab2_is10Number(char in) {
 	return '0' <= in && in <= '9';
 }
 
 // Пропускает все символы пробела.
 // Возвращает: на следующий символ не-пробел. В случае, если пробелы до конца - то указатель на недоступный символ (следующий за доступным).
-inline const char * z2_skipSpace(char * in, size_t inL) {
+inline const char * lab2_skipSpace(char * in, size_t inL) {
 	if (in == NULL) return NULL;
 	for (const char * i = in; i < in + inL; i++)
 		if (*i == ' ')
@@ -196,7 +196,7 @@ inline const char * z2_skipSpace(char * in, size_t inL) {
 // const char * in - указатель на начало поиска.
 // size_t inL - количество доступных символов для поиска.
 // Возвращает: 0 - если не содержится постфиксная функция. Иначе - количество занимаемых символов функцией.
-size_t z2_isPostfixFunction(const char * in, size_t inL)
+size_t lab2_isPostfixFunction(const char * in, size_t inL)
 {
 	if (*in == '!')
 		for (const char * i = in + 1; i < in + inL; i++)
@@ -209,22 +209,22 @@ size_t z2_isPostfixFunction(const char * in, size_t inL)
 // const char * in - указатель на начало поиска.
 // size_t inL - количество доступных символов для поиска.
 // Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
-size_t z2_isFunctionOrOperator(const char * in, size_t inL)
+size_t lab2_isFunctionOrOperator(const char * in, size_t inL)
 {
-	const char * i = z2_skipSpace(in, inL);
-	if (z2_is10Number(*i) || z2_isParenthes(*i))
+	const char * i = lab2_skipSpace(in, inL);
+	if (lab2_is10Number(*i) || lab2_isParenthes(*i))
 		return 0; // it's number or Parentheses!
 	for ( ; i < in + inL; i++)
 	{
-		if (z2_isSeparator(*i)) {
+		if (lab2_isSeparator(*i)) {
 			i++;
 			break;
 		}
-		if (z2_isParenthes(*i) || *i == ' ' || *i == '\0') {
+		if (lab2_isParenthes(*i) || *i == ' ' || *i == '\0') {
 			break;
 		}
 	}
-	return z2_skipSpace(i, inL) - in;
+	return lab2_skipSpace(i, inL) - in;
 }
 
 // Создать обратную польскую запись для арифметической формулы.
@@ -237,7 +237,7 @@ size_t z2_isFunctionOrOperator(const char * in, size_t inL)
 // 2 - Не верный входной формат.
 // 3 - Неизвестная ошибка при перемещении из стека в выходную строку.
 // 4 - не верные входные данные.
-int z2(char * out, size_t outL, const char * in, size_t inL)
+int lab2(char * out, size_t outL, const char * in, size_t inL)
 {
 	if (out == NULL || outL == 0 || in == NULL || inL == 0)
 		return 4;
@@ -253,7 +253,7 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 			return 1;
 		}
 		{
-			char * NewIn = z2_skipSpace(in, inL);
+			char * NewIn = lab2_skipSpace(in, inL);
 			inL = inL - (NewIn - in);
 			in = NewIn;
 			if (inL > ~(size_t)0 - 1)
@@ -261,9 +261,9 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 				break;
 			}
 		}
-		if (z2_is10Number(*in) /*|| z2_isPostfixFunction(in + i, inL - i) нет времени или идей разработки*/)
+		if (lab2_is10Number(*in) /*|| lab2_isPostfixFunction(in + i, inL - i) нет времени или идей разработки*/)
 		{ // Это оказалось десятичное число
-			while (z2_is10Number(*in) && inL > 1 && outL > 2)
+			while (lab2_is10Number(*in) && inL > 1 && outL > 2)
 			{
 				*out = *in;
 				in++; out++; outL--; inL--;
@@ -274,7 +274,7 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 				in++; out++; outL--; inL--;
 			}
 		}
-		size_t countOfFun = z2_isFunctionOrOperator(in, inL);
+		size_t countOfFun = lab2_isFunctionOrOperator(in, inL);
 		if(countOfFun)
 		{ // Ого! Найдена функция!
 			Stack_push(&stk, &((String) { in, countOfFun }));
@@ -282,14 +282,14 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 			inL -= countOfFun;
 			continue;
 		}
-		if (z2_isParenthesOpen(*in))
+		if (lab2_isParenthesOpen(*in))
 		{ // Найдена открытая скобка. Что делать?
 			Stack_push(&stk, &((String) { in, 1 }));
 			in += 1;
 			inL -= 1;
 			continue;
 		}
-		if (z2_isParenthesClose(*in))
+		if (lab2_isParenthesClose(*in))
 		{ // Найдена закрытая скобка. Что делать?
 			String stk_elm;
 			while(1)
@@ -299,7 +299,7 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 					Stack_free(stk);
 					return 1;
 				}
-				if (z2_isParenthesOpen(*stk_elm.first))
+				if (lab2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
 					in++;
 					inL--;
@@ -326,7 +326,7 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 	String stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
 	{
-		if (z2_isParenthesOpen(*stk_elm.first))
+		if (lab2_isParenthesOpen(*stk_elm.first))
 		{ // find end. ????
 			in++;
 			inL--;
@@ -359,94 +359,94 @@ int z2(char * out, size_t outL, const char * in, size_t inL)
 }
 
 #if _DEBUG == 1
-// Тестирование задания z2.
-void z2_test(void)
+// Тестирование задания lab2.
+void lab2_test(void)
 {
-	printf("z2\tStart test...\n");
+	printf("lab2\tStart test...\n");
 	char out[256] = ""; // 256 - не менять.
 	int err = 0;
 
-	err = z2(out, 256, "5", sizeof("5"));
+	err = lab2(out, 256, "5", sizeof("5"));
 	if (err != 0)
-		printf("z2.0\tError[%d], res %s", err, out);
+		printf("lab2.0\tError[%d], res %s", err, out);
 	if (strcmp("5", out) != 0)
-		printf("z2.0\tError[%d], exp. %s but %s", err, "5", out);
+		printf("lab2.0\tError[%d], exp. %s but %s", err, "5", out);
 
-	err = z2(out, 256, "5 - 2", sizeof("5 - 2"));
+	err = lab2(out, 256, "5 - 2", sizeof("5 - 2"));
 	if (err != 0)
-		printf("z2.0.5\tError[%d], res %s", err, out);
+		printf("lab2.0.5\tError[%d], res %s", err, out);
 	if (strcmp("5 2 -", out) != 0)
-		printf("z2.0.5\tError[%d], exp. %s but %s", err, "5 2 -", out);
+		printf("lab2.0.5\tError[%d], exp. %s but %s", err, "5 2 -", out);
 
-	err = z2(out, 256, "(10 - 15) * 3", sizeof("(10 - 15) * 3"));
+	err = lab2(out, 256, "(10 - 15) * 3", sizeof("(10 - 15) * 3"));
 	if (err != 0)
-		printf("z2.1\tError[%d], res %s", err, out);
+		printf("lab2.1\tError[%d], res %s", err, out);
 	if (strcmp("10 15 - 3 *", out) != 0)
-		printf("z2.1\tError[%d], exp. %s but %s", err, "10 15 - 3 *", out);
+		printf("lab2.1\tError[%d], exp. %s but %s", err, "10 15 - 3 *", out);
 
-	err = z2(out, 256, "", sizeof(""));
+	err = lab2(out, 256, "", sizeof(""));
 	if (err != 0)
-		printf("z2.2\tError[%d], res %s", err, out);
+		printf("lab2.2\tError[%d], res %s", err, out);
 	if (strcmp("", out) != 0)
-		printf("z2.2\tError[%d], exp. %s but %s", err, "", out);
+		printf("lab2.2\tError[%d], exp. %s but %s", err, "", out);
 
-	err = z2(out, 256, "sin(2)", sizeof("sin(2)"));
+	err = lab2(out, 256, "sin(2)", sizeof("sin(2)"));
 	if (err != 0)
-		printf("z2.3\tError[%d], res %s", err, out);
+		printf("lab2.3\tError[%d], res %s", err, out);
 	if (strcmp("2 sin", out) != 0)
-		printf("z2.3\tError[%d], exp. %s but %s", err, "2 sin", out);
+		printf("lab2.3\tError[%d], exp. %s but %s", err, "2 sin", out);
 
-	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)", sizeof("anywhere(1, 2 + 5 * 3)"));
+	err = lab2(out, 256, "anywhere(1, 2 + 5 * 3)", sizeof("anywhere(1, 2 + 5 * 3)"));
 	if (err != 0)
-		printf("z2.4\tError[%d], res %s", err, out);
+		printf("lab2.4\tError[%d], res %s", err, out);
 	if (strcmp("1 2 3 5 * + anywhere", out) != 0)
-		printf("z2.4\tError[%d], exp. %s but %s", err, "1 2 3 5 * + anywhere", out);
+		printf("lab2.4\tError[%d], exp. %s but %s", err, "1 2 3 5 * + anywhere", out);
 
-	err = z2(out, 256, "anywhere(1, 2 + 5 * 3)wejfwioe", sizeof("anywhere(1, 2 + 5 * 3)wejfwioe"));
+	err = lab2(out, 256, "anywhere(1, 2 + 5 * 3)wejfwioe", sizeof("anywhere(1, 2 + 5 * 3)wejfwioe"));
 	if (err != 2)
-		printf("z2.5\tError[%d] but need 2, res %s", err, out);
+		printf("lab2.5\tError[%d] but need 2, res %s", err, out);
 
-	err = z2(out, 256, "iju34098gu25gug", sizeof("iju34098gu25gug"));
+	err = lab2(out, 256, "iju34098gu25gug", sizeof("iju34098gu25gug"));
 	if (err != 2)
-		printf("z2.6\tError[%d] but need 2, res %s", err, out);
+		printf("lab2.6\tError[%d] but need 2, res %s", err, out);
 
-	err = z2(out, 256, "0", sizeof("0"));
+	err = lab2(out, 256, "0", sizeof("0"));
 	if (err != 0)
-		printf("z2.7\tError[%d], res %s", err, out);
+		printf("lab2.7\tError[%d], res %s", err, out);
 	if (strcmp("0", out) != 0)
-		printf("z2.7\tError[%d], exp. %s but %s", err, "0", out);
+		printf("lab2.7\tError[%d], exp. %s but %s", err, "0", out);
 
-	err = z2(out, 256, "-1", sizeof("-1"));
+	err = lab2(out, 256, "-1", sizeof("-1"));
 	if (err != 0)
-		printf("z2.8\tError[%d], res %s", err, out);
+		printf("lab2.8\tError[%d], res %s", err, out);
 	if (strcmp("-1", out) != 0)
-		printf("z2.8\tError[%d], exp. %s but %s", err, "-1", out);
+		printf("lab2.8\tError[%d], exp. %s but %s", err, "-1", out);
 
-	err = z2(out, 256, "2 * -1", sizeof("2 * -1"));
+	err = lab2(out, 256, "2 * -1", sizeof("2 * -1"));
 	if (err != 0)
-		printf("z2.9\tError[%d], res %s", err, out);
+		printf("lab2.9\tError[%d], res %s", err, out);
 	if (strcmp("2 -1 *", out) != 0)
-		printf("z2.9\tError[%d], exp. %s but %s", err, "2 -1 *", out);
+		printf("lab2.9\tError[%d], exp. %s but %s", err, "2 -1 *", out);
 
-	err = z2(out, 256, "2 * -)1", sizeof("2 * -)1"));
+	err = lab2(out, 256, "2 * -)1", sizeof("2 * -)1"));
 	if (err != 2)
-		printf("z2.10\tError[%d] but need 2, res %s", err, out);
+		printf("lab2.10\tError[%d] but need 2, res %s", err, out);
 
-	err = z2(out, 256, "2 * - 1", sizeof("2 * - 1"));
+	err = lab2(out, 256, "2 * - 1", sizeof("2 * - 1"));
 	if (err != 2)
-		printf("z2.11\tError[%d] but need 2, res %s", err, out);
+		printf("lab2.11\tError[%d] but need 2, res %s", err, out);
 
 
-	err = z2(out, 256, "(10 − 15) * 3", sizeof("(10 − 15) * 3"));
+	err = lab2(out, 256, "(10 − 15) * 3", sizeof("(10 − 15) * 3"));
 	if (err != 2)
-		printf("z2.11\tError[%d] but need 2, res %s", err, out);
+		printf("lab2.11\tError[%d] but need 2, res %s", err, out);
 
-	printf("z2\tFinish test!\n");
+	printf("lab2\tFinish test!\n");
 }
 #endif
 
 // Вычислить значение арифметической формулы, используя обратную польскую запись.
-void z3(void){}
+void lab3(void){}
 
 // Преобразовать трёхмерный массив в одномерный. Реализовать обращение к нему как трёхмерному, используя обратную польскую запись.
 void z8(void)
@@ -457,10 +457,10 @@ void z8(void)
 void main(void)
 {
 #if _DEBUG == 1
-	//z1_test();
-	z2_test();
+	//lab1_test();
+	lab2_test();
 #endif
-	//z1_interface();
-	//z2_interface();
+	//lab1_interface();
+	//lab2_interface();
 	UserInterface_Pause("Press any key...");
 }
