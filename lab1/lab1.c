@@ -150,10 +150,6 @@ void lab8(void)
 
 void main(void)
 {
-#if _DEBUG == 1
-	//lab1_test();
-	lab2_test();
-#endif
 	//lab1_interface();
 	//lab2_interface();
 	UserInterface_Pause("Press any key...");

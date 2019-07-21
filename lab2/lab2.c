@@ -1,16 +1,14 @@
-﻿#pragma once
-#include "..\byte_t\byte_t.h"
+﻿#include "..\byte_t\byte_t.h"
 #include "..\UserInterface-CLanguage\UserInterface.h"
 #include <stdlib.h>
 #include "..\stack_t\stack_t.h"
 #include "..\string_t\string_t.h"
 #include <string.h>
-
 void lab2_interface(void)
 {
-	string_t input = { malloc(sizeof(char) * 1024), UserInterface_GetStr("Input arithmetic expression:", input.first, 1024) };
+	string_t input = { (char*) malloc(sizeof(char) * 1024), UserInterface_GetStr("Input arithmetic expression:", input.first, 1024) };
 	if (input.first == NULL) return;
-	string_t output = { malloc(input.length * sizeof(char) * 2), input.length * sizeof(char) * 2 };
+	string_t output = { (char*) malloc(input.length * sizeof(char) * 2), input.length * sizeof(char) * 2 };
 	int err = lab2(output.first, output.length, input.first, input.length);
 	if (err != 0) printf("error %d.\n", err);
 	printf("%s", output.first);
@@ -589,3 +587,8 @@ void lab2_test(void)
 	printf("lab2\tFinish test!\n");
 }
 #endif
+
+void main(void)
+{
+	lab2_interface();
+}
