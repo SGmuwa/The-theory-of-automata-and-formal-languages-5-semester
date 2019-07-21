@@ -23,12 +23,12 @@ extern "C" {
 		size_t sizeElement;
 	} stack_t;
 
-	/// <summary>
-	/// Выделить память для стека.
-	/// </summary>
-	/// <param name="countElements">Количество элементов в стеке.</param>
-	/// <param name="sizeElement">Размер одного элемента.</param>
-	/// <return>Структуру, которая содержит информацию о новом стеке. Возвращает все элементы структуры NULL или 0, если память не выделилась.</return>
+	// Выделить память для стека.
+	// countElements - Количество элементов в стеке.
+	// sizeElement - Размер одного элемента.
+	// Возвращает: Структуру, которая содержит информацию о новом стеке.
+	//				Возвращает все элементы структуры NULL или 0,
+	//				если память не выделилась.
 	struct StackMemory Stack_malloc(size_t countElements, size_t sizeElement)
 	{
 		struct StackMemory output;

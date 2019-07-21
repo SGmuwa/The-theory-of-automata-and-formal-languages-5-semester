@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lab2.c">
+    <ClCompile Include="lab2_userInterface.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
