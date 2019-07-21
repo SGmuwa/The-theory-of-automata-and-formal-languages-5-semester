@@ -1,0 +1,3 @@
+[submodule "UserInterface-CLanguage"]
+	path = UserInterface-CLanguage
+	url = https://github.com/SGmuwa/UserInterface-CLanguage.git
