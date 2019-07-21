@@ -15,13 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\UserInterface-CLanguage\UserInterface.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="lab1.c">
+    <ClInclude Include="lab2.c">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
 </Project>
