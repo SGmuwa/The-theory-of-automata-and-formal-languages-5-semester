@@ -2,93 +2,63 @@
 #include <stdio.h>
 #include <string.h>
 #include "lab2.h"
+#include "..\minctest\minctest.h"
 
-#define LAB2_TEST_OUTPUT_LENGTH
+// Создаёт функцию тестирования.
+#define LAB2_TEST_MAKE(NUMBER, EXPECT, INPUT, ERROR) void lab2_test ## NUMBER (void)\
+{\
+	string_t out = string_malloc(256);\
+	*out.first = 0;\
+	lequal(ERROR, lab2(out, STRING_STATIC(INPUT)));\
+	if(ERROR == 0) lsequal(EXPECT, out.first);\
+	string_free(out);\
+}
+
+// Получает имя функции по номеру
+#define LAB2_TEST_GETNAME(NUMBER) lab2_test ## NUMBER
+
+LAB2_TEST_MAKE(0, "5", "5", 0);
+LAB2_TEST_MAKE(1, "5 2 -", "5 - 2", 0);
+LAB2_TEST_MAKE(2, "10 15 - 3 *", "(10 - 15) * 3", 0);
+LAB2_TEST_MAKE(3, "", "", 0);
+LAB2_TEST_MAKE(4, "2 sin", "sin(2)", 0);
+LAB2_TEST_MAKE(5, "1 2 3 5 * + anywhere", "anywhere(1, 2 + 5 * 3)", 0);
+LAB2_TEST_MAKE(6, "1 2 3 5 * + anywhere wejfwioe *", "anywhere(1, 2 + 5 * 3)wejfwioe", 0); // "anywhere(1, 2 + 5 * 3) * wejfwioe"
+LAB2_TEST_MAKE(7, "iju34098gu25gug", "iju34098gu25gug", 0);
+LAB2_TEST_MAKE(8, "0", "0", 0);
+LAB2_TEST_MAKE(9, "-1", "-1", 0);
+LAB2_TEST_MAKE(10, "2 -1 *", "2 * -1", 0);
+LAB2_TEST_MAKE(11, (char*)NULL, "2 * -)1", 2);
+LAB2_TEST_MAKE(12, "2 -1 *", "2 * - 1", 0);
+LAB2_TEST_MAKE(13, "10 15 - 3 *", "(10 − 15) * 3", 0);
+#define LAB2_TEST_COUNT 13 + 1
 
 // Тестирование задания lab2.
-void lab2_test(void)
+void lab2_runTests(void)
 {
-#ifdef _DEBUG // Запуск тестов в debug версии.
-	printf("lab2\tStart test...\n");
-	string_t out = string_malloc(256);
-	int err = 0;
+	void(*lab2_tests[LAB2_TEST_COUNT])(void) = {
+	LAB2_TEST_GETNAME(0),
+	LAB2_TEST_GETNAME(1),
+	LAB2_TEST_GETNAME(2),
+	LAB2_TEST_GETNAME(3),
+	LAB2_TEST_GETNAME(4),
+	LAB2_TEST_GETNAME(5),
+	LAB2_TEST_GETNAME(6),
+	LAB2_TEST_GETNAME(7),
+	LAB2_TEST_GETNAME(8),
+	LAB2_TEST_GETNAME(9),
+	LAB2_TEST_GETNAME(10),
+	LAB2_TEST_GETNAME(11),
+	LAB2_TEST_GETNAME(12),
+	LAB2_TEST_GETNAME(13)
+	};
 
-	err = lab2(out, STRING_STATIC("5"));
-	if (err != 0)
-		printf_s("lab2.0\tError[%d], res %s", err, out.first);
-	if (strcmp("5", out.first) != 0)
-		printf("lab2.0\tError[%d], exp. %s but %s", err, "5", out.first);
-
-	err = lab2(out, STRING_STATIC("5 - 2"));
-	if (err != 0)
-		printf("lab2.0.5\tError[%d], res %s", err, out.first);
-	if (strcmp("5 2 -", out.first) != 0)
-		printf("lab2.0.5\tError[%d], exp. %s but %s", err, "5 2 -", out.first);
-
-	err = lab2(out, STRING_STATIC("(10 - 15) * 3"));
-	if (err != 0)
-		printf("lab2.1\tError[%d], res %s", err, out.first);
-	if (strcmp("10 15 - 3 *", out.first) != 0)
-		printf("lab2.1\tError[%d], exp. %s but %s", err, "10 15 - 3 *", out.first);
-
-	err = lab2(out, STRING_STATIC(""));
-	if (err != 0)
-		printf("lab2.2\tError[%d], res %s", err, out.first);
-	if (strcmp("", out.first) != 0)
-		printf("lab2.2\tError[%d], exp. %s but %s", err, "", out.first);
-
-	err = lab2(out, STRING_STATIC("sin(2)"));
-	if (err != 0)
-		printf("lab2.3\tError[%d], res %s", err, out.first);
-	if (strcmp("2 sin", out.first) != 0)
-		printf("lab2.3\tError[%d], exp. %s but %s", err, "2 sin", out.first);
-
-	err = lab2(out, STRING_STATIC("anywhere(1, 2 + 5 * 3)"));
-	if (err != 0)
-		printf("lab2.4\tError[%d], res %s", err, out.first);
-	if (strcmp("1 2 3 5 * + anywhere", out.first) != 0)
-		printf("lab2.4\tError[%d], exp. %s but %s", err, "1 2 3 5 * + anywhere", out.first);
-
-	err = lab2(out, STRING_STATIC("anywhere(1, 2 + 5 * 3)wejfwioe"));
-	if (err != 2)
-		printf("lab2.5\tError[%d] but need 2, res %s", err, out.first);
-
-	err = lab2(out, STRING_STATIC("iju34098gu25gug"));
-	if (err != 2)
-		printf("lab2.6\tError[%d] but need 2, res %s", err, out.first);
-
-	err = lab2(out, STRING_STATIC("0"));
-	if (err != 0)
-		printf("lab2.7\tError[%d], res %s", err, out.first);
-	if (strcmp("0", out.first) != 0)
-		printf("lab2.7\tError[%d], exp. %s but %s", err, "0", out.first);
-
-	err = lab2(out, STRING_STATIC("-1"));
-	if (err != 0)
-		printf("lab2.8\tError[%d], res %s", err, out.first);
-	if (strcmp("-1", out.first) != 0)
-		printf("lab2.8\tError[%d], exp. %s but %s", err, "-1", out.first);
-
-	err = lab2(out, STRING_STATIC("2 * -1"));
-	if (err != 0)
-		printf("lab2.9\tError[%d], res %s", err, out.first);
-	if (strcmp("2 -1 *", out.first) != 0)
-		printf("lab2.9\tError[%d], exp. %s but %s", err, "2 -1 *", out.first);
-
-	err = lab2(out, STRING_STATIC("2 * -)1"));
-	if (err != 2)
-		printf("lab2.10\tError[%d] but need 2, res %s", err, out.first);
-
-	err = lab2(out, STRING_STATIC("2 * - 1"));
-	if (err != 2)
-		printf("lab2.11\tError[%d] but need 2, res %s", err, out.first);
-
-
-	err = lab2(out, STRING_STATIC("(10 − 15) * 3"));
-	if (err != 2)
-		printf("lab2.11\tError[%d] but need 2, res %s", err, out.first);
-
-	string_free(out);
-	printf("lab2\tFinish test!\n");
-#endif // _DEBUG
+	char prototypeName[] = "lab2_test ";
+	// Нужно выделить так, чтобы любую цифру можно было записать в диапазоне size_t. Это не более 20 символов.
+	string_t testName = string_malloc(sizeof(prototypeName) + 20u);
+	for (size_t i = 0; i < LAB2_TEST_COUNT; i++)
+	{
+		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
+		lrun(testName.first, lab2_tests[i]);
+	}
 }
