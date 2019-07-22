@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include <stdio.h>
-#include <string.h>
 #include "lab2.h"
 #include "..\minctest\minctest.h"
 
@@ -9,8 +7,8 @@
 {\
 	string_t out = string_malloc(256);\
 	*out.first = 0;\
-	lequal(ERROR, lab2(out, STRING_STATIC(INPUT)));\
-	if(ERROR == 0) lsequal(EXPECT, out.first);\
+	minctest_equal(ERROR, lab2(out, STRING_STATIC(INPUT)));\
+	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
 }
 
@@ -31,7 +29,10 @@ LAB2_TEST_MAKE(10, "2 -1 *", "2 * -1", 0);
 LAB2_TEST_MAKE(11, (char*)NULL, "2 * -)1", 2);
 LAB2_TEST_MAKE(12, "2 -1 *", "2 * - 1", 0);
 LAB2_TEST_MAKE(13, "10 15 - 3 *", "(10 − 15) * 3", 0);
-#define LAB2_TEST_COUNT 13 + 1
+LAB2_TEST_MAKE(14, "2 2 2 ^ ^", "2^2^2", 0);
+LAB2_TEST_MAKE(15, "2 2 2 ^ ^", "2^(2^2)", 0);
+LAB2_TEST_MAKE(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
+#define LAB2_TEST_COUNT 16 + 1
 
 // Тестирование задания lab2.
 void lab2_runTests(void)
@@ -50,7 +51,10 @@ void lab2_runTests(void)
 	LAB2_TEST_GETNAME(10),
 	LAB2_TEST_GETNAME(11),
 	LAB2_TEST_GETNAME(12),
-	LAB2_TEST_GETNAME(13)
+	LAB2_TEST_GETNAME(13),
+	LAB2_TEST_GETNAME(14),
+	LAB2_TEST_GETNAME(15),
+	LAB2_TEST_GETNAME(16)
 	};
 
 	char prototypeName[] = "lab2_test ";
@@ -59,6 +63,6 @@ void lab2_runTests(void)
 	for (size_t i = 0; i < LAB2_TEST_COUNT; i++)
 	{
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
-		lrun(testName.first, lab2_tests[i]);
+		minctest_run(testName.first, lab2_tests[i]);
 	}
 }
