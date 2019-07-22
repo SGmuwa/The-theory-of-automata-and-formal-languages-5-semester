@@ -1,3 +1,6 @@
 [submodule "UserInterface-CLanguage"]
 	path = UserInterface-CLanguage
 	url = https://github.com/SGmuwa/UserInterface-CLanguage.git
+[submodule "minctest"]
+	path = minctest
+	url = https://github.com/codeplea/minctest.git
