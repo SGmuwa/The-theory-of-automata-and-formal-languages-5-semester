@@ -4,7 +4,7 @@
 void main()
 {
 	minctest_reset();
-	minctest_run("lab2 --- ", lab2_runTests);
+	minctest_run("lab2", lab2_runTests);
 	minctest_results();
 	printf_s("end.\n");
 }

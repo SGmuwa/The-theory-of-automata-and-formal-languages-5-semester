@@ -23,6 +23,7 @@
     <ProjectGuid>{F91B4283-BBF1-4A10-8A60-F59F88338D4F}</ProjectGuid>
     <RootNamespace>lab2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <ProjectName>lab2 (expression to RPN)</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
