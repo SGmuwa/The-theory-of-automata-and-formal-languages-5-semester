@@ -132,8 +132,11 @@ int lab2(string_t output, string_t input)
 	{ // Пока мы ещё имеем входную строку
 		if (output.length < 2)
 		{ // В выходной строке кончается место!
-			if (output.length > 0) *output.first = '\0';
-			output.first++; output.length--;
+			if (output.length > 0)
+			{
+				*output.first = '\0';
+				output.first++; output.length--;
+			}
 			Stack_free(stk);
 			return 1;
 		}
