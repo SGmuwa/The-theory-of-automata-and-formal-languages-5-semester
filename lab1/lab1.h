@@ -31,31 +31,32 @@ int lab1(long double * output, string_t input)
 		i = 1; // Первый символ обработан. 
 		if (input.length < 2) return 1;
 	}
-	bool isFloat = false; // true, если точка или запятая встречались.
-	for (; i < input.length && i != ~(size_t)0; i += isFloat ? -1 : +1)
+	size_t floatPos = SIZE_MAX;	// 0...(SIZE_MAX-1), если точка или запятая встречалась.
+								// SIZE_MAX, если точка или запятая не встречалась.
+	for (; i < input.length && i != ~(size_t)0; i += floatPos == SIZE_MAX ? +1 : -1)
 	{
-		if (input.first[i] == '\0') continue;
+		if (input.first[i] == '\0' || input.first[i] == ' ') continue;
 		if (input.first[i] == '.' || input.first[i] == ',') // Если встретилась точка или запятая
 		{
-			if (isFloat != i && isFloat != false)
+			if (floatPos == SIZE_MAX)
+			{
 				if (numbersLeft == 0)
 					return 4;
-				else
-					return 3;
-			else
-			{
-				if (isFloat == i)
-					if (numberRight == 0)
-						return 4;
-					else
-						break;
-				isFloat = i;
+				floatPos = i;
 				i = input.length - 1 + 1; // Индексация на последний символ + 1 для цикла for.
 				continue;
 			}
+			else
+			{
+				if (numberRight == 0)
+					return 4;
+				if (floatPos != i)
+					return 3;
+				break; // Мы нашли точку слева в прошлом, теперь нашли справа.
+			}
 		}
 		else if (input.first[i] < '0' || input.first[i] > '9') return 2;
-		if (isFloat)
+		if (floatPos != SIZE_MAX)
 		{
 			outF = outF / 10 + input.first[i] - '0';
 			numberRight++;

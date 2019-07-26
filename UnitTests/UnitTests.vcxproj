@@ -89,7 +89,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(TargetDir)\lastTest.log</Command>
+      <Command>start "" "$(TargetDir)\lastTest.log"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -100,7 +100,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <PostBuildEvent>
-      <Command>$(TargetDir)\lastTest.log</Command>
+      <Command>start "" "$(TargetDir)\lastTest.log"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,7 +117,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>$(TargetDir)\lastTest.log</Command>
+      <Command>start "" "$(TargetDir)\lastTest.log"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +134,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>$(TargetDir)\lastTest.log</Command>
+      <Command>start "" "$(TargetDir)\lastTest.log"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
