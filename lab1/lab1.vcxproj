@@ -116,7 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lab1.c" />
+    <ClCompile Include="lab1_userInterface.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lab1.h" />

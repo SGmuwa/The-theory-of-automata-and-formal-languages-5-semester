@@ -56,6 +56,7 @@ for(STRING_FOREACH(ch, name))
 printf_s("%s", name.first, name.length); // JAas
 */
 #define STRING_FOREACHL(I, STR) char * I; I < string_getEnd(STR); I++
+
 /*
 Создаёт перечислитель строки справа налево.
 Использование:
@@ -119,6 +120,18 @@ extern "C" {
 	inline void string_free(string_t str)
 	{
 		free(str.first);
+	}
+
+	/*
+	Превращает указатель на char в строку, ведя поиск по \0 невключительно (strlen).
+	Данная функция используется, если не известно, сколько символов в входной строке.
+	В случае, если количество символов изветсно, используйте STRING_STATIC.
+	char * string - входной указатель на строку.
+	Возвращает: string_t с данной строкой и количеством доступных символов.
+	*/
+	inline string_t string_dynamic(char * string)
+	{
+		return (string_t) { string, strlen(string) };
 	}
 
 #ifdef __cplusplus

@@ -37,7 +37,7 @@ LAB2_TEST_MAKE(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
 // Тестирование задания lab2.
 void lab2_runTests(void)
 {
-	void(*lab2_tests[LAB2_TEST_COUNT])(void) = {
+	void(*tests[LAB2_TEST_COUNT])(void) = {
 		LAB2_TEST_GETNAME(0),
 		LAB2_TEST_GETNAME(1),
 		LAB2_TEST_GETNAME(2),
@@ -63,6 +63,6 @@ void lab2_runTests(void)
 	for (size_t i = 0; i < LAB2_TEST_COUNT; i++)
 	{
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
-		minctest_run(testName.first, lab2_tests[i]);
+		minctest_run(testName.first, tests[i]);
 	}
 }

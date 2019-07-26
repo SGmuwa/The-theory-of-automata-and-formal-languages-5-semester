@@ -1,28 +1,61 @@
-﻿#include "lab1.h"
+﻿#pragma once
+#include "lab1.h"
 #include "..\minctest\minctest.h"
 
-#if _DEBUG == 1
+#define LAB1_TEST_MAKE(NUMBER, EXPECT, INPUT, ERROR) void lab1_test ## NUMBER (void) \
+{ \
+	long double output = 0.0; \
+	minctest_equal(ERROR, lab1(&output, STRING_STATIC(INPUT))); \
+	if(ERROR == 0) minctest_fequal(EXPECT, output, 0); \
+}
+
+// Получает имя функции по номеру
+#define LAB1_TEST_GETNAME(NUMBER) lab1_test ## NUMBER
+
+LAB1_TEST_MAKE(0, 0, "0", 0);
+LAB1_TEST_MAKE(1, 1, "1", 0);
+LAB1_TEST_MAKE(2, 123, "123", 0);
+LAB1_TEST_MAKE(3, 123.123, "123.123", 0);
+LAB1_TEST_MAKE(4, 0.0, "", 1);
+LAB1_TEST_MAKE(5, 0.0, "123.1a23", 2);
+LAB1_TEST_MAKE(6, 0.0, "123..123", 3);
+LAB1_TEST_MAKE(7, 0.0, ".123", 4);
+void lab1_test8(void) { minctest_equal(5, lab1(NULL, STRING_STATIC("123"))); };
+void lab1_test9(void) { long double a; minctest_equal(5, lab1(&a, STRING_STATIC(NULL))); };
+LAB1_TEST_MAKE(10, 0123456789.0123456789, "0123456789.0123456789", 0);
+LAB1_TEST_MAKE(11, -0123456789.0123456789, "-0123456789.0123456789", 0);
+LAB1_TEST_MAKE(12, -123456789.0123456789, "-123456789.0123456789", 0);
+LAB1_TEST_MAKE(13, 0.0, "-", 1);
+LAB1_TEST_MAKE(14, 0.0, "-.1", 6);
+
+#define LAB1_TEST_COUNT 14 + 1
+
 void lab1_test(void)
 {
-	printf("lab1:\tTest start.\n");
-	double output = 0;
-	double * o = &output;
-	int err = 0;
-	if ((err = lab1(o, "0", sizeof("0"))) != 0 || output != 0) printf("lab1:\tError[%d]: 0 but %lf\n", err, output);
-	if ((err = lab1(o, "1", sizeof("1"))) != 0 || output != 1) printf("lab1:\tError[%d]: 1 but %lf\n", err, output);
-	if ((err = lab1(o, "123", sizeof("123"))) != 0 || output != 123) printf("lab1:\tError[%d]: 123 but %lf\n", err, output);
-	if ((err = lab1(o, "123.123", sizeof("123.123"))) != 0 || output != 123.123) printf("lab1:\tError[%d]: 123 but %lf\n", err, output);
-	if ((err = lab1(o, "", sizeof(""))) != 1) printf("lab1:\tError[%d] but need err 1. res? %lf\n", err, output);
-	if ((err = lab1(o, "123.1a23", sizeof("123.1a23"))) != 2) printf("lab1:\tError[%d] but need err 2. res? %lf\n", err, output);
-	if ((err = lab1(o, "123..123", sizeof("123..123"))) != 3) printf("lab1:\tError[%d] but need err 3. res? %lf\n", err, output);
-	if ((err = lab1(o, ".123", sizeof(".123"))) != 4) printf("lab1:\tError[%d] but need err 4. res? %lf\n", err, output);
-	if ((err = lab1(NULL, "123", sizeof("123"))) != 5) printf("lab1:\tError[%d] but need err 5. res? %lf\n", err, output);
-	if ((err = lab1(o, NULL, 12)) != 5) printf("lab1:\tError[%d] but need err 5. res? %lf\n", err, output);
-	if ((err = lab1(o, "0123456789.0123456789", sizeof("0123456789.0123456789"))) != 0 || output != 0123456789.0123456789) printf("lab1:\tError[%d]: 0123456789.0123456789 but %lf\n", err, output);
-	if ((err = lab1(o, "-0123456789.0123456789", sizeof("-0123456789.0123456789"))) != 0 || output != -0123456789.0123456789) printf("lab1:\tError[%d]: -0123456789.0123456789 but %lf\n", err, output);
-	if ((err = lab1(o, "-123456789.0123456789", sizeof("-123456789.0123456789"))) != 0 || output != -123456789.0123456789) printf("lab1:\tError[%d]: -123456789.0123456789 but %lf\n", err, output);
-	if ((err = lab1(o, "-", sizeof("-"))) != 1) printf("lab1:\tError[%d] but need 1. res? %lf\n", err, output);
-	if ((err = lab1(o, "-.1", sizeof("-.1"))) != 6) printf("lab1:\tError[%d] but need 6. res? %lf\n", err, output);
-	printf("lab1:\tTest end.\n");
+	void(*tests[LAB1_TEST_COUNT])(void) = {
+		LAB1_TEST_GETNAME(0),
+		LAB1_TEST_GETNAME(1),
+		LAB1_TEST_GETNAME(2),
+		LAB1_TEST_GETNAME(3),
+		LAB1_TEST_GETNAME(4),
+		LAB1_TEST_GETNAME(5),
+		LAB1_TEST_GETNAME(6),
+		LAB1_TEST_GETNAME(7),
+		LAB1_TEST_GETNAME(8),
+		LAB1_TEST_GETNAME(9),
+		LAB1_TEST_GETNAME(10),
+		LAB1_TEST_GETNAME(11),
+		LAB1_TEST_GETNAME(12),
+		LAB1_TEST_GETNAME(13),
+		LAB1_TEST_GETNAME(14)
+	};
+
+	char prototypeName[] = "lab1_test ";
+	// Нужно выделить так, чтобы любую цифру можно было записать в диапазоне size_t. Это не более 20 символов.
+	string_t testName = string_malloc(sizeof(prototypeName) + 20u);
+	for (size_t i = 0; i < LAB1_TEST_COUNT; i++)
+	{
+		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
+		minctest_run(testName.first, tests[i]);
+	}
 }
-#endif
