@@ -160,6 +160,28 @@ extern "C" {
 		return output.first;
 	}
 
+	/*
+	Убирает пробелы и символы '\0' слева и справа строки.
+	Не выделяет память, меняет указатели. Следовательно,
+	если выполнить string_free(source), то результат этой функции
+	также будет стёрт.
+	*/
+	string_t string_trim(string_t source)
+	{
+		if (source.first == NULL || source.length == 0)
+			return source;
+		while ((*source.first == ' ' || *source.first == '\0') && source.length > 0)
+		{
+			source.first++;
+			source.length--;
+		}
+		while ((*(string_getEnd(source) - 1) == ' ' || *(string_getEnd(source) - 1) == '\0') && source.length > 0)
+		{
+			source.length--;
+		}
+		return source;
+	}
+
 	// Освобождение памяти от строки.
 	// string_t str - строка, которую нужно удалить из памяти.
 	inline void string_free(string_t str)

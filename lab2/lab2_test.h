@@ -43,7 +43,9 @@ LAB2_TEST_MAKE_lab2(15, "2 2 2 ^ ^", "2^(2^2)", 0);
 LAB2_TEST_MAKE_lab2(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
 LAB2_TEST_MAKE_lab2(17, "1 2 3 * +", "1 + 2 * 3", 0);
 LAB2_TEST_MAKE_lab2_search10Number(18, "12.0", "12.0");
-#define LAB2_TEST_COUNT 18 + 1
+LAB2_TEST_MAKE_lab2_search10Number(19, "1", "1a");
+LAB2_TEST_MAKE_lab2_search10Number(20, "-34.22", "-34.22 eeeee");
+#define LAB2_TEST_COUNT 20 + 1
 
 // Тестирование задания lab2.
 void lab2_runTests(void)
@@ -66,8 +68,10 @@ void lab2_runTests(void)
 		LAB2_TEST_GETNAME(14),
 		LAB2_TEST_GETNAME(15),
 		LAB2_TEST_GETNAME(16),
+		LAB2_TEST_GETNAME(17),
 		LAB2_TEST_GETNAME(18),
-		LAB2_TEST_GETNAME(17)
+		LAB2_TEST_GETNAME(19),
+		LAB2_TEST_GETNAME(20)
 	};
 
 	char prototypeName[] = "lab2_test ";

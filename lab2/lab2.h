@@ -18,20 +18,37 @@
 #include "..\lab1\lab1.h"
 
 /*
-Пытается найти подстроку, символизирующую число. Если с самого первого
-символа строку не удаётся преобразовать в число, то вернётся пустая строка.
+Пытается найти конец подстроки, символизирующую число. Сначала берёт один символ, затем два
+символа, затем три... И пока не дойдёт до ошибки.
 string_t input - строка, в которой надо найти число.
 Возвращает: найденную подстроку в входной строке, символизирующую число.
+			Обратите внимание на то, что указатель всегда равен input.first, но меняется length.
 */
 string_t lab2_search10Number(string_t input)
 {
 	long double buffer;
-	unsigned char countErrors = 0;
+	// Указывает на позицию, где последний раз была ошибка.
+	size_t errPos = SIZE_MAX;
+	enum lab1_errorCodes errN = LAB1_ERRORCODES_OK;
+	enum lab1_errorCodes errorNumberBuffer; // Записывается результат lab1 для передачи в errN.
 	size_t i;
-	for (i = 1; i < input.length && countErrors < 2; i++)
-		if (!lab1(&buffer, (string_t) { input.first, i })) // Если ошибка при считывании.
-			countErrors++;
-	return (string_t) { input.first, i };
+	for (i = 1; i < input.length; i++)
+		switch (errorNumberBuffer = lab1(&buffer, (string_t) { input.first, i }))
+		{
+		case LAB1_ERRORCODES_NOT_SUPPORT_CHARACTER:
+			return string_trim((string_t) { input.first, errPos == SIZE_MAX ? i - 1 : errPos });
+		case LAB1_ERRORCODES_OK:
+			errPos = SIZE_MAX;
+			errN = LAB1_ERRORCODES_OK;
+			break;
+		default:
+			if (errPos != SIZE_MAX)
+				// Две подрят ошибки допускать нельзя.
+				return string_trim((string_t) { input.first, errPos });
+			errPos = i;
+			errN = errorNumberBuffer;
+		}
+	return string_trim((string_t) { input.first, errPos == SIZE_MAX ? i - 1 : errPos });
 }
 
 /*
