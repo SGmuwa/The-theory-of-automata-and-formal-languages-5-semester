@@ -22,7 +22,7 @@
 символа, затем три... И пока не дойдёт до ошибки.
 string_t input - строка, в которой надо найти число.
 Возвращает: найденную подстроку в входной строке, символизирующую число.
-			Обратите внимание на то, что указатель всегда равен input.first, но меняется length.
+			Обратите внимание на то, что ведётся поиск только по началу строки.
 */
 string_t lab2_search10Number(string_t input)
 {
@@ -146,6 +146,11 @@ size_t lab2_isPostfixFunction(const char * in, size_t inL)
 	if(inL )
 }*/
 
+int lab2_putInString_t(string_t * )
+{
+
+}
+
 // Создать обратную польскую запись для арифметической формулы.
 // const string_t output - указатель, куда поместить результат.
 //							Память должна быть уже выделена и должно
@@ -184,8 +189,10 @@ int lab2(string_t output, string_t input)
 				break;
 			}
 		}
-		if (lab2_is10Number(*input.first) /*|| lab2_isPostfixFunction(in + i, inL - i) нет времени или идей разработки*/)
+		string_t numberInInput = lab2_search10Number(input);
+		if (numberInInput.length > 0)
 		{ // Это оказалось десятичное число
+			// TODO: Поддержку search10Number.
 			while (lab2_is10Number(*input.first) && input.length > 1 && output.length > 2)
 			{
 				*output.first = *input.first;

@@ -4,3 +4,6 @@
 [submodule "minctest"]
 	path = minctest
 	url = https://github.com/SGmuwa/minctest.git
+[submodule "Dynamic_Generic_ArrayList_C"]
+	path = Dynamic_Generic_ArrayList_C
+	url = https://github.com/SGmuwa/Dynamic_Generic_ArrayList_C.git
