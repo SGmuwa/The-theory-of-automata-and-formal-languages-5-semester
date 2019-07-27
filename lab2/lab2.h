@@ -15,6 +15,24 @@
 #include "..\string_t\string_t.h"
 #include <string.h>
 #include "..\byte_t\byte_t.h"
+#include "..\lab1\lab1.h"
+
+/*
+Пытается найти подстроку, символизирующую число. Если с самого первого
+символа строку не удаётся преобразовать в число, то вернётся пустая строка.
+string_t input - строка, в которой надо найти число.
+Возвращает: найденную подстроку в входной строке, символизирующую число.
+*/
+string_t lab2_search10Number(string_t input)
+{
+	long double buffer;
+	unsigned char countErrors = 0;
+	size_t i;
+	for (i = 1; i < input.length && countErrors < 2; i++)
+		if (!lab1(&buffer, (string_t) { input.first, i })) // Если ошибка при считывании.
+			countErrors++;
+	return (string_t) { input.first, i };
+}
 
 /*
 Функция отвечает на вопрос, явяляется ли символ открытой скобкой.

@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include "lab2.h"
 #include "..\minctest\minctest.h"
+#include "..\string_t\string_t_forTest.h"
 
-// Создаёт функцию тестирования.
-#define LAB2_TEST_MAKE(NUMBER, EXPECT, INPUT, ERROR) void lab2_test ## NUMBER (void)\
+// Создаёт функцию тестирования для функции lab2.
+#define LAB2_TEST_MAKE_lab2(NUMBER, EXPECT, INPUT, ERROR) void lab2_test ## NUMBER (void)\
 {\
 	string_t out = string_malloc(256);\
 	*out.first = 0;\
@@ -12,28 +13,37 @@
 	string_free(out);\
 }
 
+
+// Создаёт функцию тестирования для функции lab2.
+#define LAB2_TEST_MAKE_lab2_search10Number(NUMBER, EXPECT, INPUT) void lab2_test ## NUMBER (void)\
+{\
+	string_t result = lab2_search10Number(STRING_STATIC(INPUT));\
+	minctest_string_t_equal(STRING_STATIC(EXPECT), result);\
+}
+
 // Получает имя функции по номеру
 #define LAB2_TEST_GETNAME(NUMBER) lab2_test ## NUMBER
 
-LAB2_TEST_MAKE(0, "5", "5", 0);
-LAB2_TEST_MAKE(1, "5 2 -", "5 - 2", 0);
-LAB2_TEST_MAKE(2, "10 15 - 3 *", "(10 - 15) * 3", 0);
-LAB2_TEST_MAKE(3, "", "", 0);
-LAB2_TEST_MAKE(4, "2 sin", "sin(2)", 0);
-LAB2_TEST_MAKE(5, "1 2 3 5 * + anywhere", "anywhere(1, 2 + 5 * 3)", 0);
-LAB2_TEST_MAKE(6, "1 2 3 5 * + anywhere wejfwioe *", "anywhere(1, 2 + 5 * 3)wejfwioe", 0); // "anywhere(1, 2 + 5 * 3) * wejfwioe"
-LAB2_TEST_MAKE(7, "iju34098gu25gug", "iju34098gu25gug", 0);
-LAB2_TEST_MAKE(8, "0", "0", 0);
-LAB2_TEST_MAKE(9, "-1", "-1", 0);
-LAB2_TEST_MAKE(10, "2 -1 *", "2 * -1", 0);
-LAB2_TEST_MAKE(11, (char*)NULL, "2 * -)1", 2);
-LAB2_TEST_MAKE(12, "2 -1 *", "2 * - 1", 0);
-LAB2_TEST_MAKE(13, "10 15 - 3 *", "(10 − 15) * 3", 0);
-LAB2_TEST_MAKE(14, "2 2 2 ^ ^", "2^2^2", 0);
-LAB2_TEST_MAKE(15, "2 2 2 ^ ^", "2^(2^2)", 0);
-LAB2_TEST_MAKE(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
-LAB2_TEST_MAKE(17, "1 2 3 * +", "1 + 2 * 3", 0);
-#define LAB2_TEST_COUNT 17 + 1
+LAB2_TEST_MAKE_lab2(0, "5", "5", 0);
+LAB2_TEST_MAKE_lab2(1, "5 2 -", "5 - 2", 0);
+LAB2_TEST_MAKE_lab2(2, "10 15 - 3 *", "(10 - 15) * 3", 0);
+LAB2_TEST_MAKE_lab2(3, "", "", 0);
+LAB2_TEST_MAKE_lab2(4, "2 sin", "sin(2)", 0);
+LAB2_TEST_MAKE_lab2(5, "1 2 3 5 * + anywhere", "anywhere(1, 2 + 5 * 3)", 0);
+LAB2_TEST_MAKE_lab2(6, "1 2 3 5 * + anywhere wejfwioe *", "anywhere(1, 2 + 5 * 3)wejfwioe", 0); // "anywhere(1, 2 + 5 * 3) * wejfwioe"
+LAB2_TEST_MAKE_lab2(7, "iju34098gu25gug", "iju34098gu25gug", 0);
+LAB2_TEST_MAKE_lab2(8, "0", "0", 0);
+LAB2_TEST_MAKE_lab2(9, "-1", "-1", 0);
+LAB2_TEST_MAKE_lab2(10, "2 -1 *", "2 * -1", 0);
+LAB2_TEST_MAKE_lab2(11, (char*)NULL, "2 * -)1", 2);
+LAB2_TEST_MAKE_lab2(12, "2 -1 *", "2 * - 1", 0);
+LAB2_TEST_MAKE_lab2(13, "10 15 - 3 *", "(10 - 15) * 3", 0);
+LAB2_TEST_MAKE_lab2(14, "2 2 2 ^ ^", "2^2^2", 0);
+LAB2_TEST_MAKE_lab2(15, "2 2 2 ^ ^", "2^(2^2)", 0);
+LAB2_TEST_MAKE_lab2(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
+LAB2_TEST_MAKE_lab2(17, "1 2 3 * +", "1 + 2 * 3", 0);
+LAB2_TEST_MAKE_lab2_search10Number(18, "12.0", "12.0");
+#define LAB2_TEST_COUNT 18 + 1
 
 // Тестирование задания lab2.
 void lab2_runTests(void)
@@ -56,6 +66,7 @@ void lab2_runTests(void)
 		LAB2_TEST_GETNAME(14),
 		LAB2_TEST_GETNAME(15),
 		LAB2_TEST_GETNAME(16),
+		LAB2_TEST_GETNAME(18),
 		LAB2_TEST_GETNAME(17)
 	};
 

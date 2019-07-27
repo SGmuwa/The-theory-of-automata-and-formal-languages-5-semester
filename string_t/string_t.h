@@ -55,7 +55,7 @@ for(STRING_FOREACH(ch, name))
 }
 printf_s("%s", name.first, name.length); // JAas
 */
-#define STRING_FOREACHL(I, STR) char * I; I < string_getEnd(STR); I++
+#define STRING_FOREACHL(I, STR) char * I = STR.first; I < string_getEnd(STR); I++
 
 /*
 Создаёт перечислитель строки справа налево.
@@ -71,7 +71,7 @@ for(STRING_FOREACHR(ch, name))
 }
 printf_s("%s", name.first, name.length); // JaAs
 */
-#define STRING_FOREACHR (I, STR) char * I; I < string_getEnd(STR); I--
+#define STRING_FOREACHR(I, STR) char * I = string_getEnd(STR) - 1; I >= STR.first; I--
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,13 +106,58 @@ extern "C" {
 	// size_t count - количество доступных символов.
 	// Возвращает: строка в памяти. В случае, если не получилось,
 	//				то указатель равен NULL, а length = 0.
-	inline string_t string_malloc(size_t count)
+	string_t string_malloc(size_t count)
 	{
 		string_t output = (string_t) { malloc(count), count };
 		return
 			output.first != NULL
 			? output
 			: (string_t) { NULL, 0 };
+	}
+
+	string_t string_mallocCopyLimit(char * source, size_t countCopy)
+	{
+		string_t output = (string_t) { malloc(sizeof(char) * countCopy), countCopy };
+#ifdef _MSC_VER
+		errno_t err = memcpy_s(output.first, output.length, source, countCopy);
+#else
+		unsigned char err = countCopy < 1 || source == NULL || output.first == NULL;
+		if(!err)
+			memcpy(output.first, source, countCopy);
+#endif // _MSC_VER
+		if (err)
+		{
+			if (output.first != NULL) free(output.first);
+			return (string_t) { NULL, 0 };
+		}
+		return output;
+	}
+
+	string_t string_mallocCopy(char * source)
+	{
+		if (source == NULL)
+			return (string_t) { NULL, 0 };
+		return string_mallocCopyLimit(source, strlen(source));
+	}
+
+	/*
+	Превращает string_t в char *.
+	Заменяются все символы '\0' на ' '.
+	В случае, если последний символ не '\0', он будет добавлен к выходному char*.
+	*/
+	char * string_mallocCopyToChar(string_t source)
+	{
+		string_t output = string_mallocCopyLimit(source.first, *(string_getEnd(source) - 1) == '\0' ? source.length : source.length + 1);
+		if (output.first != NULL)
+		{
+			for (STRING_FOREACHR(ch, output))
+			{
+				if (*ch == '\0')
+					*ch = ' ';
+			}
+			*(string_getEnd(output) - 1) = '\0';
+		}
+		return output.first;
 	}
 
 	// Освобождение памяти от строки.

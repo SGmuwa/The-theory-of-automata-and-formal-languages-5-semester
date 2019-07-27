@@ -18,5 +18,8 @@
     <ClInclude Include="string_t.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="string_t_forTest.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
