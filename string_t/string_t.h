@@ -201,6 +201,38 @@ extern "C" {
 		return (string_t) { string, strlen(string) };
 	}
 
+	string_t string_removeAllMalloc(string_t input, string_t removeCharactes)
+	{
+		size_t countRemove = 0;
+		for (STRING_FOREACHR(in, input))
+		{
+			for (STRING_FOREACHR(re, removeCharactes))
+			{
+				if (*in == *re)
+					countRemove++;
+			}
+		}
+		string_t output = string_malloc(input.length - countRemove);
+		char * outputPointer = output.first;
+		if (output.first == NULL)
+			return output;
+		for (STRING_FOREACHR(in, input))
+		{
+			unsigned char isNeedDelete = 0;
+			for (STRING_FOREACHR(re, removeCharactes))
+			{
+				if (*in == *re)
+				{
+					isNeedDelete = 1;
+					break;
+				}
+			}
+			if (!isNeedDelete)
+				*(outputPointer++) = *in;
+		}
+		return output;
+	}
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

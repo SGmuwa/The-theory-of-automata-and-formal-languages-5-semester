@@ -16,6 +16,7 @@
 #include <string.h>
 #include "..\byte_t\byte_t.h"
 #include "..\lab1\lab1.h"
+#include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
 
 /*
 Пытается найти конец подстроки, символизирующую число. Сначала берёт один символ, затем два
@@ -51,6 +52,31 @@ string_t lab2_search10Number(string_t input)
 	return string_trim((string_t) { input.first, errPos == SIZE_MAX ? i - 1 : errPos });
 }
 
+// Определяет, принадлежит ли входной символ множеству десятичных цифр.
+inline byte_t lab2_is10Number(char in) {
+	return '0' <= in && in <= '9';
+}
+
+inline byte_t lab2_isLetter(char in) {
+	return ('a' <= in && in <= 'z')
+		|| ('A' <= in && in <= 'Z');
+}
+
+string_t lab2_searchOperand(string_t input)
+{
+	if (input.first == NULL)
+		return (string_t) { NULL, 0u };
+	char * ch = input.first;
+	while (*ch < string_getEnd(input))
+	{
+		if (!lab2_is10Number(*ch)
+			&& !lab2_isLetter(*ch)
+			&& *ch != '_')
+			return (string_t) {input.first, ch - input.first};
+	}
+	return input;
+}
+
 /*
 Функция отвечает на вопрос, явяляется ли символ открытой скобкой.
 char in - входной символ.
@@ -79,22 +105,18 @@ inline byte_t lab2_isSeparator(char in) {
 	return in == ',' || in == ';';
 }
 
-// Определяет, принадлежит ли входной символ множеству десятичных цифр.
-inline byte_t lab2_is10Number(char in) {
-	return '0' <= in && in <= '9';
-}
-
 // Пропускает все символы пробела.
 // Возвращает: на следующий символ не-пробел.
 //				В случае, если пробелы до конца - то указатель на недоступный символ (следующий за доступным).
-inline char * lab2_skipSpace(string_t str) {
-	if (str.first == NULL) return NULL;
+string_t lab2_skipSpace(string_t str) {
+	if (str.first == NULL) return (string_t) {NULL, 0u};
 	char * i;
-	for (i = str.first; i < string_getEnd(str); i++)
-		if (*i == ' ')
-			continue;
-		else return i;
-	return i;
+	while (*str.first == ' ' && str.length > 0)
+	{
+		str.first++;
+		str.length--;
+	}
+	return str;
 }
 
 /*
@@ -111,25 +133,50 @@ size_t lab2_isPostfixFunction(const char * in, size_t inL)
 	if(inL )
 }*/
 
-// Определяет, содержится ли в входной строке префиксная функция или оператор.
+// Определяет, содержится ли в входной строке префиксная функция.
 // string_t input - Строка поиска.
 // Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
-size_t lab2_isFunctionOrOperator(string_t input)
+size_t lab2_isFunction(string_t input)
 {
-	char * i = lab2_skipSpace(input);
+	char * i = input.first;
 	if (lab2_is10Number(*i) || lab2_isParenthes(*i))
 		return 0; // it's number or Parentheses!
 	for (; i < string_getEnd(input); i++)
 	{
 		if (lab2_isSeparator(*i)) {
 			i++;
-			break;
+			return 0;
 		}
-		if (lab2_isParenthes(*i) || *i == ' ' || *i == '\0') {
-			break;
+		if (*i == ' ' || *i == '\0')
+			break; // Вообще-то, очень бы не рекомендовалось, чтобы всё-таки дело доходило до встречи пробелов.
+		if (lab2_isParenthesOpen(*i)) {
+			return (i - 1) - input.first;
 		}
+		if (lab2_is10Number(*i) || ('a' <= *i && *i <= 'z') || ('A' <= *i && *i <= 'Z'))
+			continue;
+		else
+			break;
 	}
-	return lab2_skipSpace((string_t) { i, input.length }) - input.first;
+	return 0;
+}
+
+/*
+Вставляет из from в to последовательность строк начиная с указателя to.first.
+string_t to - куда идёт копирование.
+string_t from - откуда идёт копирование.
+Возвращает: Оставшаяся часть string_t to.
+*/
+string_t lab2_putInString(string_t to, string_t from)
+{
+	if (to.first == NULL || from.first == NULL || to.length < from.length)
+		return (string_t) { NULL, 0u };
+#ifdef _MSC_VER
+	if (memcpy_s(to.first, to.length, from.first, from.length))
+		return (string_t) { NULL, 0u };
+#else
+	memcpy(to.first, from.first, from.length);
+#endif // _MSC_VER
+	return (string_t) { to.first + from.length, to.length - from.length };
 }
 
 /*
@@ -146,10 +193,6 @@ size_t lab2_isPostfixFunction(const char * in, size_t inL)
 	if(inL )
 }*/
 
-int lab2_putInString_t(string_t * )
-{
-
-}
 
 // Создать обратную польскую запись для арифметической формулы.
 // const string_t output - указатель, куда поместить результат.
@@ -162,51 +205,39 @@ int lab2_putInString_t(string_t * )
 //				2 - Не верный входной формат.
 //				3 - Неизвестная ошибка при перемещении из стека в выходную строку.
 //				4 - не верные входные данные.
+//				5 - Нехватка памяти.
 int lab2(string_t output, string_t input)
 {
 	if (output.first == NULL || output.length == 0 || input.first == NULL || input.length == 0)
 		return 4;
 	const char * oldOut = output.first;
 	struct StackMemory stk = Stack_malloc(output.length, sizeof(string_t));
-	while (input.length > 1)
+	if (stk.bottom == NULL)
+		return 5;
+	input = string_removeAllMalloc(input, STRING_STATIC(" "));
+	const char * oldIn = input.first;
+	if (input.first == NULL)
+	{
+		Stack_free(stk);
+		return 5;
+	}
+	ArrayList outList = ArrayList_malloc(sizeof(string_t));
+	if (outList == NULL)
+	{
+		Stack_free(stk);
+		free(oldIn);
+	}
+	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку
-		if (output.length < 2)
-		{ // В выходной строке кончается место!
-			if (output.length > 0)
-			{
-				*output.first = '\0';
-				output.first++; output.length--;
-			}
-			Stack_free(stk);
-			return 1;
-		}
-		{
-			char * NewIn = lab2_skipSpace(input);
-			input.length = input.length - (NewIn - input.first);
-			input.first = NewIn;
-			if (input.length > ~(size_t)0 - 1)
-			{
-				break;
-			}
-		}
-		string_t numberInInput = lab2_search10Number(input);
-		if (numberInInput.length > 0)
+		string_t operand = lab2_searchOperand(input);
+		if (operand.length > 0)
 		{ // Это оказалось десятичное число
-			// TODO: Поддержку search10Number.
-			while (lab2_is10Number(*input.first) && input.length > 1 && output.length > 2)
-			{
-				*output.first = *input.first;
-				input.first++; output.first++; output.length--; input.length--;
-			}
-			if (input.length > 0 && output.length > 2)
-			{
-				*output.first = ' ';
-				input.first++; output.first++; output.length--; input.length--;
-			}
+			ArrayList_addLast(outList, &operand);
+			continue;
 		}
-		size_t countOfFun = lab2_isFunctionOrOperator(input);
+		size_t countOfFun = lab2_isFunction(input);
 		if (countOfFun)
-		{ // Ого! Найдена функция!
+		{ // Найдена функция
 			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
 			input.first += countOfFun;
 			input.length -= countOfFun;
@@ -227,6 +258,8 @@ int lab2(string_t output, string_t input)
 				if (Stack_pop(&stk, &stk_elm))
 				{ // error
 					Stack_free(stk);
+					free(oldIn);
+					ArrayList_free(outList);
 					return 1;
 				}
 				if (lab2_isParenthesOpen(*stk_elm.first))
@@ -235,24 +268,16 @@ int lab2(string_t output, string_t input)
 					input.length--;
 					break;
 				}
-				int error;
-#ifndef _MSC_VER
-				error = memcpy(output.first, stk_elm.first, stk_elm.length) == NULL ? 1 : 0;
-#else
-				error = memcpy_s(output.first, output.length, stk_elm.first, stk_elm.length);
-#endif
-				output.first += stk_elm.length;
-				output.length -= stk_elm.length;
-				if (error)
+				if (ArrayList_addLast(outList, &stk_elm))
 				{
 					Stack_free(stk);
+					free(oldIn);
+					ArrayList_free(outList);
 					return 3;
 				}
-
 			}
 		}
 	}
-
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
 	{
@@ -273,6 +298,8 @@ int lab2(string_t output, string_t input)
 		if (error)
 		{
 			Stack_free(stk);
+			free(oldIn);
+			ArrayList_free(outList);
 			return 3;
 		}
 
@@ -285,5 +312,7 @@ int lab2(string_t output, string_t input)
 	if (output.length > 0) *output.first = '\0';
 	output.first++; output.length--;
 	Stack_free(stk);
+	free(oldIn);
+	ArrayList_free(outList);
 	return 0;
 }
