@@ -73,7 +73,7 @@ extern "C" {
 		return 1;
 	}
 
-	/// <summary>Извлечь информацию из стека</summary>
+	/// <summary>Извлечь информацию из стека.</summary>
 	/// <param name="stack">Стек, с которым мы работаем.</param>
 	/// <param name="output">Указатель на элемент, куда нужно вывести результат.</param>
 	/// <return>0 - операция успешна. 1 - стек пуст.</return>
@@ -90,6 +90,33 @@ extern "C" {
 			return 0;
 		}
 		return 1;
+	}
+
+	/// <summary>Получает из стека последний элемент.</summary>
+	/// <param name="stack">Стек, с которым мы работаем.</param>
+	/// <param name="output">Указатель на элемент, куда нужно вывести результат.</param>
+	/// <return>0 - операция успешна. 1 - стек пуст.</return>
+	unsigned short int Stack_get(struct StackMemory stack, void * output)
+	{
+		size_t i;
+		if ((size_t)stack.current - (size_t)stack.bottom >= stack.sizeElement)
+		{
+			for (i = stack.sizeElement - 1; i != ~(size_t)0; i--)
+			{
+				((char*)stack.current)--;
+				((char*)output)[i] = *((char*)stack.current);
+			}
+			return 0;
+		}
+		return 1;
+	}
+	
+	/// <summary>Получает количество добавленных элементов в стеке.</summary>
+	/// <param name="stack">Стек, в котором надо узнать количество элементов.</param>
+	/// <return>Количество добавленных элементов в стеке.</return>
+	size_t Stack_count(struct StackMemory stack)
+	{
+		return ((size_t)stack.current - (size_t)stack.bottom) / stack.sizeElement;
 	}
 
 #ifdef __cplusplus
