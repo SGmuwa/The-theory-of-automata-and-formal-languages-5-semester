@@ -73,12 +73,34 @@ inline byte_t lab2_isParenthesOpen(char in) {
 	return in == '(' || in == '[' || in == '{';
 }
 
+
+
+/*
+Находит начиная с первого символа оператор.
+*/
+string_t lab2_searchOperator(string_t input)
+{
+	if (input.first == NULL)
+		return (string_t) { NULL, 0 };
+	switch (*input.first)
+	{
+	default:
+		return (string_t) { input.first, 0 };
+	case '-':
+	case '+':
+	case '*':
+	case '/':
+	case '^': // Возведение в степень.
+		return (string_t) { input.first, 1 };
+	}
+}
+
 string_t lab2_searchOperand(string_t input, char previous)
 {
 	if (input.first == NULL)
 		return (string_t) { NULL, 0u };
 	char * ch = input.first - 1;
-	if (previous == '\0' || lab2_isParenthesOpen(previous))
+	if (previous == '\0' || lab2_isParenthesOpen(previous) || lab2_searchOperator((string_t) { (char[]) { previous}, 0u }).length > 0)
 	{
 		if (ch[1] == '-') // Бинарный минус.
 			ch++;
@@ -186,26 +208,6 @@ string_t lab2_putInString(string_t to, string_t from)
 }
 
 /*
-Находит начиная с первого символа оператор.
-*/
-string_t lab2_searchOperator(string_t input)
-{
-	if (input.first == NULL)
-		return (string_t) {NULL, 0};
-	switch (*input.first)
-	{
-	default:
-		return (string_t) { input.first, 0 };
-	case '-':
-	case '+':
-	case '*':
-	case '/':
-	case '^': // Возведение в степень.
-		return (string_t) { input.first, 1 };
-	}
-}
-
-/*
 Получает приоритет оператора.
 */
 unsigned int lab2_getOperatorPreority(string_t input)
@@ -218,12 +220,12 @@ unsigned int lab2_getOperatorPreority(string_t input)
 		return UINT_MAX;
 	case '-':
 	case '+':
-		return 2;
+		return 0;
 	case '*':
 	case '/':
 		return 1;
 	case '^': // Возведение в степень.
-		return 0;
+		return 2;
 	}
 }
 
@@ -321,6 +323,14 @@ int lab2(string_t output, string_t input)
 		string_t operand = lab2_searchOperand(input, previous);
 		size_t countOfFun = lab2_isFunction(input);
 		string_t operator = lab2_searchOperator(input);
+		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length) && operator.length == 0) // Поддержка мнимого умножения
+		{
+			operand = (string_t){ NULL, 0 };
+			countOfFun = 0;
+			operator = (string_t) { "*", 1 };
+			input.first -= 1;
+			input.length += 1;
+		}
 		if (countOfFun)
 		{ // Найдена функция
 			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
@@ -353,17 +363,27 @@ int lab2(string_t output, string_t input)
 					return 5;
 				}
 			}
-			else while (lab2_getOperatorPreority(operator) <= lab2_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+			else
 			{
-				if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
+				while (lab2_getOperatorPreority(operator) <= lab2_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+				{
+					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
+					{
+						Stack_free(stk);
+						free(oldIn);
+						ArrayList_free(outList);
+						return 5;
+					}
+					if (Stack_get(stk, &stk_elm))
+						break;
+				}
+				if (Stack_push(&stk, &operator))
 				{
 					Stack_free(stk);
 					free(oldIn);
 					ArrayList_free(outList);
 					return 5;
 				}
-				if (Stack_get(stk, &stk_elm))
-					break;
 			}
 			input.first += operator.length;
 			input.length -= operator.length;
@@ -384,7 +404,7 @@ int lab2(string_t output, string_t input)
 					Stack_free(stk);
 					free(oldIn);
 					ArrayList_free(outList);
-					return 1;
+					return 2;
 				}
 				if (lab2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
@@ -414,6 +434,11 @@ int lab2(string_t output, string_t input)
 				}
 			}
 		}
+		else if (lab2_isSeparator(*input.first))
+		{
+			input.first++;
+			input.length--;
+		}
 		else
 		{
 			Stack_free(stk);
@@ -421,7 +446,7 @@ int lab2(string_t output, string_t input)
 			ArrayList_free(outList);
 			return 2;
 		}
-		previous = *(input.first - 1);
+		previous = lab2_isParenthesClose(previous) ? '*' : *(input.first - 1);
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
