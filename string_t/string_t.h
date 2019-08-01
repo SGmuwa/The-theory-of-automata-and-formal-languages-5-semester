@@ -209,11 +209,14 @@ extern "C" {
 			for (STRING_FOREACHR(re, removeCharactes))
 			{
 				if (*in == *re)
+				{
 					countRemove++;
+					break;
+				}
 			}
 		}
 		string_t output = string_malloc(input.length - countRemove);
-		char * outputPointer = output.first;
+		char * outputPointer = string_getEnd(output) - 1;
 		if (output.first == NULL)
 			return output;
 		for (STRING_FOREACHR(in, input))
@@ -228,7 +231,7 @@ extern "C" {
 				}
 			}
 			if (!isNeedDelete)
-				*(outputPointer++) = *in;
+				*(outputPointer--) = *in;
 		}
 		return output;
 	}

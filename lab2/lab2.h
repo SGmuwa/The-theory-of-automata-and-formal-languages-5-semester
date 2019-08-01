@@ -156,7 +156,7 @@ size_t lab2_isFunction(string_t input)
 		if (*i == ' ' || *i == '\0')
 			break; // Вообще-то, очень бы не рекомендовалось, чтобы всё-таки дело доходило до встречи пробелов.
 		if (lab2_isParenthesOpen(*i)) {
-			return (i - 1) - input.first;
+			return i - input.first;
 		}
 		if (lab2_is10Number(*i) || ('a' <= *i && *i <= 'z') || ('A' <= *i && *i <= 'Z'))
 			continue;
@@ -321,7 +321,13 @@ int lab2(string_t output, string_t input)
 		string_t operand = lab2_searchOperand(input, previous);
 		size_t countOfFun = lab2_isFunction(input);
 		string_t operator = lab2_searchOperator(input);
-		if (operand.length > 0)
+		if (countOfFun)
+		{ // Найдена функция
+			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
+			input.first += countOfFun;
+			input.length -= countOfFun;
+		}
+		else if (operand.length > 0)
 		{ // Это оказалось десятичное число.
 			if (ArrayList_addLast(outList, &operand))
 			{
@@ -361,12 +367,6 @@ int lab2(string_t output, string_t input)
 			}
 			input.first += operator.length;
 			input.length -= operator.length;
-		}
-		else if (countOfFun)
-		{ // Найдена функция
-			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
-			input.first += countOfFun;
-			input.length -= countOfFun;
 		}
 		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
