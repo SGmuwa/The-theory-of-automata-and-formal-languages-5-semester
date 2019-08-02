@@ -2,19 +2,24 @@
 #include "lab2.h"
 #include "lab2_test.h"
 
-void lab2_interface(void)
+void lab2_interface(int argc, char * argv[])
 {
-	string_t input = { (char*) malloc(sizeof(char) * 1024), 1024 };
-	if (input.first == NULL) return;
-	input.length = UserInterface_GetStr("Input arithmetic expression:", input.first, 1024);
-	string_t output = { (char*) malloc(input.length * sizeof(char) * 2), input.length * sizeof(char) * 2 };
-	int err = lab2(output, input);
-	if (err != 0) printf("error %d.\n", err);
-	printf("%s", output.first);
-	free(input.first);
+	size_t mem = argc > 1
+		? (size_t)UserInterface_GetUnsignedLongLongIntLimit("Memory = ", 0, SIZE_MAX)
+		: 8192u;
+	string_t str = { (char*) malloc(sizeof(char) * mem), mem }; // string.
+	if (str.first == NULL)
+		return;
+	str.length = UserInterface_GetStr("Input arithmetic expression: ", str.first, mem);
+	int err = lab2(str, str); // error.
+	if (err != 0)
+		printf("error %d.\n", err);
+	printf("%s\n", str.first);
+	string_free(str);
 }
 
-void main(void)
+void main(int argc, char * argv[])
 {
-	lab2_interface();
+	lab2_interface(argc, argv);
+	UserInterface_Pause("Press any key for exit...\n");
 }
