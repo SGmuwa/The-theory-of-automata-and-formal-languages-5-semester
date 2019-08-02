@@ -269,6 +269,12 @@ int lab2_putListToString(string_t toResult, ArrayList from, string_t separator)
 	return 0;
 }
 
+
+unsigned char lab2_isLeftFirstPriority(string_t input)
+{
+	return input.length != 1 || *input.first != '^';
+}
+
 /*
 // Опредеоляет, содержится ли в входной строке до пробела или оператора или скобки постфиксная функция.
 // const char * in - указатель на начало поиска.
@@ -365,7 +371,7 @@ int lab2(string_t output, string_t input)
 			}
 			else
 			{
-				while (lab2_getOperatorPreority(operator) <= lab2_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+				while ((lab2_isLeftFirstPriority(operator) ? lab2_getOperatorPreority(operator) : ~lab2_getOperatorPreority(operator)) <= lab2_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
 					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
 					{

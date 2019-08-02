@@ -46,7 +46,18 @@ LAB2_TEST_MAKE_lab2_search10Number(18, "12.0", "12.0");
 LAB2_TEST_MAKE_lab2_search10Number(19, "1", "1a");
 LAB2_TEST_MAKE_lab2_search10Number(20, "-34.22", "-34.22 eeeee");
 LAB2_TEST_MAKE_lab2(21, "1 2 *", "(1)2", 0);
-#define LAB2_TEST_COUNT 21 + 1
+LAB2_TEST_MAKE_lab2(22, "1 2 3 4 ^ ^ ^", "1^2^3^4", 0);
+LAB2_TEST_MAKE_lab2(23, "x y ^ 5 z * / 10 +", "x ^ y / (5 * z) + 10", 0);
+LAB2_TEST_MAKE_lab2(24, "2 3 - 3 2 + + 6 1 - -", "   (  ( (2-3) + (3+2) )  -  (6 - 1)  )   ", 0);
+LAB2_TEST_MAKE_lab2(25, "2 3 - 3 2 + + 6 1 - -", "(((2-3)+(3+2))-(6-1))", 0);
+LAB2_TEST_MAKE_lab2(26, "3 2 + 6 1 - -", "(((3+2))-(6-1))", 0);
+LAB2_TEST_MAKE_lab2(27, "3 2 + 6 1 - -", "(3+2)-(6-1)", 0);
+LAB2_TEST_MAKE_lab2(28, "3 6 -", "((3)-(6))", 0);
+LAB2_TEST_MAKE_lab2(29, "3 1 6 + -", "((3)-(1+6))", 0);
+LAB2_TEST_MAKE_lab2(30, "1 3 + 6 -", "((1+3)-(6))", 0);
+LAB2_TEST_MAKE_lab2(31, "1 2 -", "(((1))-(2))", 0);
+LAB2_TEST_MAKE_lab2(32, "5 -3 8 + *", "5 * (-3 + 8)", 0);
+#define LAB2_TEST_COUNT 32 + 1
 
 // Тестирование задания lab2.
 void lab2_runTests(void)
@@ -73,7 +84,18 @@ void lab2_runTests(void)
 		LAB2_TEST_GETNAME(18),
 		LAB2_TEST_GETNAME(19),
 		LAB2_TEST_GETNAME(20),
-		LAB2_TEST_GETNAME(21)
+		LAB2_TEST_GETNAME(21),
+		LAB2_TEST_GETNAME(22),
+		LAB2_TEST_GETNAME(23),
+		LAB2_TEST_GETNAME(24),
+		LAB2_TEST_GETNAME(25),
+		LAB2_TEST_GETNAME(26),
+		LAB2_TEST_GETNAME(27),
+		LAB2_TEST_GETNAME(28),
+		LAB2_TEST_GETNAME(29),
+		LAB2_TEST_GETNAME(30),
+		LAB2_TEST_GETNAME(31),
+		LAB2_TEST_GETNAME(32)
 	};
 
 	char prototypeName[] = "lab2_test ";
