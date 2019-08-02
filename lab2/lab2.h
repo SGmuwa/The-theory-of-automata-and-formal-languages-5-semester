@@ -110,7 +110,8 @@ string_t lab2_searchOperand(string_t input, char previous)
 		if (!lab2_is10Number(*ch)
 			&& !lab2_isLetter(*ch)
 			&& *ch != '_')
-			return (string_t) {input.first, ch - input.first};
+			return input.first[0] == '-' && (size_t)ch - (size_t)input.first <= 1
+			? (string_t) { input.first, 0 } : (string_t) { input.first, ch - input.first };
 	}
 	return input;
 }
