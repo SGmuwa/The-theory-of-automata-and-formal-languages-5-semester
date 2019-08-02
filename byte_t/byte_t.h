@@ -40,12 +40,3 @@ typedef union
 	byte_bits_t bit;
 } byte_union_t;
 
-#ifndef false
-// Ложь.
-#define false ((byte_t)0)
-#endif // false
-
-#ifndef true
-// Истина.
-#define true ((byte_t)!0)
-#endif // true
