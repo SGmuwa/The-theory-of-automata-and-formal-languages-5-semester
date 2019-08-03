@@ -1,9 +1,11 @@
 ﻿#include "..\UserInterface-CLanguage\UserInterface.h"
 #include "lab2.h"
-#include "lab2_test.h"
+#include <locale.h>
 
 void lab2_interface(int argc, char * argv[])
 {
+	setlocale(LC_ALL, "Russian");
+	printf(LAB2_HELP_STR "\n");
 	size_t mem = argc > 1
 		? (size_t)UserInterface_GetUnsignedLongLongIntLimit("Memory = ", 0, SIZE_MAX)
 		: 8192u;

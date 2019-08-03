@@ -1,8 +1,11 @@
 #include "..\UserInterface-CLanguage\UserInterface.h"
 #include "lab1.h"
+#include <locale.h>
 
 void lab1_interface(void)
 {
+	setlocale(LC_ALL, "Russian");
+	printf(LAB1_HELP_STR "\n");
 	char input[256];
 	size_t length = UserInterface_GetStr("Input number in decimal format: ", input, sizeof(input) / sizeof(char));
 	long double output = 0;
