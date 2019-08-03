@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab1", "lab1\lab1.vcxproj", "{45F9D8FC-4169-4F2E-A842-F659D053BBD4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab1 (scanf number)", "lab1\lab1.vcxproj", "{45F9D8FC-4169-4F2E-A842-F659D053BBD4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "byte_t", "byte_t\byte_t.vcxproj", "{BD3F8D5A-621F-4DA7-9187-701BDE480310}"
 EndProject
@@ -11,9 +11,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "string_t", "string_t\string
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stack_t", "stack_t\stack_t.vcxproj", "{5B7F26EF-EB17-4ABA-9D6B-3A51AEF9939B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab2", "lab2\lab2.vcxproj", "{F91B4283-BBF1-4A10-8A60-F59F88338D4F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab2 (expression to RPN)", "lab2\lab2.vcxproj", "{F91B4283-BBF1-4A10-8A60-F59F88338D4F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\UnitTests.vcxproj", "{6EAD8F04-67D3-4410-A68D-800C53CD1999}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab3 (calculate RPN)", "lab3 (calculate RPN)\lab3 (calculate RPN).vcxproj", "{186011C4-CB5A-4D20-9823-943D3A404BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,14 @@ Global
 		{6EAD8F04-67D3-4410-A68D-800C53CD1999}.Release|x64.Build.0 = Release|x64
 		{6EAD8F04-67D3-4410-A68D-800C53CD1999}.Release|x86.ActiveCfg = Release|Win32
 		{6EAD8F04-67D3-4410-A68D-800C53CD1999}.Release|x86.Build.0 = Release|Win32
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Debug|x64.ActiveCfg = Debug|x64
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Debug|x64.Build.0 = Debug|x64
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Debug|x86.ActiveCfg = Debug|Win32
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Debug|x86.Build.0 = Debug|Win32
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Release|x64.ActiveCfg = Release|x64
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Release|x64.Build.0 = Release|x64
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Release|x86.ActiveCfg = Release|Win32
+		{186011C4-CB5A-4D20-9823-943D3A404BB8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
