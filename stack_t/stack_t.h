@@ -61,7 +61,7 @@ extern "C" {
 	unsigned short int Stack_push(struct StackMemory * stack, void * element)
 	{
 		size_t i;
-		if ((size_t)stack->top - (size_t)stack->current >= stack->sizeElement)
+		if ((size_t)stack->top - (size_t)stack->current + 1 >= stack->sizeElement)
 		{
 			for (i = 0; i < stack->sizeElement; i++)
 			{
@@ -80,7 +80,7 @@ extern "C" {
 	unsigned short int Stack_pop(struct StackMemory * stack, void * output)
 	{
 		size_t i;
-		if ((size_t)stack->current - (size_t)stack->bottom >= stack->sizeElement)
+		if ((size_t)stack->current - (size_t)stack->bottom + 1 >= stack->sizeElement)
 		{
 			for (i = stack->sizeElement - 1; i != ~(size_t)0; i--)
 			{
@@ -99,7 +99,7 @@ extern "C" {
 	unsigned short int Stack_get(struct StackMemory stack, void * output)
 	{
 		size_t i;
-		if ((size_t)stack.current - (size_t)stack.bottom >= stack.sizeElement)
+		if ((size_t)stack.current - (size_t)stack.bottom + 1 >= stack.sizeElement)
 		{
 			for (i = stack.sizeElement - 1; i != ~(size_t)0; i--)
 			{
@@ -116,7 +116,7 @@ extern "C" {
 	/// <return>Количество добавленных элементов в стеке.</return>
 	size_t Stack_count(struct StackMemory stack)
 	{
-		return ((size_t)stack.current - (size_t)stack.bottom) / stack.sizeElement;
+		return ((size_t)stack.current - (size_t)stack.bottom + 1) / stack.sizeElement;
 	}
 
 #ifdef __cplusplus
