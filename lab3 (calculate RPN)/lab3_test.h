@@ -16,9 +16,10 @@
 
 LAB3_TEST_MAKE_lab3_runFloat(0, 0.0, "0", LAB3_ERR_OK);
 LAB3_TEST_MAKE_lab3_runFloat(1, 4, "2 2 *", LAB3_ERR_OK);
+LAB3_TEST_MAKE_lab3_runFloat(2, 6, "3 2 *", LAB3_ERR_OK);
 
 
-#define LAB3_TEST_COUNT 1 + 1
+#define LAB3_TEST_COUNT 2 + 1
 
 
 // Тестирование задания lab3.
@@ -26,7 +27,8 @@ void lab3_runTests(void)
 {
 	void(*tests[LAB3_TEST_COUNT])(void) = {
 		LAB3_TEST_GETNAME(0),
-		LAB3_TEST_GETNAME(1)
+		LAB3_TEST_GETNAME(1),
+		LAB3_TEST_GETNAME(2)
 	};
 
 	char prototypeName[] = "lab3_test ";

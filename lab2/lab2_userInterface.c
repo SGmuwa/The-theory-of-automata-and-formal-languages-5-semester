@@ -14,7 +14,7 @@ void lab2_interface(int argc, char * argv[])
 	if (input.first == NULL)
 		return;
 	input.length = UserInterface_GetStr("Input arithmetic expression: ", input.first, mem);
-	int err = lab2(output, input); // error.
+	int err = lab2(&output, input); // error.
 	if (err != 0)
 		printf("error %d.\n", err);
 	printf("%s\n", output.first);

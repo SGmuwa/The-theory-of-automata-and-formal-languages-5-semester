@@ -8,7 +8,7 @@
 {\
 	string_t out = string_malloc(256);\
 	*out.first = 0;\
-	minctest_equal(ERROR, lab2(out, STRING_STATIC(INPUT)));\
+	minctest_equal(ERROR, lab2(&out, STRING_STATIC(INPUT)));\
 	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
 }

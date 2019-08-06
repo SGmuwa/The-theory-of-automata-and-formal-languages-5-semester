@@ -235,8 +235,9 @@ unsigned int lab2_getOperatorPreority(string_t input)
 Помещает элементы листа типа string_t в итоговую строку toResult.
 Возвращает: код ошибки.
 */
-int lab2_putListToString(string_t toResult, ArrayList from, string_t separator)
+int lab2_putListToString(string_t * toResult_, ArrayList from, string_t separator)
 {
+	string_t toResult = *toResult_;
 	if (from == NULL)
 		return 1;
 	if (toResult.first == NULL && from->length != 0)
@@ -268,6 +269,7 @@ int lab2_putListToString(string_t toResult, ArrayList from, string_t separator)
 		return 0;
 	if (toResult.length > 0)
 		*toResult.first = '\0';
+	toResult_->length = (size_t)toResult.first - (size_t)toResult_->first;
 	return 0;
 }
 
@@ -304,12 +306,12 @@ size_t lab2_isPostfixFunction(const char * in, size_t inL)
 //				3 - Неизвестная ошибка при перемещении из стека в выходную строку.
 //				4 - не верные входные данные.
 //				5 - Нехватка памяти.
-int lab2(string_t output, string_t input)
+int lab2(string_t * output, string_t input)
 {
-	if (output.first == NULL || output.length == 0 || input.first == NULL || input.length == 0)
+	if (output == NULL || output->first == NULL || output->length == 0 || input.first == NULL || input.length == 0)
 		return 4;
-	char * oldOut = output.first;
-	struct StackMemory stk = Stack_malloc(output.length, sizeof(string_t));
+	char * oldOut = output->first;
+	struct StackMemory stk = Stack_malloc(output->length, sizeof(string_t));
 	if (stk.bottom == NULL)
 		return 5;
 	input = string_removeAllMalloc(input, STRING_STATIC(" "));
@@ -459,13 +461,6 @@ int lab2(string_t output, string_t input)
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
 	{
-		if (lab2_isParenthesOpen(*stk_elm.first))
-		{ // find end. ????
-			input.first++;
-			input.length--;
-			printf("Ну и зачем это?\n");
-			break;
-		}
 		if (ArrayList_addLast(outList, &stk_elm))
 		{
 			Stack_free(stk);
