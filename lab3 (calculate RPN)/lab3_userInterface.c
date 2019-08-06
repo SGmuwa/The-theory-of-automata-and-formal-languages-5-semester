@@ -1,10 +1,13 @@
-#include "lab3.h"
+﻿#include "lab3.h"
 #include "..\UserInterface-CLanguage\UserInterface.h"
 #include "..\string_t\string_t.h"
 #include "..\lab2\lab2.h"
+#include <locale.h>
 
 int lab3_userInterface(int argc, char * argv[])
 {
+	setlocale(LC_ALL, "Russian");
+	printf(LAB3_HELP_STR "\n");
 	size_t memCount = argc > 1
 		? (size_t)UserInterface_GetUnsignedLongLongIntLimit("Memory = ", 0, SIZE_MAX)
 		: 8192u;
@@ -31,7 +34,7 @@ int lab3_userInterface(int argc, char * argv[])
 	case 2:
 		if (str.length == memory.length)
 			str.length = UserInterface_GetStr("Input reverse polish notation: ", str.first, str.length - 1);
-		lab3_struct constructor = lab3_malloc();
+		lab3_state constructor = lab3_malloc();
 		if (constructor == NULL)
 		{
 			string_free(memory);
@@ -40,6 +43,7 @@ int lab3_userInterface(int argc, char * argv[])
 		lab3_addMath(constructor);
 		string_t output = memory;
 		error = lab3_run(constructor, &output, str);
+		lab3_free(constructor);
 		if (error != 0)
 		{
 			string_free(memory);
