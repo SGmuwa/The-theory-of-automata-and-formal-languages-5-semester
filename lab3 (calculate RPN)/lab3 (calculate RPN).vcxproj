@@ -118,6 +118,7 @@
     <ClCompile Include="lab3_userInterface.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lab2_lab3_test.h" />
     <ClInclude Include="lab3.h" />
     <ClInclude Include="lab3_test.h" />
   </ItemGroup>

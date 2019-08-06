@@ -23,7 +23,7 @@ int lab3_userInterface(int argc, char * argv[])
 	{
 	case 1:
 		str.length = UserInterface_GetStr("Input arithmetic notation: ", str.first, str.length - 1);
-		error = lab2(memory, str);
+		error = lab2(&memory, str);
 		if (error != 0)
 		{
 			printf("Error in arithmetic -> RPN: %d", error);
@@ -34,16 +34,8 @@ int lab3_userInterface(int argc, char * argv[])
 	case 2:
 		if (str.length == memory.length)
 			str.length = UserInterface_GetStr("Input reverse polish notation: ", str.first, str.length - 1);
-		lab3_state constructor = lab3_malloc();
-		if (constructor == NULL)
-		{
-			string_free(memory);
-			return 3;
-		}
-		lab3_addMath(constructor);
 		string_t output = memory;
-		error = lab3_run(constructor, &output, str);
-		lab3_free(constructor);
+		error = lab3_run(&output, str, STRING_STATIC((char[]) {' '}));
 		if (error != 0)
 		{
 			string_free(memory);

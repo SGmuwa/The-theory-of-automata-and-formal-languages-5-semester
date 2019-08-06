@@ -64,8 +64,8 @@ enum lab3_err lab3_runFloat(long double * output, string_t input, string_t separ
 		{
 			if (operator.length != 1)
 				LAB3_RETURN(LAB3_ERR_NOT_SUPPORT_OPERATOR);
-			Stack_pop(&stk, pop);
 			Stack_pop(&stk, pop + 1);
+			Stack_pop(&stk, pop);
 			switch (*operator.first)
 			{
 			case '+':
