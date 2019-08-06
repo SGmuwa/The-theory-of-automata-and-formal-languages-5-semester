@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
-#include <stdarg.h>
+#include "..\stack_t\stack_t.h"
+#include "..\string_t\string_t.h"
 
 #define LAB3_HELP_STR \
 	"Постановка задачи:\n" \
@@ -22,7 +23,7 @@ enum lab3_err
 	LAB3_ERR_OUT_OF_MEMORY
 };
 
-enum lab3_err lab3(string_t * output, string_t input)
+enum lab3_err lab3(string_t * output, string_t input, string_t separator)
 {
 	if (output == NULL)
 		return LAB3_ERR_OUTPUT_NULL;
@@ -30,5 +31,6 @@ enum lab3_err lab3(string_t * output, string_t input)
 		return LAB3_ERR_OUTPUT_FIRST_NULL;
 	if (input.first == NULL)
 		return LAB3_ERR_INPUT_FIRST_NULL;
-
+	struct StackMemory stk = Stack_malloc(input.length, sizeof(string_t));
+	ArrayList arrayInput = lab3_splitMalloc(input, separator);
 }

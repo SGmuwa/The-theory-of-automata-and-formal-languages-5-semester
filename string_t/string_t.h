@@ -5,6 +5,7 @@
 */
 #pragma once
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 // Создание новой строки из стандартных символов "".
@@ -233,6 +234,22 @@ extern "C" {
 			if (!isNeedDelete)
 				*(outputPointer--) = *in;
 		}
+		return output;
+	}
+
+	_Bool string_equal(string_t left, string_t right)
+	{
+		if (left.first == NULL || right.first == NULL)
+			return false;
+		if (left.length == 0 && right.length == 0)
+			return true;
+		if (left.length == 0 || right.length == 0)
+			return false;
+		char * l = string_mallocCopyToChar(left);
+		char * r = string_mallocCopyToChar(right);
+		_Bool output = strcmp(l, r) == 0;
+		free(l);
+		free(r);
 		return output;
 	}
 
