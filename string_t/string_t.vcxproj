@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="stringArrayList.h" />
+    <ClInclude Include="stringArrayList_test.h" />
     <ClInclude Include="string_t.h" />
     <ClInclude Include="string_t_forTest.h" />
   </ItemGroup>
