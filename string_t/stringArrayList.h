@@ -40,5 +40,15 @@ ArrayList string_splitMalloc(string_t input, string_t separator)
 		}
 		lastAdded = input.first + input.length - 1;
 	}
+	for (size_t i = output->length - 1; i != SIZE_MAX; i--)
+	{
+		string_t current;
+		ArrayList_get(output, i, &current);
+		if (current.length == 0)
+		{
+			ArrayList_remove(output, i);
+		}
+	}
+	ArrayList_removeTrash(output);
 	return output;
 }

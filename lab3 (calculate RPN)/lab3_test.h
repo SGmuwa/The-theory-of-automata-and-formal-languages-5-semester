@@ -4,19 +4,17 @@
 #include "..\string_t\string_t_forTest.h"
 
 // Создаёт функцию тестирования для функции lab3.
-#define LAB3_TEST_MAKE_lab3_run(NUMBER, EXPECT, INPUT, ERROR) void lab3_test ## NUMBER (void)\
+#define LAB3_TEST_MAKE_lab3_runFloat(NUMBER, EXPECT, INPUT, ERROR) void lab3_test ## NUMBER (void)\
 {\
-	string_t out = string_malloc(256);\
-	*out.first = 0;\
-	minctest_equal(ERROR, lab3(&out, STRING_STATIC(INPUT), (string_t){" ", 1}));\
-	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
-	string_free(out);\
+	long double out;\
+	minctest_equal(ERROR, lab3_runFloat(&out, STRING_STATIC(INPUT), (string_t){" ", 1}));\
+	if(ERROR == 0) minctest_fequal(EXPECT, out, 0.001);\
 }
 
 // Получает имя функции по номеру
 #define LAB3_TEST_GETNAME(NUMBER) lab3_test ## NUMBER
 
-LAB3_TEST_MAKE_lab3_run(0, "0", "0", LAB3_ERR_OK);
+LAB3_TEST_MAKE_lab3_runFloat(0, 0.0, "0", LAB3_ERR_OK);
 
 
 #define LAB3_TEST_COUNT 0 + 1

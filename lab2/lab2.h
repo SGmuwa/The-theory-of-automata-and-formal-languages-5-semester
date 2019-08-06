@@ -35,7 +35,7 @@ string_t lab2_search10Number(string_t input)
 	enum lab1_errorCodes errN = LAB1_ERRORCODES_OK;
 	enum lab1_errorCodes errorNumberBuffer; // Записывается результат lab1 для передачи в errN.
 	size_t i;
-	for (i = 1; i < input.length; i++)
+	for (i = 1; i <= input.length; i++)
 		switch (errorNumberBuffer = lab1(&buffer, (string_t) { input.first, i }))
 		{
 		case LAB1_ERRORCODES_NOT_SUPPORT_CHARACTER:
