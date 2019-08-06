@@ -243,13 +243,11 @@ extern "C" {
 			return false;
 		if (left.length == 0 && right.length == 0)
 			return true;
-		if (left.length == 0 || right.length == 0)
+		if (left.length == 0)
 			return false;
-		char * l = string_mallocCopyToChar(left);
-		char * r = string_mallocCopyToChar(right);
-		_Bool output = strcmp(l, r) == 0;
-		free(l);
-		free(r);
+		if (left.length != right.length)
+			return false;
+		_Bool output = memcmp(left.first, right.first, left.length) == 0;
 		return output;
 	}
 

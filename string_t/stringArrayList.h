@@ -6,6 +6,8 @@ ArrayList string_splitMalloc(string_t input, string_t separator)
 {
 	if (input.first == NULL)
 		return NULL;
+	if (input.length > 0 && input.first[input.length - 1] == '\0')
+		input.length--;
 	ArrayList output = ArrayList_malloc(sizeof(string_t));
 	if (output == NULL)
 		return NULL;
@@ -14,39 +16,31 @@ ArrayList string_splitMalloc(string_t input, string_t separator)
 		ArrayList_addLast(output, &input);
 		return output;
 	}
-	char * lastAdded = input.first - 1;
+	string_t toSend = { input.first, 0u };
 	for (size_t i = 0; i < input.length; i++)
 	{
-		if (string_equal(
-			(string_t) {
-			input.first + i, separator.length
-		},
+		toSend.length++;
+		if (toSend.length >= separator.length && string_equal(
+			(string_t) { toSend.first + toSend.length - separator.length, separator.length },
 			separator))
 		{
-			if (ArrayList_addLast(output, &(string_t) { lastAdded + 1, input.first + i - 1 - lastAdded }))
-			{
-				ArrayList_free(output);
-				return NULL;
-			}
-			lastAdded = input.first;
+			toSend.length -= separator.length;
+			if(toSend.length > 0)
+				if (ArrayList_addLast(output, &toSend))
+				{
+					ArrayList_free(output);
+					return NULL;
+				}
+			toSend.first += toSend.length + separator.length;
+			toSend.length = 0;
 		}
 	}
-	if (lastAdded != input.first + input.length - 1)
+	if (toSend.length > 0)
 	{
-		if (ArrayList_addLast(output, &(string_t) { lastAdded + 1, input.first + input.length - 1 - lastAdded }))
+		if (ArrayList_addLast(output, &toSend))
 		{
 			ArrayList_free(output);
 			return NULL;
-		}
-		lastAdded = input.first + input.length - 1;
-	}
-	for (size_t i = output->length - 1; i != SIZE_MAX; i--)
-	{
-		string_t current;
-		ArrayList_get(output, i, &current);
-		if (current.length == 0)
-		{
-			ArrayList_remove(output, i);
 		}
 	}
 	ArrayList_removeTrash(output);
