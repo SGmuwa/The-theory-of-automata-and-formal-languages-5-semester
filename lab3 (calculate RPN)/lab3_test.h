@@ -8,14 +8,8 @@
 {\
 	string_t out = string_malloc(256);\
 	*out.first = 0;\
-	lab3_state st = lab3_malloc();\
-	minctest_ok(st != NULL);\
-	if(st != NULL) \
-	{\
-		minctest_equal(ERROR, lab3(st, &out, STRING_STATIC(INPUT)));\
-		if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
-		lab3_free(st);\
-	}\
+	minctest_equal(ERROR, lab3(&out, STRING_STATIC(INPUT)));\
+	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
 }
 
@@ -32,13 +26,13 @@ LAB3_TEST_MAKE_lab3_run(0, "0", "0", LAB3_ERR_OK);
 void lab3_runTests(void)
 {
 	void(*tests[LAB3_TEST_COUNT])(void) = {
-		//LAB3_TEST_GETNAME(0)
+		LAB3_TEST_GETNAME(0)
 	};
 
 	char prototypeName[] = "lab3_test ";
 	// Нужно выделить так, чтобы любую цифру можно было записать в диапазоне size_t. Это не более 20 символов.
 	string_t testName = string_malloc(sizeof(prototypeName) + 20u);
-	for (size_t i = 0; i < LAB2_TEST_COUNT; i++)
+	for (size_t i = 0; i < LAB3_TEST_COUNT; i++)
 	{
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
 		minctest_run(testName.first, tests[i]);
