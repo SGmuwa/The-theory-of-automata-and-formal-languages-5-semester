@@ -106,13 +106,19 @@ string_t lab2_searchOperand(string_t input, char previous)
 		if (ch[1] == '-') // Бинарный минус.
 			ch++;
 	}
+	char * first = ch + 1;
 	while (++ch < string_getEnd(input))
 	{
 		if (!lab2_is10Number(*ch)
 			&& !lab2_isLetter(*ch)
-			&& *ch != '_')
+			&& *ch != '_'
+			&& (first == ch || *ch != '.'))
+		{
+			if (*ch == '.')
+				ch--;
 			return input.first[0] == '-' && (size_t)ch - (size_t)input.first <= 1
-			? (string_t) { input.first, 0 } : (string_t) { input.first, ch - input.first };
+				? (string_t) { input.first, 0 } : (string_t) { input.first, ch - input.first };
+		}
 	}
 	return input;
 }

@@ -60,12 +60,15 @@ LAB2_TEST_MAKE_lab2(32, "5 -3 8 + *", "5 * (-3 + 8)", 0);
 LAB2_TEST_MAKE_lab2(33, "1 2 5 3 * + 2 2 2 ^ ^ + anywhere", "anywhere(1, 2 + 5 * 3 + 2^2^2)", 0);
 LAB2_TEST_MAKE_lab2(34, "1 2 5 3 * + 2 2 2 ^ ^ + anywhere s *", "anywhere(1, 2 + 5 * 3 + 2^2^2)s", 0);
 LAB2_TEST_MAKE_lab2(35, "10 2 + 3 2 * 3 3.3 / - 2 4 / 2 3 ^ / 2 / +", "10 + 2 - 3 * 2 - 3 / 3.3 + (2 / 4) / 2 ^ 3 / 2", 0);
-#define LAB2_TEST_COUNT 35 + 1
+LAB2_TEST_MAKE_lab2(36, "0.0", "0.0", 0);
+LAB2_TEST_MAKE_lab2(37, "2.0 2.00 2.000 ^ ^", "2.0^2.00^2.000", 0);
+LAB2_TEST_MAKE_lab2(38, "2 2 pow", "pow(2, 2)", 0);
+LAB2_TEST_MAKE_lab2(39, "2 sin", "sin(2)", 0);
 
 // Тестирование задания lab2.
 void lab2_runTests(void)
 {
-	void(*tests[LAB2_TEST_COUNT])(void) = {
+	void(*tests[])(void) = {
 		LAB2_TEST_GETNAME(0),
 		LAB2_TEST_GETNAME(1),
 		LAB2_TEST_GETNAME(2),
@@ -101,13 +104,17 @@ void lab2_runTests(void)
 		LAB2_TEST_GETNAME(32),
 		LAB2_TEST_GETNAME(33),
 		LAB2_TEST_GETNAME(34),
-		LAB2_TEST_GETNAME(35)
+		LAB2_TEST_GETNAME(35),
+		LAB2_TEST_GETNAME(36),
+		LAB2_TEST_GETNAME(37),
+		LAB2_TEST_GETNAME(38),
+		LAB2_TEST_GETNAME(39)
 	};
 
 	char prototypeName[] = "lab2_test ";
 	// Нужно выделить так, чтобы любую цифру можно было записать в диапазоне size_t. Это не более 20 символов.
 	string_t testName = string_malloc(sizeof(prototypeName) + 20u);
-	for (size_t i = 0; i < LAB2_TEST_COUNT; i++)
+	for (size_t i = 0; i < sizeof(tests) / sizeof(void*); i++)
 	{
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
 		minctest_run(testName.first, tests[i]);
