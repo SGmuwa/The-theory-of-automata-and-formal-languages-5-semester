@@ -18,30 +18,31 @@ int lab3_userInterface(int argc, char * argv[])
 		return 1;
 	}
 	string_t str = memory;
+	string_t output = memory;
 	int error = 0;
 	switch (UserInterface_GetUnsignedIntLimit("1 - enter arithmetic notation\n2 - enter reverse polish notation\n", 1, 2))
 	{
 	case 1:
 		str.length = UserInterface_GetStr("Input arithmetic notation: ", str.first, str.length - 1);
-		error = lab2(&memory, str);
+		error = lab2(&output, str);
 		if (error != 0)
 		{
 			printf("Error in arithmetic -> RPN: %d", error);
 			string_free(memory);
 			return 2;
 		}
-		str.length = strnlen(memory.first, memory.length);
+		str.length = strnlen(output.first, output.length);
 	case 2:
 		if (str.length == memory.length)
 			str.length = UserInterface_GetStr("Input reverse polish notation: ", str.first, str.length - 1);
-		string_t output = memory;
+		output = memory;
 		error = lab3_run(&output, str, STRING_STATIC((char[]) {' '}));
 		if (error != 0)
 		{
 			string_free(memory);
 			return 4;
 		}
-		printf("result:\n%s\n", output);
+		printf("result:\n%s\n", output.first);
 		return 0;
 	default:
 		string_free(memory);

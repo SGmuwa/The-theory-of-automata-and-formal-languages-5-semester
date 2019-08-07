@@ -33,13 +33,11 @@ LAB2LAB3_TEST_MAKE_lab3_runFloat(8, 8, "(1+3)*2", LAB3_ERR_OK);
 LAB2LAB3_TEST_MAKE_lab3_runFloat(9, 8, "2^3", LAB3_ERR_OK);
 LAB2LAB3_TEST_MAKE_lab3_runFloat(10, 5.12215909091, "10 + 2 - 3 * 2 - 3 / 3.3 + (2 / 4) / 2 ^ 3 / 2", LAB3_ERR_OK);
 
-#define LAB2LAB3_TEST_COUNT 10 + 1
-
 
 // Тестирование задания lab3.
 void lab2lab3_runTests(void)
 {
-	void(*tests[LAB2LAB3_TEST_COUNT])(void) = {
+	void(*tests[])(void) = {
 		LAB2LAB3_TEST_GETNAME(0),
 		LAB2LAB3_TEST_GETNAME(1),
 		LAB2LAB3_TEST_GETNAME(2),
@@ -56,7 +54,7 @@ void lab2lab3_runTests(void)
 	char prototypeName[] = "lab2lab3_test ";
 	// Нужно выделить так, чтобы любую цифру можно было записать в диапазоне size_t. Это не более 20 символов.
 	string_t testName = string_malloc(sizeof(prototypeName) + 20u);
-	for (size_t i = 0; i < LAB2LAB3_TEST_COUNT; i++)
+	for (size_t i = 0; i < sizeof(tests) / sizeof(void*); i++)
 	{
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
 		minctest_run(testName.first, tests[i]);
