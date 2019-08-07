@@ -115,6 +115,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="lab4.h" />
+    <ClInclude Include="lab4_test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lab4_userInterface.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
