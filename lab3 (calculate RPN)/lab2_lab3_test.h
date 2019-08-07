@@ -32,6 +32,7 @@ LAB2LAB3_TEST_MAKE_lab3_runFloat(7, 4096, "(2^3)^4", LAB3_ERR_OK);
 LAB2LAB3_TEST_MAKE_lab3_runFloat(8, 8, "(1+3)*2", LAB3_ERR_OK);
 LAB2LAB3_TEST_MAKE_lab3_runFloat(9, 8, "2^3", LAB3_ERR_OK);
 LAB2LAB3_TEST_MAKE_lab3_runFloat(10, 5.12215909091, "10 + 2 - 3 * 2 - 3 / 3.3 + (2 / 4) / 2 ^ 3 / 2", LAB3_ERR_OK);
+LAB2LAB3_TEST_MAKE_lab3_runFloat(11, 17.1221590909, "10 + 2 - -3 * 2 - 3 / 3.3 + (2 / 4) / 2 ^ 3 / 2", LAB3_ERR_OK);
 
 
 // Тестирование задания lab3.
@@ -48,7 +49,8 @@ void lab2lab3_runTests(void)
 		LAB2LAB3_TEST_GETNAME(7),
 		LAB2LAB3_TEST_GETNAME(8),
 		LAB2LAB3_TEST_GETNAME(9),
-		LAB2LAB3_TEST_GETNAME(10)
+		LAB2LAB3_TEST_GETNAME(10),
+		LAB2LAB3_TEST_GETNAME(11)
 	};
 
 	char prototypeName[] = "lab2lab3_test ";
