@@ -75,7 +75,7 @@ unsigned int lab4_getOperatorPreority(string_t input)
 	char a = input.first[0];
 	char b = input.length >= 2 ? input.first[1] : '\0';
 	unsigned int i = 1;
-#define LAB4_MAKE(A) if(a == A[0] && b == A[1]) return ~i;
+#define LAB4_MAKE(A) if(a == A[0] && b == A[1]) return i;
 	LAB4_MAKE("||"); // Самый низкий приоритет
 	i++;
 	LAB4_MAKE("&&");
@@ -160,7 +160,7 @@ int lab4(string_t * output, string_t input)
 			input.first -= 1;
 			input.length += 1;
 		}
-		else if (countOfPrefixOperator)
+		if (countOfPrefixOperator)
 		{ // Префиксый оператор (кроме минуса).
 			Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator }));
 			input.first += countOfPrefixOperator;
@@ -200,7 +200,7 @@ int lab4(string_t * output, string_t input)
 			}
 			else
 			{
-				while ((lab2_isLeftFirstPriority(operator) ? lab2_getOperatorPreority(operator) : ~lab4_getOperatorPreority(operator)) <= lab4_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+				while ((lab2_isLeftFirstPriority(operator) ? lab4_getOperatorPreority(operator) : ~lab4_getOperatorPreority(operator)) <= lab4_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
 					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
 					{

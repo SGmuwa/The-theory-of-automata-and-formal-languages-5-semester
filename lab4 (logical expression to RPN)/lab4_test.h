@@ -33,7 +33,7 @@ LAB4_TEST_MAKE_lab4(13, "10 15 - 3 *", "(10 - 15) * 3", 0);
 LAB4_TEST_MAKE_lab4(14, "2 2 2 ^ ^", "2^2^2", 0);
 LAB4_TEST_MAKE_lab4(15, "2 2 2 ^ ^", "2^(2^2)", 0);
 LAB4_TEST_MAKE_lab4(16, "2 2 ^ 2 ^", "(2^2)^2", 0);
-LAB4_TEST_MAKE_lab4(17, "1 2 3 * +", "1 + 2 * 3", 0);
+LAB4_TEST_MAKE_lab4(17, "1 2 3 * +", "1 + 2 * 3", 0); // Тест приоритетов.
 LAB4_TEST_MAKE_lab4(18, "1 2 *", "(1)2", 0);
 LAB4_TEST_MAKE_lab4(19, "1 2 3 4 ^ ^ ^", "1^2^3^4", 0);
 LAB4_TEST_MAKE_lab4(20, "x y ^ 5 z * / 10 +", "x ^ y / (5 * z) + 10", 0);
@@ -56,6 +56,8 @@ LAB4_TEST_MAKE_lab4(36, "2 sin", "sin(2)", 0);
 LAB4_TEST_MAKE_lab4(37, "1.0 2.00 5.1 3.2 * + 2.3 2.4 2.5 ^ ^ + anywhere s.a *", "anywhere(1.0, 2.00 + 5.1 * 3.2 + 2.3^2.4^2.5)s.a", 0);
 LAB4_TEST_MAKE_lab4(38, "a !", "!a", 0);
 LAB4_TEST_MAKE_lab4(39, "1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a *", "!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a", 0);
+LAB4_TEST_MAKE_lab4(40, "2 sin 2 *", "sin(2)2", 0);
+
 
 
 // Тестирование задания lab4.
@@ -101,7 +103,8 @@ void lab4_runTests(void)
 		LAB4_TEST_GETNAME(36),
 		LAB4_TEST_GETNAME(37),
 		LAB4_TEST_GETNAME(38),
-		LAB4_TEST_GETNAME(39)
+		LAB4_TEST_GETNAME(39),
+		LAB4_TEST_GETNAME(40)
 	};
 
 	char prototypeName[] = "lab4_test ";
