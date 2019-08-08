@@ -29,6 +29,24 @@ size_t lab4_isPrefixOperator(string_t input)
 		: 0;
 }
 
+// Определяет, может ли входная строка быть именем функции.
+// string_t input - Строка поиска.
+// Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
+size_t lab4_isFunctionName(string_t input)
+{
+	char * i = input.first;
+	if (lab2_is10Number(*i))
+		return 0; // Функция не может начинаться с цифры.
+	for (; i < string_getEnd(input); i++)
+	{
+		if (lab2_is10Number(*i) || lab2_isLetter(*i))
+			continue;
+		else
+			return i - input.first;
+	}
+	return i - input.first;
+}
+
 /*
 Находит начиная с первого символа оператор.
 */
@@ -68,9 +86,9 @@ string_t lab4_searchOperator(string_t input)
 /*
 Получает приоритет оператора.
 */
-unsigned int lab4_getOperatorPreority(string_t input)
+unsigned int lab4_getOperatorPriority(string_t input)
 {
-	if (input.length != 1)
+	if (input.length == 0)
 		return ~UINT_MAX;
 	char a = input.first[0];
 	char b = input.length >= 2 ? input.first[1] : '\0';
@@ -108,6 +126,8 @@ unsigned int lab4_getOperatorPreority(string_t input)
 	i++;
 	LAB4_MAKE("~"); // Битовое не
 	LAB4_MAKE("!"); // Логическое не
+	i++;
+	return ~UINT_MAX;
 #undef LAB4_MAKE2
 }
 
@@ -152,10 +172,11 @@ int lab4(string_t * output, string_t input)
 		size_t countOfFun = lab2_isFunction(input);
 		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
 		string_t operator = lab2_searchOperator(input);
-		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length) && operator.length == 0) // Поддержка мнимого умножения
+		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length || countOfPrefixOperator) && operator.length == 0) // Поддержка мнимого умножения
 		{
 			operand = (string_t){ NULL, 0 };
 			countOfFun = 0;
+			countOfPrefixOperator = 0;
 			operator = (string_t) { "*", 1 };
 			input.first -= 1;
 			input.length += 1;
@@ -188,7 +209,7 @@ int lab4(string_t * output, string_t input)
 		{ // Это оператор.
 			string_t stk_elm = (string_t) { NULL, 0 };
 			if ((Stack_count(stk) == 0) || (Stack_get(stk, &stk_elm) == 0 && lab2_isParenthesOpen(*stk_elm.first) && stk_elm.length == 1)
-				|| lab4_getOperatorPreority(operator) > lab4_getOperatorPreority(stk_elm))
+				|| lab4_getOperatorPriority(operator) > lab4_getOperatorPriority(stk_elm))
 			{
 				if (Stack_push(&stk, &operator))
 				{
@@ -200,7 +221,7 @@ int lab4(string_t * output, string_t input)
 			}
 			else
 			{
-				while ((lab2_isLeftFirstPriority(operator) ? lab4_getOperatorPreority(operator) : ~lab4_getOperatorPreority(operator)) <= lab4_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+				while ((lab2_isLeftFirstPriority(operator) ? lab4_getOperatorPriority(operator) : ~lab4_getOperatorPriority(operator)) <= lab4_getOperatorPriority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
 					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
 					{
@@ -247,7 +268,7 @@ int lab4(string_t * output, string_t input)
 					input.length--;
 					if (Stack_get(stk, &stk_elm))
 						break;
-					if (lab2_isFunction(stk_elm))
+					if (lab4_isFunctionName(stk_elm) == stk_elm.length)
 					{
 						if (ArrayList_addLast(outList, &stk_elm))
 						{
