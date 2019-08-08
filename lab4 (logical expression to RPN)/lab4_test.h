@@ -55,6 +55,8 @@ LAB4_TEST_MAKE_lab4(35, "2 2 pow", "pow(2, 2)", 0);
 LAB4_TEST_MAKE_lab4(36, "2 sin", "sin(2)", 0);
 LAB4_TEST_MAKE_lab4(37, "1.0 2.00 5.1 3.2 * + 2.3 2.4 2.5 ^ ^ + anywhere s.a *", "anywhere(1.0, 2.00 + 5.1 * 3.2 + 2.3^2.4^2.5)s.a", 0);
 LAB4_TEST_MAKE_lab4(38, "a !", "!a", 0);
+LAB4_TEST_MAKE_lab4(39, "1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a *", "!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a", 0);
+
 
 // Тестирование задания lab4.
 void lab4_runTests(void)
@@ -98,7 +100,8 @@ void lab4_runTests(void)
 		LAB4_TEST_GETNAME(35),
 		LAB4_TEST_GETNAME(36),
 		LAB4_TEST_GETNAME(37),
-		LAB4_TEST_GETNAME(38)
+		LAB4_TEST_GETNAME(38),
+		LAB4_TEST_GETNAME(39)
 	};
 
 	char prototypeName[] = "lab4_test ";

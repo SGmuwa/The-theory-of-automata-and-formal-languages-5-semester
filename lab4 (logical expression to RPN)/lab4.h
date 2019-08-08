@@ -22,25 +22,6 @@
 #include <limits.h>
 
 
-// Определяет, принадлежит ли входной символ множеству десятичных цифр.
-inline byte_t lab4_is10Number(char in) {
-	return '0' <= in && in <= '9';
-}
-
-inline byte_t lab4_isLetter(char in) {
-	return ('a' <= in && in <= 'z')
-		|| ('A' <= in && in <= 'Z');
-}
-
-/*
-Функция отвечает на вопрос, явяляется ли символ открытой скобкой.
-char in - входной символ.
-Возвращает: True, если символ символизирует открытую скобку. Иначе - False.
-*/
-inline byte_t lab4_isParenthesOpen(char in) {
-	return in == '(' || in == '[' || in == '{';
-}
-
 size_t lab4_isPrefixOperator(string_t input)
 {
 	return input.length > 0
@@ -171,7 +152,7 @@ int lab4(string_t * output, string_t input)
 		size_t countOfFun = lab2_isFunction(input);
 		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
 		string_t operator = lab2_searchOperator(input);
-		if (lab4_isParenthesClose(previous) && (countOfFun || operand.length) && operator.length == 0) // Поддержка мнимого умножения
+		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length) && operator.length == 0) // Поддержка мнимого умножения
 		{
 			operand = (string_t){ NULL, 0 };
 			countOfFun = 0;
@@ -206,7 +187,7 @@ int lab4(string_t * output, string_t input)
 		else if (operator.length > 0)
 		{ // Это оператор.
 			string_t stk_elm = (string_t) { NULL, 0 };
-			if ((Stack_count(stk) == 0) || (Stack_get(stk, &stk_elm) == 0 && lab4_isParenthesOpen(*stk_elm.first) && stk_elm.length == 1)
+			if ((Stack_count(stk) == 0) || (Stack_get(stk, &stk_elm) == 0 && lab2_isParenthesOpen(*stk_elm.first) && stk_elm.length == 1)
 				|| lab4_getOperatorPreority(operator) > lab4_getOperatorPreority(stk_elm))
 			{
 				if (Stack_push(&stk, &operator))
@@ -219,7 +200,7 @@ int lab4(string_t * output, string_t input)
 			}
 			else
 			{
-				while ((lab4_isLeftFirstPriority(operator) ? lab4_getOperatorPreority(operator) : ~lab4_getOperatorPreority(operator)) <= lab4_getOperatorPreority(stk_elm) && !lab4_isParenthesOpen(*stk_elm.first))
+				while ((lab2_isLeftFirstPriority(operator) ? lab2_getOperatorPreority(operator) : ~lab4_getOperatorPreority(operator)) <= lab4_getOperatorPreority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
 					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
 					{
@@ -242,13 +223,13 @@ int lab4(string_t * output, string_t input)
 			input.first += operator.length;
 			input.length -= operator.length;
 		}
-		else if (lab4_isParenthesOpen(*input.first))
+		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
 			Stack_push(&stk, &((string_t) { input.first, 1 }));
 			input.first += 1;
 			input.length -= 1;
 		}
-		else if (lab4_isParenthesClose(*input.first))
+		else if (lab2_isParenthesClose(*input.first))
 		{ // Найдена закрытая скобка. Что делать?
 			string_t stk_elm;
 			while (1)
@@ -260,13 +241,13 @@ int lab4(string_t * output, string_t input)
 					ArrayList_free(outList);
 					return 2;
 				}
-				if (lab4_isParenthesOpen(*stk_elm.first))
+				if (lab2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
 					input.first++;
 					input.length--;
 					if (Stack_get(stk, &stk_elm))
 						break;
-					if (lab4_isFunction(stk_elm))
+					if (lab2_isFunction(stk_elm))
 					{
 						if (ArrayList_addLast(outList, &stk_elm))
 						{
@@ -288,7 +269,7 @@ int lab4(string_t * output, string_t input)
 				}
 			}
 		}
-		else if (lab4_isSeparator(*input.first))
+		else if (lab2_isSeparator(*input.first))
 		{
 			input.first++;
 			input.length--;
@@ -300,7 +281,7 @@ int lab4(string_t * output, string_t input)
 			ArrayList_free(outList);
 			return 2;
 		}
-		previous = lab4_isParenthesClose(previous) ? '*' : *(input.first - 1);
+		previous = lab2_isParenthesClose(previous) ? '*' : *(input.first - 1);
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
@@ -314,9 +295,9 @@ int lab4(string_t * output, string_t input)
 		}
 
 	}
-	int lab4_putListToString_error = lab4_putListToString(output, outList, STRING_STATIC((char[]) { ' ' }));
+	int lab2_putListToString_error = lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' }));
 	Stack_free(stk);
 	free(oldIn);
 	ArrayList_free(outList);
-	return lab4_putListToString_error == 0 ? 0 : 5;
+	return lab2_putListToString_error == 0 ? 0 : 5;
 }
