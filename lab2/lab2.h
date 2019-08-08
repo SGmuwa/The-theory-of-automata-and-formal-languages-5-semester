@@ -188,7 +188,7 @@ size_t lab2_isFunction(string_t input)
 		if (lab2_isParenthesOpen(*i)) {
 			return i - input.first;
 		}
-		if (lab2_is10Number(*i) || ('a' <= *i && *i <= 'z') || ('A' <= *i && *i <= 'Z'))
+		if (lab2_is10Number(*i) || lab2_isLetter(*i))
 			continue;
 		else
 			break;
