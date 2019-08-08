@@ -41,7 +41,12 @@ inline byte_t lab4_isParenthesOpen(char in) {
 	return in == '(' || in == '[' || in == '{';
 }
 
-
+size_t lab4_isPrefixOperator(string_t input)
+{
+	return input.length > 0
+		? input.first != NULL && (*input.first == '~' || *input.first == '!')
+		: 0;
+}
 
 /*
 Находит начиная с первого символа оператор.
@@ -163,7 +168,8 @@ int lab4(string_t * output, string_t input)
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab2_searchOperand(input, previous);
-		size_t countOfFun = lab4_isFunction(input);
+		size_t countOfFun = lab2_isFunction(input);
+		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
 		string_t operator = lab2_searchOperator(input);
 		if (lab4_isParenthesClose(previous) && (countOfFun || operand.length) && operator.length == 0) // Поддержка мнимого умножения
 		{
@@ -173,7 +179,13 @@ int lab4(string_t * output, string_t input)
 			input.first -= 1;
 			input.length += 1;
 		}
-		if (countOfFun)
+		else if (countOfPrefixOperator)
+		{ // Префиксый оператор (кроме минуса).
+			Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator }));
+			input.first += countOfPrefixOperator;
+			input.length -= countOfPrefixOperator;
+		}
+		else if (countOfFun)
 		{ // Найдена функция
 			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
 			input.first += countOfFun;
