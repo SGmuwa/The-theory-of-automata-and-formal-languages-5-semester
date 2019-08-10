@@ -56,8 +56,8 @@ string_t lab4_searchOperator(string_t input)
 		return (string_t) { NULL, 0 };
 	char a = *input.first;
 	char b = input.length >= 2 ? input.first[1] : '\0';
-	size_t countReturn = 0;
-#define LAB4_MAKE(A) if(a == A[0] && b == A[1]) return (string_t) {input.first, b == '\0' ? 1 : 2 }
+	size_t lenRet = 0;
+#define LAB4_MAKE(A) if(A[0] == a && ((A[1] == '\0' && lenRet <= 1) || A[1] == b)) { lenRet = A[1] == '\0' ? 1 : 2; if(lenRet == 2) return (string_t) {input.first, lenRet };}
 	LAB4_MAKE("||");
 	LAB4_MAKE("&&");
 	LAB4_MAKE("|");
@@ -79,7 +79,7 @@ string_t lab4_searchOperator(string_t input)
 	LAB4_MAKE("^");
 	LAB4_MAKE("~");
 	LAB4_MAKE("!");
-	return (string_t) { input.first, 0 };
+	return (string_t) { input.first, lenRet };
 #undef LAB4_MAKE
 }
 
@@ -89,11 +89,13 @@ string_t lab4_searchOperator(string_t input)
 unsigned int lab4_getOperatorPriority(string_t input)
 {
 	if (input.length == 0)
-		return ~UINT_MAX;
+		return 0;
 	char a = input.first[0];
 	char b = input.length >= 2 ? input.first[1] : '\0';
 	unsigned int i = 1;
-#define LAB4_MAKE(A) if(a == A[0] && b == A[1]) return i;
+	unsigned int ret = 0;
+	size_t lenRet = 0;
+#define LAB4_MAKE(A) if(A[0] == a && ((A[1] == '\0' && lenRet <= 1) || A[1] == b)) {ret = i; lenRet = A[1] == '\0' ? 1 : 2; if(lenRet == 2) return ret; }
 	LAB4_MAKE("||"); // Самый низкий приоритет
 	i++;
 	LAB4_MAKE("&&");
@@ -127,7 +129,7 @@ unsigned int lab4_getOperatorPriority(string_t input)
 	LAB4_MAKE("~"); // Битовое не
 	LAB4_MAKE("!"); // Логическое не
 	i++;
-	return ~UINT_MAX;
+	return ret;
 #undef LAB4_MAKE2
 }
 
@@ -171,7 +173,7 @@ int lab4(string_t * output, string_t input)
 		string_t operand = lab2_searchOperand(input, previous);
 		size_t countOfFun = lab2_isFunction(input);
 		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
-		string_t operator = lab2_searchOperator(input);
+		string_t operator = lab4_searchOperator(input);
 		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length || countOfPrefixOperator) && operator.length == 0) // Поддержка мнимого умножения
 		{
 			operand = (string_t){ NULL, 0 };
@@ -181,7 +183,7 @@ int lab4(string_t * output, string_t input)
 			input.first -= 1;
 			input.length += 1;
 		}
-		if (countOfPrefixOperator)
+		if (countOfPrefixOperator && countOfPrefixOperator >= operator.length)
 		{ // Префиксый оператор (кроме минуса).
 			Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator }));
 			input.first += countOfPrefixOperator;

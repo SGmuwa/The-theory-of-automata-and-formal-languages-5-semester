@@ -66,6 +66,7 @@ LAB4_TEST_MAKE_lab4(46, "a b !", "!(a, b)", 0);
 LAB4_TEST_MAKE_lab4(47, "a b !", "a, !b", 0);
 LAB4_TEST_MAKE_lab4(48, "a b ! as", "as(a, !b)", 0);
 LAB4_TEST_MAKE_lab4(49, "q w e r t y u i o p a s d f g h j k l z x c ! ~ ^ % / * - + << >> <= < >= > != == & ^^ | && ||", "q || w && e | r ^^ t & y == u != i > o >= p < a <= s >> d << f + g - h * j / k % l ^ z ~ x ! c", 0);
+LAB4_TEST_MAKE_lab4(50, "a b >>", "a >> b", 0);
 
 
 
@@ -122,7 +123,8 @@ void lab4_runTests(void)
 		LAB4_TEST_GETNAME(46),
 		LAB4_TEST_GETNAME(47),
 		LAB4_TEST_GETNAME(48),
-		LAB4_TEST_GETNAME(49)
+		LAB4_TEST_GETNAME(49),
+		LAB4_TEST_GETNAME(50)
 	};
 
 	char prototypeName[] = "lab4_test ";
