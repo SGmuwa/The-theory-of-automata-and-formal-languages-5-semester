@@ -57,6 +57,15 @@ LAB4_TEST_MAKE_lab4(37, "1.0 2.00 5.1 3.2 * + 2.3 2.4 2.5 ^ ^ + anywhere s.a *",
 LAB4_TEST_MAKE_lab4(38, "a !", "!a", 0);
 LAB4_TEST_MAKE_lab4(39, "1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a *", "!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a", 0);
 LAB4_TEST_MAKE_lab4(40, "2 sin 2 *", "sin(2)2", 0);
+LAB4_TEST_MAKE_lab4(41, "a ! if", "if(!a)", 0);
+LAB4_TEST_MAKE_lab4(42, "a ! if ~", "~if(!a)", 0);
+LAB4_TEST_MAKE_lab4(43, "a ! b any", "any(!a, b)", 0);
+LAB4_TEST_MAKE_lab4(44, "a ! b", "(!a, b)", 0);
+LAB4_TEST_MAKE_lab4(45, "a b + !", "!(a + b)", 0);
+LAB4_TEST_MAKE_lab4(46, "a b !", "!(a, b)", 0);
+LAB4_TEST_MAKE_lab4(47, "a b !", "a, !b", 0);
+LAB4_TEST_MAKE_lab4(48, "a b ! as", "as(a, !b)", 0);
+LAB4_TEST_MAKE_lab4(49, "q w e r t y u i o p a s d f g h j k l z x c ! ~ ^ % / * - + << >> <= < >= > != == & ^^ | && ||", "q || w && e | r ^^ t & y == u != i > o >= p < a <= s >> d << f + g - h * j / k % l ^ z ~ x ! c", 0);
 
 
 
@@ -104,7 +113,16 @@ void lab4_runTests(void)
 		LAB4_TEST_GETNAME(37),
 		LAB4_TEST_GETNAME(38),
 		LAB4_TEST_GETNAME(39),
-		LAB4_TEST_GETNAME(40)
+		LAB4_TEST_GETNAME(40),
+		LAB4_TEST_GETNAME(41),
+		LAB4_TEST_GETNAME(42),
+		LAB4_TEST_GETNAME(43),
+		LAB4_TEST_GETNAME(44),
+		LAB4_TEST_GETNAME(45),
+		LAB4_TEST_GETNAME(46),
+		LAB4_TEST_GETNAME(47),
+		LAB4_TEST_GETNAME(48),
+		LAB4_TEST_GETNAME(49)
 	};
 
 	char prototypeName[] = "lab4_test ";

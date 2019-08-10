@@ -204,6 +204,28 @@ int lab4(string_t * output, string_t input)
 			}
 			input.length -= operand.length;
 			input.first += operand.length;
+			// Поддержка префиксных операторов:
+			string_t stk_elm = (string_t) { NULL, 0 };
+			if (Stack_get(stk, &stk_elm) == 0)
+			{
+				if (lab4_isPrefixOperator(stk_elm) == stk_elm.length)
+				{
+					if (ArrayList_addLast(outList, &stk_elm))
+					{
+						Stack_free(stk);
+						free(oldIn);
+						ArrayList_free(outList);
+						return 5;
+					}
+					if (Stack_pop(&stk, &stk_elm))
+					{
+						Stack_free(stk);
+						free(oldIn);
+						ArrayList_free(outList);
+						return 5;
+					}
+				}
+			}
 		}
 		else if (operator.length > 0)
 		{ // Это оператор.
