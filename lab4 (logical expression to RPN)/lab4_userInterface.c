@@ -5,7 +5,7 @@
 void lab4_interface(int argc, char * argv[])
 {
 	setlocale(LC_ALL, "Russian");
-	printf(LAB4_HELP_STR "\n");
+	printf("%s", LAB4_HELP_STR "\n");
 	size_t mem = argc > 1
 		? (size_t)UserInterface_GetUnsignedLongLongIntLimit("Memory = ", 0, SIZE_MAX)
 		: 8192u;
@@ -13,7 +13,7 @@ void lab4_interface(int argc, char * argv[])
 	string_t output = input;
 	if (input.first == NULL)
 		return;
-	input.length = UserInterface_GetStr("Input arithmetic expression: ", input.first, mem);
+	input.length = UserInterface_GetStr("Введите арифметическую запись: ", input.first, mem);
 	int err = lab4(&output, input); // error.
 	if (err != 0)
 		printf("error %d.\n", err);
