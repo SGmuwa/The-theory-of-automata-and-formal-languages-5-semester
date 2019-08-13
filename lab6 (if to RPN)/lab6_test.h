@@ -72,6 +72,8 @@ LAB6_TEST_MAKE_lab6(52, "-1 -2 >", "-1 > -2", 0);
 LAB6_TEST_MAKE_lab6(53, "-1 -2 >=", "-1 >= -2", 0);
 LAB6_TEST_MAKE_lab6(54, "-1 -2 <=", "-1 <= -2", 0);
 LAB6_TEST_MAKE_lab6(55, "-1 -2 <", "-1 < -2", 0);
+LAB6_TEST_MAKE_lab6(56, "true 6 if a 3 =", "if(true) {a = 3}", 0); // Переход по лжи!
+LAB6_TEST_MAKE_lab6(57, "false 8 if a 3 = 11 goto b 4 = c 5.0 =", "if(false) {a = 3} else {b = 4} c = 5.0", 0);
 
 
 
@@ -134,7 +136,9 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(52),
 		LAB6_TEST_GETNAME(53),
 		LAB6_TEST_GETNAME(54),
-		LAB6_TEST_GETNAME(55)
+		LAB6_TEST_GETNAME(55),
+		LAB6_TEST_GETNAME(56),
+		LAB6_TEST_GETNAME(57)
 	};
 
 	char prototypeName[] = "lab6_test ";
