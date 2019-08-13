@@ -107,6 +107,7 @@ string_t lab4_searchOperator(string_t input)
 	LAB4_MAKE("^");
 	LAB4_MAKE("~");
 	LAB4_MAKE("!");
+	LAB4_MAKE("=");
 	return (string_t) { input.first, lenRet };
 #undef LAB4_MAKE
 }
@@ -153,7 +154,9 @@ unsigned int lab4_getOperatorPriority(string_t input)
 	unsigned int ret = 0;
 	size_t lenRet = 0;
 #define LAB4_MAKE(A) if(A[0] == a && ((A[1] == '\0' && lenRet <= 1) || A[1] == b)) {ret = i; lenRet = A[1] == '\0' ? 1 : 2; if(lenRet == 2) return ret; }
-	LAB4_MAKE("||"); // Самый низкий приоритет
+	LAB4_MAKE("="); // Самый низкий приоритет
+	i++;
+	LAB4_MAKE("||");
 	i++;
 	LAB4_MAKE("&&");
 	i++;
