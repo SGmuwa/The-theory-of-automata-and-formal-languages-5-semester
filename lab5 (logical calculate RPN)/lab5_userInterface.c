@@ -7,7 +7,7 @@
 int lab5_userInterface(int argc, char * argv[])
 {
 	setlocale(LC_ALL, "Russian");
-	printf(LAB5_HELP_STR "\n");
+	printf("%s", LAB5_HELP_STR "\n");
 	size_t memCount = argc > 1
 		? (size_t)UserInterface_GetUnsignedLongLongIntLimit("Memory = ", 0, SIZE_MAX)
 		: 8192u;
