@@ -56,7 +56,9 @@ enum lab5_err
 	// Данный оператор не поддерживается.
 	LAB5_ERR_NOT_SUPPORT_OPERATOR,
 	// В конце вычислений в стеке получилось количество элементов не равное единице.
-	LAB5_ERR_ENDSTACK_COUNT
+	LAB5_ERR_ENDSTACK_COUNT,
+	// Операнд не поддерживается.
+	LAB5_ERR_NOT_SUPPORT_OPERAND
 };
 
 enum lab5_err lab5_runFloat(long double * output, string_t input, string_t separator)
@@ -83,6 +85,7 @@ enum lab5_err lab5_runFloat(long double * output, string_t input, string_t separ
 	{
 		string_t current;
 		ArrayList_get(arrayInput, i, &current);
+		string_t operand = lab2_searchOperand(current, '\0');
 		string_t number = lab2_search10Number(current);
 		string_t operator = lab4_searchOperator(current);
 		if (operator.length == current.length)
@@ -118,6 +121,14 @@ enum lab5_err lab5_runFloat(long double * output, string_t input, string_t separ
 		{
 			if (lab1(&push, number))
 				LAB5_RETURN(LAB5_ERR_READ_NUMBER);
+			if (Stack_push(&stk, &push))
+				LAB5_RETURN(LAB5_ERR_OUT_OF_MEMORY);
+		}
+		else if (operand.length == current.length)
+		{
+			if (string_equal(STRING_STATIC0("true"), operand)) push = 1;
+			else if (string_equal(STRING_STATIC0("false"), operand)) push = 0;
+			else LAB5_RETURN(LAB5_ERR_NOT_SUPPORT_OPERAND);
 			if (Stack_push(&stk, &push))
 				LAB5_RETURN(LAB5_ERR_OUT_OF_MEMORY);
 		}
