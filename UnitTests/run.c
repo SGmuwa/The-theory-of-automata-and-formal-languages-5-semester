@@ -7,6 +7,7 @@
 #include "..\lab4 (logical expression to RPN)\lab4_test.h"
 #include "..\lab5 (logical calculate RPN)\lab5_test.h"
 #include "..\lab5 (logical calculate RPN)\lab4_lab5_test.h"
+#include "..\lab6 (if to RPN)\lab6_test.h"
 
 void main()
 {
@@ -19,6 +20,7 @@ void main()
 	minctest_run("lab4", lab4_runTests);
 	minctest_run("lab5", lab5_runTests);
 	minctest_run("lab4 and lab5", lab4lab5_runTests);
+	minctest_run("lab6", lab6_runTests);
 	minctest_results();
 	printf_s("end.\n");
 }
