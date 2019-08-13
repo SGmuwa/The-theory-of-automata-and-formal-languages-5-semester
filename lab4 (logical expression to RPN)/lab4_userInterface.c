@@ -16,7 +16,7 @@ void lab4_interface(int argc, char * argv[])
 	input.length = UserInterface_GetStr("Введите арифметическую запись: ", input.first, mem);
 	int err = lab4(&output, input); // error.
 	if (err != 0)
-		printf("error %d.\n", err);
+		printf("ошибка %d.\n", err);
 	printf("%s\n", output.first);
 	string_free(input);
 }
