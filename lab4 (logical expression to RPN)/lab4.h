@@ -43,7 +43,12 @@
 #include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
 #include <limits.h>
 
-
+/*
+Ищет префиксный оператор в входной строке.
+Найдёт префиксный оператор только в том случае, если строка начинается с префиксного оператора.
+string_t input - строка, в которой надо найти префиксный оператор.
+Возвращает: количество символов, занимаемым префиксным оператором.
+*/
 size_t lab4_isPrefixOperator(string_t input)
 {
 	return input.length > 0

@@ -92,28 +92,34 @@ enum lab5_err lab5_runFloat(long double * output, string_t input, string_t separ
 		{
 			if (operator.length != 1)
 				LAB5_RETURN(LAB5_ERR_NOT_SUPPORT_OPERATOR);
-			Stack_pop(&stk, pop + 1);
+			if (lab4_isPrefixOperator(operator) != operator.length)
+				Stack_pop(&stk, pop + 1);
 			Stack_pop(&stk, pop);
-			switch (*operator.first)
-			{
-			case '+':
-				push = pop[0] + pop[1];
-				break;
-			case '-':
-				push = pop[0] - pop[1];
-				break;
-			case '/':
-				push = pop[0] / pop[1];
-				break;
-			case '*':
-				push = pop[0] * pop[1];
-				break;
-			case '^':
-				push = powl(pop[0], pop[1]);
-				break;
-			default:
-				LAB5_RETURN(LAB5_ERR_NOT_SUPPORT_OPERATOR);
-			}
+#define LAB5_MAKE(STR, MAKE) else if((operator.length == 1 && STR[0] == operator.first[0]) || (operator.length == 2 && STR[0] == operator.first[0] && STR[1] == operator.first[1])) push = MAKE
+			if (0);
+			LAB5_MAKE("||", pop[0] || pop[1]);
+			LAB5_MAKE("&&", pop[0] && pop[1]);
+			LAB5_MAKE("|", (int)pop[0] | (int)pop[1]);
+			LAB5_MAKE("^^", (int)pop[0] ^ (int)pop[1]);
+			LAB5_MAKE("&", (int)pop[0] & (int)pop[1]);
+			LAB5_MAKE("==", pop[0] == pop[1]);
+			LAB5_MAKE("!=", pop[0] != pop[1]);
+			LAB5_MAKE("<=", pop[0] <= pop[1]);
+			LAB5_MAKE(">=", pop[0] >= pop[1]);
+			LAB5_MAKE("<", pop[0] < pop[1]);
+			LAB5_MAKE(">", pop[0] > pop[1]);
+			LAB5_MAKE("<<", (int)pop[0] << (int)pop[1]);
+			LAB5_MAKE(">>", (int)pop[0] >> (int)pop[1]);
+			LAB5_MAKE("+", pop[0] + pop[1]);
+			LAB5_MAKE("-", pop[0] - pop[1]);
+			LAB5_MAKE("*", pop[0] * pop[1]);
+			LAB5_MAKE("/", pop[0] / pop[1]);
+			LAB5_MAKE("%", (int)pop[0] % (int)pop[1]);
+			LAB5_MAKE("^", powl(pop[0], pop[1]));
+			LAB5_MAKE("~", ~(int)pop[0]);
+			LAB5_MAKE("!", !pop[0]);
+			else LAB5_RETURN(LAB5_ERR_NOT_SUPPORT_OPERATOR);
+#undef LAB5_MAKE
 			if (Stack_push(&stk, &push))
 				LAB5_RETURN(LAB5_ERR_OUT_OF_MEMORY);
 		}
