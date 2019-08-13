@@ -17,6 +17,9 @@
 #define STRING_STATIC(X) ((string_t){X, sizeof(X)})
 // Создание новой широкой строки из стандартных символов L"".
 #define WSTRING_STATIC(X) ((wstring_t){X, sizeof(X)})
+// Создание новой строки из стандартных символов "" не включая последний ноль.
+// Он исключается благодаря length, который уменьшен на единицу.
+#define STRING_STATIC0(X) ((string_t){X, sizeof(X) - 1})
 #endif // __cplusplus
 
 // Создаёт массив пробелов. Размер в байтах: 1
