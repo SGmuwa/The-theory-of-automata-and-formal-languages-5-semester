@@ -48,4 +48,5 @@ void stringArrayList_runTests(void)
 		sprintf_s(testName.first, testName.length, "%s%zu", prototypeName, i);
 		minctest_run(testName.first, tests[i]);
 	}
+	string_free(testName);
 }
