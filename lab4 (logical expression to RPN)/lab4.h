@@ -56,6 +56,7 @@ size_t lab4_isPrefixOperator(string_t input)
 		: 0;
 }
 
+
 // Определяет, может ли входная строка быть именем функции.
 // string_t input - Строка поиска.
 // Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
@@ -109,6 +110,35 @@ string_t lab4_searchOperator(string_t input)
 	return (string_t) { input.first, lenRet };
 #undef LAB4_MAKE
 }
+
+
+string_t lab4_searchOperand(string_t input, char previous)
+{
+	if (input.first == NULL)
+		return (string_t) { NULL, 0u };
+	char * ch = input.first - 1;
+	if (previous == '\0' || lab2_isParenthesOpen(previous) || lab4_searchOperator((string_t) { (char[]) { previous }, 0u }).length > 0)
+	{
+		if (ch[1] == '-') // Бинарный минус.
+			ch++;
+	}
+	char * first = ch + 1;
+	while (++ch < string_getEnd(input))
+	{
+		if (!lab2_is10Number(*ch)
+			&& !lab2_isLetter(*ch)
+			&& *ch != '_'
+			&& (first == ch || *ch != '.'))
+		{
+			if (*ch == '.')
+				ch--;
+			return input.first[0] == '-' && (size_t)ch - (size_t)input.first <= 1
+				? (string_t) { input.first, 0 } : (string_t) { input.first, ch - input.first };
+		}
+	}
+	return input;
+}
+
 
 /*
 Получает приоритет оператора.
@@ -197,7 +227,7 @@ int lab4(string_t * output, string_t input)
 	char previous = '\0';
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
-		string_t operand = lab2_searchOperand(input, previous);
+		string_t operand = lab4_searchOperand(input, previous);
 		size_t countOfFun = lab2_isFunction(input);
 		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
 		string_t operator = lab4_searchOperator(input);

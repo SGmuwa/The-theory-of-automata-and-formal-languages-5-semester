@@ -15,8 +15,8 @@ void main()
 	minctest_run("lab2", lab2_runTests);
 	minctest_run("stringArrayList", stringArrayList_runTests);
 	minctest_run("lab3", lab3_runTests);
-	minctest_run("lab4", lab4_runTests);
 	minctest_run("lab2 and lab3", lab2lab3_runTests);
+	minctest_run("lab4", lab4_runTests);
 	minctest_run("lab5", lab5_runTests);
 	minctest_run("lab4 and lab5", lab4lab5_runTests);
 	minctest_results();

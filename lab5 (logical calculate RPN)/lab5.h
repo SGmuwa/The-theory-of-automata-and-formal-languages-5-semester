@@ -85,17 +85,17 @@ enum lab5_err lab5_runFloat(long double * output, string_t input, string_t separ
 	{
 		string_t current;
 		ArrayList_get(arrayInput, i, &current);
-		string_t operand = lab2_searchOperand(current, '\0');
+		string_t operand = lab4_searchOperand(current, '\0');
 		string_t number = lab2_search10Number(current);
 		string_t operator = lab4_searchOperator(current);
 		if (operator.length == current.length)
 		{
-			if (operator.length != 1)
+			if (operator.length == 0 || operator.length > 2)
 				LAB5_RETURN(LAB5_ERR_NOT_SUPPORT_OPERATOR);
 			if (lab4_isPrefixOperator(operator) != operator.length)
-				Stack_pop(&stk, pop + 1);
+				Stack_pop(&stk, pop + 1); // Если не является префиксным оператором.
 			Stack_pop(&stk, pop);
-#define LAB5_MAKE(STR, MAKE) else if((operator.length == 1 && STR[0] == operator.first[0]) || (operator.length == 2 && STR[0] == operator.first[0] && STR[1] == operator.first[1])) push = MAKE
+#define LAB5_MAKE(STR, MAKE) else if((operator.length == 1 && STR[0] == operator.first[0] && STR[1] == '\0') || (operator.length == 2 && STR[0] == operator.first[0] && STR[1] == operator.first[1] && STR[2] == '\0')) push = MAKE
 			if (0);
 			LAB5_MAKE("||", pop[0] || pop[1]);
 			LAB5_MAKE("&&", pop[0] && pop[1]);
