@@ -41,161 +41,34 @@
 #include <string.h>
 #include "..\byte_t\byte_t.h"
 #include "..\lab1\lab1.h"
+#include "..\lab4 (logical expression to RPN)\lab4.h"
 #include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
 #include <limits.h>
 
-/*
-Ищет префиксный оператор в входной строке.
-Найдёт префиксный оператор только в том случае, если строка начинается с префиксного оператора.
-string_t input - строка, в которой надо найти префиксный оператор.
-Возвращает: количество символов, занимаемым префиксным оператором.
-*/
-size_t lab6_isPrefixOperator(string_t input)
+enum lab6_logicaloperator
 {
-	return input.length > 0
-		? input.first != NULL && (*input.first == '~' || *input.first == '!')
-		: 0;
-}
-
-
-// Определяет, может ли входная строка быть именем функции.
-// string_t input - Строка поиска.
-// Возвращает: 0 - если не содержится префиксная функция. Иначе - количество занимаемых символов функцией.
-size_t lab6_isFunctionName(string_t input)
-{
-	char * i = input.first;
-	if (lab2_is10Number(*i))
-		return 0; // Функция не может начинаться с цифры.
-	for (; i < string_getEnd(input); i++)
-	{
-		if (lab2_is10Number(*i) || lab2_isLetter(*i))
-			continue;
-		else
-			return i - input.first;
-	}
-	return i - input.first;
-}
+	LAB6_LOGICALOPERATOR_NONE = 0,
+	LAB6_LOGICALOPERATOR_IF,
+	LAB6_LOGICALOPERATOR_ELSE
+};
 
 /*
-Находит начиная с первого символа оператор.
+Ищет логический оператор в входной строке.
+Возвращает найденный оператор.
 */
-string_t lab6_searchOperator(string_t input)
+enum lab6_logicaloperator lab6_searchLogicaloperator(string_t input)
 {
-	if (input.first == NULL)
-		return (string_t) { NULL, 0 };
-	char a = *input.first;
-	char b = input.length >= 2 ? input.first[1] : '\0';
-	size_t lenRet = 0;
-#define LAB6_MAKE(A) if(A[0] == a && ((A[1] == '\0' && lenRet <= 1) || A[1] == b)) { lenRet = A[1] == '\0' ? 1 : 2; if(lenRet == 2) return (string_t) {input.first, lenRet };}
-	LAB6_MAKE("||");
-	LAB6_MAKE("&&");
-	LAB6_MAKE("|");
-	LAB6_MAKE("^^");
-	LAB6_MAKE("&");
-	LAB6_MAKE("==");
-	LAB6_MAKE("!=");
-	LAB6_MAKE("<=");
-	LAB6_MAKE(">=");
-	LAB6_MAKE(">");
-	LAB6_MAKE("<");
-	LAB6_MAKE(">>");
-	LAB6_MAKE("<<");
-	LAB6_MAKE("+");
-	LAB6_MAKE("-");
-	LAB6_MAKE("*");
-	LAB6_MAKE("/");
-	LAB6_MAKE("%");
-	LAB6_MAKE("^");
-	LAB6_MAKE("~");
-	LAB6_MAKE("!");
-	LAB6_MAKE("=");
-	return (string_t) { input.first, lenRet };
+	if (input.first == NULL || input.length < 2)
+		return LAB6_LOGICALOPERATOR_NONE;
+#define LAB6_MAKE(STR, CODE) else if(sizeof(STR) - 1 >= input.length && string_equal(STRING_STATIC0(STR), (string_t){input.first, sizeof(STR) - 1})) return CODE
+	if (0);
+	LAB6_MAKE("if", LAB6_LOGICALOPERATOR_IF);
+	LAB6_MAKE("else", LAB6_LOGICALOPERATOR_ELSE);
+	else return LAB6_LOGICALOPERATOR_NONE;
 #undef LAB6_MAKE
 }
 
-
-string_t lab6_searchOperand(string_t input, char previous)
-{
-	if (input.first == NULL)
-		return (string_t) { NULL, 0u };
-	char * ch = input.first - 1;
-	if (previous == '\0' || lab2_isParenthesOpen(previous) || lab6_searchOperator((string_t) { (char[]) { previous }, 0u }).length > 0)
-	{
-		if (ch[1] == '-') // Бинарный минус.
-			ch++;
-	}
-	char * first = ch + 1;
-	while (++ch < string_getEnd(input))
-	{
-		if (!lab2_is10Number(*ch)
-			&& !lab2_isLetter(*ch)
-			&& *ch != '_'
-			&& (first == ch || *ch != '.'))
-		{
-			if (*ch == '.')
-				ch--;
-			return input.first[0] == '-' && (size_t)ch - (size_t)input.first <= 1
-				? (string_t) { input.first, 0 } : (string_t) { input.first, ch - input.first };
-		}
-	}
-	return input;
-}
-
-
-/*
-Получает приоритет оператора.
-*/
-unsigned int lab6_getOperatorPriority(string_t input)
-{
-	if (input.length == 0)
-		return 0;
-	char a = input.first[0];
-	char b = input.length >= 2 ? input.first[1] : '\0';
-	unsigned int i = 1;
-	unsigned int ret = 0;
-	size_t lenRet = 0;
-#define LAB6_MAKE(A) if(A[0] == a && ((A[1] == '\0' && lenRet <= 1) || A[1] == b)) {ret = i; lenRet = A[1] == '\0' ? 1 : 2; if(lenRet == 2) return ret; }
-	LAB6_MAKE("="); // Самый низкий приоритет
-	i++;
-	LAB6_MAKE("||");
-	i++;
-	LAB6_MAKE("&&");
-	i++;
-	LAB6_MAKE("|");
-	i++;
-	LAB6_MAKE("^^"); // XOR
-	i++;
-	LAB6_MAKE("&");
-	i++;
-	LAB6_MAKE("==");
-	LAB6_MAKE("!=");
-	i++;
-	LAB6_MAKE(">");
-	LAB6_MAKE(">=");
-	LAB6_MAKE("<");
-	LAB6_MAKE("<=");
-	i++;
-	LAB6_MAKE(">>");
-	LAB6_MAKE("<<");
-	i++;
-	LAB6_MAKE("+");
-	LAB6_MAKE("-");
-	i++;
-	LAB6_MAKE("*");
-	LAB6_MAKE("/");
-	LAB6_MAKE("%"); // Остаток от деления
-	i++;
-	LAB6_MAKE("^"); // Возведение в степень.
-	i++;
-	LAB6_MAKE("~"); // Битовое не
-	LAB6_MAKE("!"); // Логическое не
-	i++;
-	return ret;
-#undef LAB6_MAKE2
-}
-
-
-// Создать обратную польскую запись для арифметической формулы.
+// Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
 // const string_t output - указатель, куда поместить результат.
 //							Память должна быть уже выделена и должно
 //							быть указано число доступных символов
@@ -227,17 +100,19 @@ int lab6(string_t * output, string_t input)
 	{
 		Stack_free(stk);
 		free(oldIn);
+		return 5;
 	}
 	char previous = '\0';
+#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
-		string_t operand = lab6_searchOperand(input, previous);
+		string_t operand = lab4_searchOperand(input, previous);
 		size_t countOfFun = lab2_isFunction(input);
-		size_t countOfPrefixOperator = lab6_isPrefixOperator(input);
-		string_t operator = lab6_searchOperator(input);
+		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
+		string_t operator = lab4_searchOperator(input);
 		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length || countOfPrefixOperator) && operator.length == 0) // Поддержка мнимого умножения
 		{
-			operand = (string_t){ NULL, 0 };
+			operand = (string_t) { NULL, 0 };
 			countOfFun = 0;
 			countOfPrefixOperator = 0;
 			operator = (string_t) { "*", 1 };
@@ -246,47 +121,29 @@ int lab6(string_t * output, string_t input)
 		}
 		if (countOfPrefixOperator && countOfPrefixOperator >= operator.length)
 		{ // Префиксый оператор (кроме минуса).
-			Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator }));
+			LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator })), 5);
 			input.first += countOfPrefixOperator;
 			input.length -= countOfPrefixOperator;
 		}
 		else if (countOfFun)
 		{ // Найдена функция
-			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
+			LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 5);
 			input.first += countOfFun;
 			input.length -= countOfFun;
 		}
 		else if (operand.length > 0)
 		{ // Это оказалось десятичное число.
-			if (ArrayList_addLast(outList, &operand))
-			{
-				Stack_free(stk);
-				free(oldIn);
-				ArrayList_free(outList);
-				return 5;
-			}
+			LAB6_SAFE(ArrayList_addLast(outList, &operand), 5);
 			input.length -= operand.length;
 			input.first += operand.length;
 			// Поддержка префиксных операторов:
 			string_t stk_elm = (string_t) { NULL, 0 };
 			if (Stack_get(stk, &stk_elm) == 0)
 			{
-				if (lab6_isPrefixOperator(stk_elm) == stk_elm.length)
+				if (lab4_isPrefixOperator(stk_elm) == stk_elm.length)
 				{
-					if (ArrayList_addLast(outList, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
-					if (Stack_pop(&stk, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
+					LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 5);
+					LAB6_SAFE(Stack_pop(&stk, &stk_elm), 5);
 				}
 			}
 		}
@@ -294,85 +151,53 @@ int lab6(string_t * output, string_t input)
 		{ // Это оператор.
 			string_t stk_elm = (string_t) { NULL, 0 };
 			if ((Stack_count(stk) == 0) || (Stack_get(stk, &stk_elm) == 0 && lab2_isParenthesOpen(*stk_elm.first) && stk_elm.length == 1)
-				|| lab6_getOperatorPriority(operator) > lab6_getOperatorPriority(stk_elm))
+				|| lab4_getOperatorPriority(operator) > lab4_getOperatorPriority(stk_elm))
 			{
-				if (Stack_push(&stk, &operator))
-				{
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 5;
-				}
+				LAB6_SAFE(Stack_push(&stk, &operator), 5);
 			}
 			else
 			{
-				while ((lab2_isLeftFirstPriority(operator) ? lab6_getOperatorPriority(operator) : ~lab6_getOperatorPriority(operator)) <= lab6_getOperatorPriority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
+				while ((lab2_isLeftFirstPriority(operator) ? lab4_getOperatorPriority(operator) : ~lab4_getOperatorPriority(operator)) <= lab4_getOperatorPriority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
-					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
+					LAB6_SAFE(ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm), 5);
 					if (Stack_get(stk, &stk_elm))
 						break;
 				}
-				if (Stack_push(&stk, &operator))
-				{
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 5;
-				}
+				LAB6_SAFE(Stack_push(&stk, &operator), 5);
 			}
 			input.first += operator.length;
 			input.length -= operator.length;
 		}
 		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
-			Stack_push(&stk, &((string_t) { input.first, 1 }));
+			LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, 1 })), 5);
 			input.first += 1;
 			input.length -= 1;
 		}
 		else if (lab2_isParenthesClose(*input.first))
 		{ // Найдена закрытая скобка. Что делать?
 			string_t stk_elm;
-			while (1)
+			while (true)
 			{
-				if (Stack_pop(&stk, &stk_elm))
-				{ // error
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 2;
-				}
+				LAB6_SAFE(Stack_pop(&stk, &stk_elm), 2);
 				if (lab2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
 					input.first++;
 					input.length--;
 					if (Stack_get(stk, &stk_elm))
 						break;
-					if (lab6_isFunctionName(stk_elm) == stk_elm.length)
+					if (lab4_isFunctionName(stk_elm) == stk_elm.length)
 					{
-						if (ArrayList_addLast(outList, &stk_elm))
+						if (string_equal(STRING_STATIC0("if"), stk_elm))
 						{
-							Stack_free(stk); free(oldIn); ArrayList_free(outList);
-							return 3;
+							LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
 						}
-						if (Stack_pop(&stk, &stk_elm))
-						{
-							Stack_free(stk); free(oldIn); ArrayList_free(outList);
-							return 3;
-						}
+						LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+						LAB6_SAFE(Stack_pop(&stk, &stk_elm), 3);
 					}
 					break;
 				}
-				if (ArrayList_addLast(outList, &stk_elm))
-				{
-					Stack_free(stk); free(oldIn); ArrayList_free(outList);
-					return 3;
-				}
+				LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 			}
 		}
 		else if (lab2_isSeparator(*input.first))
@@ -382,28 +207,16 @@ int lab6(string_t * output, string_t input)
 		}
 		else
 		{
-			Stack_free(stk);
-			free(oldIn);
-			ArrayList_free(outList);
-			return 2;
+			LAB6_SAFE(true, 2);
 		}
 		previous = lab2_isParenthesClose(previous) ? '*' : *(input.first - 1);
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
 	{
-		if (ArrayList_addLast(outList, &stk_elm))
-		{
-			Stack_free(stk);
-			free(oldIn);
-			ArrayList_free(outList);
-			return 3;
-		}
-
+		LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 	}
-	int lab2_putListToString_error = lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' }));
-	Stack_free(stk);
-	free(oldIn);
-	ArrayList_free(outList);
-	return lab2_putListToString_error == 0 ? 0 : 5;
+	LAB6_SAFE(lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' })), 1);
+	LAB6_SAFE(true, 0);
+#undef LAB6_SAFE
 }

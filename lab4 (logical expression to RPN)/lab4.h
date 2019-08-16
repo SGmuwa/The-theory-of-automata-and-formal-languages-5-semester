@@ -226,8 +226,10 @@ int lab4(string_t * output, string_t input)
 	{
 		Stack_free(stk);
 		free(oldIn);
+		return 5;
 	}
 	char previous = '\0';
+#define LAB4_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab4_searchOperand(input, previous);
@@ -245,25 +247,19 @@ int lab4(string_t * output, string_t input)
 		}
 		if (countOfPrefixOperator && countOfPrefixOperator >= operator.length)
 		{ // Префиксый оператор (кроме минуса).
-			Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator }));
+			LAB4_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfPrefixOperator })), 5);
 			input.first += countOfPrefixOperator;
 			input.length -= countOfPrefixOperator;
 		}
 		else if (countOfFun)
 		{ // Найдена функция
-			Stack_push(&stk, &((string_t) { input.first, countOfFun }));
+			LAB4_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 5);
 			input.first += countOfFun;
 			input.length -= countOfFun;
 		}
 		else if (operand.length > 0)
 		{ // Это оказалось десятичное число.
-			if (ArrayList_addLast(outList, &operand))
-			{
-				Stack_free(stk);
-				free(oldIn);
-				ArrayList_free(outList);
-				return 5;
-			}
+			LAB4_SAFE(ArrayList_addLast(outList, &operand), 5);
 			input.length -= operand.length;
 			input.first += operand.length;
 			// Поддержка префиксных операторов:
@@ -272,20 +268,8 @@ int lab4(string_t * output, string_t input)
 			{
 				if (lab4_isPrefixOperator(stk_elm) == stk_elm.length)
 				{
-					if (ArrayList_addLast(outList, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
-					if (Stack_pop(&stk, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
+					LAB4_SAFE(ArrayList_addLast(outList, &stk_elm), 5);
+					LAB4_SAFE(Stack_pop(&stk, &stk_elm), 5);
 				}
 			}
 		}
@@ -295,57 +279,33 @@ int lab4(string_t * output, string_t input)
 			if ((Stack_count(stk) == 0) || (Stack_get(stk, &stk_elm) == 0 && lab2_isParenthesOpen(*stk_elm.first) && stk_elm.length == 1)
 				|| lab4_getOperatorPriority(operator) > lab4_getOperatorPriority(stk_elm))
 			{
-				if (Stack_push(&stk, &operator))
-				{
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 5;
-				}
+				LAB4_SAFE(Stack_push(&stk, &operator), 5);
 			}
 			else
 			{
 				while ((lab2_isLeftFirstPriority(operator) ? lab4_getOperatorPriority(operator) : ~lab4_getOperatorPriority(operator)) <= lab4_getOperatorPriority(stk_elm) && !lab2_isParenthesOpen(*stk_elm.first))
 				{
-					if (ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm))
-					{
-						Stack_free(stk);
-						free(oldIn);
-						ArrayList_free(outList);
-						return 5;
-					}
+					LAB4_SAFE(ArrayList_addLast(outList, &stk_elm) || Stack_pop(&stk, &stk_elm), 5);
 					if (Stack_get(stk, &stk_elm))
 						break;
 				}
-				if (Stack_push(&stk, &operator))
-				{
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 5;
-				}
+				LAB4_SAFE(Stack_push(&stk, &operator), 5);
 			}
 			input.first += operator.length;
 			input.length -= operator.length;
 		}
 		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
-			Stack_push(&stk, &((string_t) { input.first, 1 }));
+			LAB4_SAFE(Stack_push(&stk, &((string_t) { input.first, 1 })), 5);
 			input.first += 1;
 			input.length -= 1;
 		}
 		else if (lab2_isParenthesClose(*input.first))
 		{ // Найдена закрытая скобка. Что делать?
 			string_t stk_elm;
-			while (1)
+			while (true)
 			{
-				if (Stack_pop(&stk, &stk_elm))
-				{ // error
-					Stack_free(stk);
-					free(oldIn);
-					ArrayList_free(outList);
-					return 2;
-				}
+				LAB4_SAFE(Stack_pop(&stk, &stk_elm), 2);
 				if (lab2_isParenthesOpen(*stk_elm.first))
 				{ // find end.
 					input.first++;
@@ -354,24 +314,12 @@ int lab4(string_t * output, string_t input)
 						break;
 					if (lab4_isFunctionName(stk_elm) == stk_elm.length)
 					{
-						if (ArrayList_addLast(outList, &stk_elm))
-						{
-							Stack_free(stk); free(oldIn); ArrayList_free(outList);
-							return 3;
-						}
-						if (Stack_pop(&stk, &stk_elm))
-						{
-							Stack_free(stk); free(oldIn); ArrayList_free(outList);
-							return 3;
-						}
+						LAB4_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+						LAB4_SAFE(Stack_pop(&stk, &stk_elm), 3);
 					}
 					break;
 				}
-				if (ArrayList_addLast(outList, &stk_elm))
-				{
-					Stack_free(stk); free(oldIn); ArrayList_free(outList);
-					return 3;
-				}
+				LAB4_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 			}
 		}
 		else if (lab2_isSeparator(*input.first))
@@ -381,28 +329,16 @@ int lab4(string_t * output, string_t input)
 		}
 		else
 		{
-			Stack_free(stk);
-			free(oldIn);
-			ArrayList_free(outList);
-			return 2;
+			LAB4_SAFE(true, 2);
 		}
 		previous = lab2_isParenthesClose(previous) ? '*' : *(input.first - 1);
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
 	{
-		if (ArrayList_addLast(outList, &stk_elm))
-		{
-			Stack_free(stk);
-			free(oldIn);
-			ArrayList_free(outList);
-			return 3;
-		}
-
+		LAB4_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 	}
-	int lab2_putListToString_error = lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' }));
-	Stack_free(stk);
-	free(oldIn);
-	ArrayList_free(outList);
-	return lab2_putListToString_error == 0 ? 0 : 5;
+	LAB4_SAFE(lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' })), 1);
+	LAB4_SAFE(true, 0);
+#undef LAB4_SAFE
 }
