@@ -57,8 +57,8 @@ LAB6_TEST_MAKE_lab6(37, "1.0 2.00 5.1 3.2 * + 2.3 2.4 2.5 ^ ^ + anywhere s.a *",
 LAB6_TEST_MAKE_lab6(38, "a !", "!a", 0);
 LAB6_TEST_MAKE_lab6(39, "1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a *", "!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a", 0);
 LAB6_TEST_MAKE_lab6(40, "2 sin 2 *", "sin(2)2", 0);
-LAB6_TEST_MAKE_lab6(41, "a ! if", "if(!a)", 0);
-LAB6_TEST_MAKE_lab6(42, "a ! if ~", "~if(!a)", 0);
+LAB6_TEST_MAKE_lab6(41, "a ! if_", "if_(!a)", 0);
+LAB6_TEST_MAKE_lab6(42, "a ! if_ ~", "~if_(!a)", 0);
 LAB6_TEST_MAKE_lab6(43, "a ! b any", "any(!a, b)", 0);
 LAB6_TEST_MAKE_lab6(44, "a ! b", "(!a, b)", 0);
 LAB6_TEST_MAKE_lab6(45, "a b + !", "!(a + b)", 0);

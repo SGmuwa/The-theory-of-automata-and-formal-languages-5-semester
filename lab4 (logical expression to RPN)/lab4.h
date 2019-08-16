@@ -67,7 +67,7 @@ size_t lab4_isFunctionName(string_t input)
 		return 0; // Функция не может начинаться с цифры.
 	for (; i < string_getEnd(input); i++)
 	{
-		if (lab2_is10Number(*i) || lab2_isLetter(*i))
+		if (lab2_is10Number(*i) || lab2_isLetter(*i) || *i == '_')
 			continue;
 		else
 			return i - input.first;
