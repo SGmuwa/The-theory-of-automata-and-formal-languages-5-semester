@@ -45,6 +45,9 @@
 #include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
 #include <limits.h>
 
+// Размер листа для буфера вывода.
+#define LAB6_SIZEBUFFERLIST 22u
+
 enum lab6_logicaloperator
 {
 	LAB6_LOGICALOPERATOR_NONE = 0,
@@ -66,6 +69,46 @@ enum lab6_logicaloperator lab6_searchLogicaloperator(string_t input)
 	LAB6_MAKE("else", LAB6_LOGICALOPERATOR_ELSE);
 	else return LAB6_LOGICALOPERATOR_NONE;
 #undef LAB6_MAKE
+}
+
+/*
+Ищет последний знак вопроса и заменяет его на последний индекс.
+ArrayList<string_t> list - лист, в котором идёт поиск и замена.
+ArrayList<char[LAB6_SIZEBUFFERLIST]> buffer - лист, в котором 
+Возвращает: код ошибки.
+0 - Адрес успешно назначен.
+1 - Обращение к листу происходит с ошибкой.
+2 - Значение LAB6_SIZEBUFFERLIST слишком мало. Вообще, скорее программа аварийно завершится, чем данная функция вернёт 2.
+3 - Не получилось добавить данных в ArrayList buffer.
+4 - Ошибка изменения данных в list.
+5 - Метка вставки адреса не найдена.
+*/
+int lab6_putLastAddress(ArrayList list, ArrayList buffer)
+{
+#define LAB6_SAFE(ACT, CODE) if(ACT) return CODE
+	string_t b;
+	char toWrite[LAB6_SIZEBUFFERLIST];
+	for (size_t i = list->length - 1; i != SIZE_MAX; i--)
+	{
+		LAB6_SAFE(ArrayList_get(list, i, &b), 1);
+		if (string_equal(STRING_STATIC("?"), b))
+		{
+			b.length =
+#ifdef _MSC_VER
+				sprintf_s(toWrite, sizeof(toWrite) / sizeof(char), "%zu", list->length);
+#else
+				sprintf(toWrite, "%zu", list->length);
+#endif // _MSC_VER
+			if (b.length > LAB6_SIZEBUFFERLIST)
+				return 2;
+			LAB6_SAFE(ArrayList_addLast(buffer, toWrite), 3);
+			b.first = toWrite;
+			LAB6_SAFE(ArrayList_set(list, i, &b), 4);
+			return 0;
+		}
+	}
+	return 5;
+#undef LAB6_SAFE
 }
 
 // Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
@@ -95,6 +138,7 @@ int lab6(string_t * output, string_t input)
 		Stack_free(stk);
 		return 5;
 	}
+	// Лист, в который складываются элементы для output.
 	ArrayList outList = ArrayList_malloc(sizeof(string_t));
 	if (outList == NULL)
 	{
@@ -102,8 +146,17 @@ int lab6(string_t * output, string_t input)
 		free(oldIn);
 		return 5;
 	}
+	// Лист, куда помещаются такие символы, которые надо поместить в outList, но которые отсутствуют в input.
+	ArrayList bufferList = ArrayList_malloc(sizeof(char[LAB6_SIZEBUFFERLIST]));
+	if (bufferList == NULL)
+	{
+		Stack_free(stk);
+		free(oldIn);
+		ArrayList_free(outList);
+		return 5;
+	}
 	char previous = '\0';
-#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); return CODE; }
+#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); ArrayList_free(bufferList); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab4_searchOperand(input, previous);
@@ -181,24 +234,26 @@ int lab6(string_t * output, string_t input)
 			{
 				LAB6_SAFE(Stack_pop(&stk, &stk_elm), 2);
 				if (lab2_isParenthesOpen(*stk_elm.first))
-				{ // find end.
-					input.first++;
-					input.length--;
-					if (Stack_get(stk, &stk_elm))
-						break;
-					if (lab4_isFunctionName(stk_elm) == stk_elm.length)
-					{
-						if (string_equal(STRING_STATIC0("if"), stk_elm))
-						{
-							LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
-						}
-						LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
-						LAB6_SAFE(Stack_pop(&stk, &stk_elm), 3);
-					}
-					break;
-				}
+					break; // find end.
 				LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 			}
+			if (Stack_get(stk, &stk_elm))
+				break;
+			if (lab4_isFunctionName(stk_elm) == stk_elm.length)
+			{
+				if (string_equal(STRING_STATIC0("if"), stk_elm))
+				{
+					LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
+				}
+				LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+				LAB6_SAFE(Stack_pop(&stk, &stk_elm), 3);
+			}
+			else if (*input.first == '}')
+			{
+				LAB6_SAFE(lab6_putLastAddress(outList, bufferList), 4);
+			}
+			input.first++;
+			input.length--;
 		}
 		else if (lab2_isSeparator(*input.first))
 		{
