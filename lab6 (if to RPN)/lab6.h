@@ -91,7 +91,7 @@ int lab6_putLastAddress(ArrayList list, ArrayList buffer)
 	for (size_t i = list->length - 1; i != SIZE_MAX; i--)
 	{
 		LAB6_SAFE(ArrayList_get(list, i, &b), 1);
-		if (string_equal(STRING_STATIC("?"), b))
+		if (string_equal(STRING_STATIC0("?"), b))
 		{
 			b.length =
 #ifdef _MSC_VER
@@ -102,7 +102,7 @@ int lab6_putLastAddress(ArrayList list, ArrayList buffer)
 			if (b.length > LAB6_SIZEBUFFERLIST)
 				return 2;
 			LAB6_SAFE(ArrayList_addLast(buffer, toWrite), 3);
-			b.first = toWrite;
+			b.
 			LAB6_SAFE(ArrayList_set(list, i, &b), 4);
 			return 0;
 		}
@@ -237,20 +237,21 @@ int lab6(string_t * output, string_t input)
 					break; // find end.
 				LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 			}
-			if (Stack_get(stk, &stk_elm))
-				break;
-			if (lab4_isFunctionName(stk_elm) == stk_elm.length)
-			{
-				if (string_equal(STRING_STATIC0("if"), stk_elm))
-				{
-					LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
-				}
-				LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
-				LAB6_SAFE(Stack_pop(&stk, &stk_elm), 3);
-			}
-			else if (*input.first == '}')
+			if (*input.first == '}')
 			{
 				LAB6_SAFE(lab6_putLastAddress(outList, bufferList), 4);
+			}
+			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
+			{
+				if (lab4_isFunctionName(stk_elm) == stk_elm.length)
+				{
+					if (string_equal(STRING_STATIC0("if"), stk_elm))
+					{
+						LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
+					}
+					LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+					LAB6_SAFE(Stack_pop(&stk, &stk_elm), 3);
+				}
 			}
 			input.first++;
 			input.length--;
@@ -271,7 +272,7 @@ int lab6(string_t * output, string_t input)
 	{
 		LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 	}
-	LAB6_SAFE(lab2_putListToString(output, outList, STRING_STATIC((char[]) { ' ' })), 1);
+	LAB6_SAFE(lab2_putListToString(output, outList, STRING_STATIC0(" ")), 1);
 	LAB6_SAFE(true, 0);
 #undef LAB6_SAFE
 }
