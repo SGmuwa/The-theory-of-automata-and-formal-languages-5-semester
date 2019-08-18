@@ -77,6 +77,18 @@ LAB6_TEST_MAKE_lab6(56, "true 6 if a 3 =", "if(true) {a = 3}", 0); // Перех
 LAB6_TEST_MAKE_lab6(57, "false 8 if a 3 = 11 goto b 4 = c 5.0 =", "if(false) {a = 3} else {b = 4} c = 5.0", 0);
 LAB6_TEST_MAKE_lab6(58, "true 4 if a", "if(true) {a}", 0); // Переход по лжи!
 LAB6_TEST_MAKE_lab6(59, "s 6 if A 7 goto B C", "if(s) {A} else {B} C", 0);
+LAB6_TEST_MAKE_lab6(60, "a 2 = now a % 0 == 15 if b 1 = 18 goto b 2 = b print",
+	/*                   0 1 2 3   4 5 6 7  8  9  10111213 14   1516171819    */
+	"a = 2;             \n"\
+	"if(now() % a == 0) \n"\
+	"{                  \n"\
+	"    b = 1;         \n"\
+	"}                  \n"\
+	"else               \n"\
+	"{                  \n"\
+	"    b = 2;         \n"\
+	"}                  \n"\
+	"print(b);"         , 0);
 
 
 
@@ -143,7 +155,8 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(56),
 		LAB6_TEST_GETNAME(57),
 		LAB6_TEST_GETNAME(58),
-		LAB6_TEST_GETNAME(59)
+		LAB6_TEST_GETNAME(59),
+		LAB6_TEST_GETNAME(60)
 	};
 
 	char prototypeName[] = "lab6_test ";

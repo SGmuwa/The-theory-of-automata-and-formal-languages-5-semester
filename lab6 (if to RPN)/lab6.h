@@ -145,6 +145,37 @@ int lab6_putLastAddress(ArrayList list, string_t * buffer)
 #undef LAB6_SAFE
 }
 
+int lab6_putElse(ArrayList outList, string_t * buffer)
+{
+#define LAB6_SAFE(ACT, CODE) if(ACT) return CODE
+	LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 1);
+	LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 2);
+	char s[LAB6_SIZEBUFFER];  string_t searchAddress = {s, 
+#ifdef _MSC_VER
+		sprintf_s(s, sizeof(s) / sizeof(char), "%zu", outList->length - 2)
+#else
+		sprintf(s, "%zu", outList->length - 1)
+#endif
+	};
+	for (size_t i = outList->length - 1; i != 0; i--)
+	{
+		string_t a, b;
+		LAB6_SAFE(ArrayList_get(outList, i, &a), 3);
+		if (string_equal(STRING_STATIC0("if"), a))
+		{
+			LAB6_SAFE(ArrayList_get(outList, i - 1, &b), 4);
+			if (string_equal(searchAddress, b))
+			{
+				LAB6_SAFE(lab6_putSizetToEndString(buffer, outList->length, &searchAddress), 5);
+				LAB6_SAFE(ArrayList_set(outList, i - 1, &searchAddress), 6);
+				return 0;
+			}
+		}
+	}
+	return 5;
+#undef LAB6_SAFE
+}
+
 // Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
 // const string_t output - указатель, куда поместить результат.
 //							Память должна быть уже выделена и должно
@@ -157,6 +188,7 @@ int lab6_putLastAddress(ArrayList list, string_t * buffer)
 //				3 - Неизвестная ошибка при перемещении из стека в выходную строку.
 //				4 - не верные входные данные.
 //				5 - Нехватка памяти.
+//				6 - Ошибка при работе с else.
 int lab6(string_t * output, string_t input)
 {
 	if (output == NULL || output->first == NULL || output->length == 0 || input.first == NULL || input.length == 0)
@@ -165,7 +197,7 @@ int lab6(string_t * output, string_t input)
 	struct StackMemory stk = Stack_malloc(output->length, sizeof(string_t));
 	if (stk.bottom == NULL)
 		return 5;
-	input = string_removeAllMalloc(input, STRING_STATIC(" "));
+	input = string_removeAllMalloc(input, STRING_STATIC("\n "));
 	char * oldIn = input.first;
 	if (input.first == NULL)
 	{
@@ -197,7 +229,7 @@ int lab6(string_t * output, string_t input)
 		size_t countOfFun = lab2_isFunction(input);
 		size_t countOfPrefixOperator = lab4_isPrefixOperator(input);
 		string_t operator = lab4_searchOperator(input);
-		if (lab2_isParenthesClose(previous) && (countOfFun || operand.length || countOfPrefixOperator) && operator.length == 0) // Поддержка мнимого умножения
+		if (previous == ')' && (countOfFun || operand.length || countOfPrefixOperator) && operator.length == 0) // Поддержка мнимого умножения
 		{
 			operand = (string_t) { NULL, 0 };
 			countOfFun = 0;
@@ -214,7 +246,14 @@ int lab6(string_t * output, string_t input)
 		}
 		else if (countOfFun)
 		{ // Найдена функция
-			LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 5);
+			if (string_equal(STRING_STATIC0("else"), operand))
+			{
+				LAB6_SAFE(lab6_putElse(outList, &bufferForOutput), 6);
+			}
+			else
+			{
+				LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 5);
+			}
 			input.first += countOfFun;
 			input.length -= countOfFun;
 		}
