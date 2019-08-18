@@ -103,7 +103,7 @@ LAB6_TEST_MAKE_lab6(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"}                                                            \n"\
 	"print(test);                                                   "
 	, 0);
-LAB6_TEST_MAKE_lab6(63, (char*)NULL, "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 2);
+LAB6_TEST_MAKE_lab6(63, "3 iri3ri329ri [ [ o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
 
 
 
