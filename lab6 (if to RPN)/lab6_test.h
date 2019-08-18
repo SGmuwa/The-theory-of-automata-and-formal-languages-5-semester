@@ -89,6 +89,20 @@ LAB6_TEST_MAKE_lab6(60, "a 2 = now a % 0 == 15 if b 1 = 18 goto b 2 = b print",
 	"    b = 2;         \n"\
 	"}                  \n"\
 	"print(b);"         , 0);
+LAB6_TEST_MAKE_lab6(61, "s 6 if A 7 goto B C", "if(s) {A;} else {B;} C;", 0);
+LAB6_TEST_MAKE_lab6(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print",
+	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728 29   30   313233   34*/
+	"test = 0;                                                    \n"\
+	"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n"\
+	"{                                                            \n"\
+	"    test = 1;                                                \n"\
+	"}                                                            \n"\
+	"else                                                         \n"\
+	"{                                                            \n"\
+	"    test = 2;                                                \n"\
+	"}                                                            \n"\
+	"print(test);                                                   "
+	, 0);
 
 
 
@@ -156,7 +170,9 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(57),
 		LAB6_TEST_GETNAME(58),
 		LAB6_TEST_GETNAME(59),
-		LAB6_TEST_GETNAME(60)
+		LAB6_TEST_GETNAME(60),
+		LAB6_TEST_GETNAME(61),
+		LAB6_TEST_GETNAME(62)
 	};
 
 	char prototypeName[] = "lab6_test ";

@@ -331,6 +331,22 @@ int lab6(string_t * output, string_t input)
 		}
 		else if (lab2_isSeparator(*input.first))
 		{
+			if (*input.first == ';')
+			{
+				string_t stk_elm = { NULL, 0u };
+				while (true)
+				{
+					if (Stack_pop(&stk, &stk_elm))
+						break;
+					if (lab2_isParenthesOpen(*stk_elm.first))
+						break; // find end.
+					LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+				}
+				if (stk_elm.first != NULL && lab2_isParenthesOpen(*stk_elm.first))
+				{
+					LAB6_SAFE(Stack_push(&stk, &stk_elm), 5);
+				}
+			}
 			input.first++;
 			input.length--;
 		}
@@ -338,7 +354,7 @@ int lab6(string_t * output, string_t input)
 		{
 			LAB6_SAFE(true, 2);
 		}
-		previous = lab2_isParenthesClose(previous) ? '*' : *(input.first - 1);
+		previous = previous == ')' ? '*' : *(input.first - 1);
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
