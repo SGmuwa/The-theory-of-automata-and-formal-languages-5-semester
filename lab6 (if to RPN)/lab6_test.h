@@ -8,8 +8,9 @@
 {\
 	string_t out = string_malloc(256);\
 	*out.first = 0;\
-	minctest_equal(ERROR, lab6(&out, STRING_STATIC(INPUT)));\
-	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
+	int err = lab6(&out, STRING_STATIC(INPUT));\
+	minctest_equal(ERROR, err);\
+	if(ERROR == 0 && err == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
 }
 
@@ -75,6 +76,7 @@ LAB6_TEST_MAKE_lab6(55, "-1 -2 <", "-1 < -2", 0);
 LAB6_TEST_MAKE_lab6(56, "true 6 if a 3 =", "if(true) {a = 3}", 0); // Переход по лжи!
 LAB6_TEST_MAKE_lab6(57, "false 8 if a 3 = 11 goto b 4 = c 5.0 =", "if(false) {a = 3} else {b = 4} c = 5.0", 0);
 LAB6_TEST_MAKE_lab6(58, "true 4 if a", "if(true) {a}", 0); // Переход по лжи!
+LAB6_TEST_MAKE_lab6(59, "s 6 if A 7 goto B C", "if(s) {A} else {B} C", 0);
 
 
 
@@ -140,7 +142,8 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(55),
 		LAB6_TEST_GETNAME(56),
 		LAB6_TEST_GETNAME(57),
-		LAB6_TEST_GETNAME(58)
+		LAB6_TEST_GETNAME(58),
+		LAB6_TEST_GETNAME(59)
 	};
 
 	char prototypeName[] = "lab6_test ";

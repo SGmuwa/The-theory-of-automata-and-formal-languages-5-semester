@@ -45,8 +45,13 @@
 #include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
 #include <limits.h>
 
+#if _WIN32 && !_WIN64
 // Размер листа для буфера вывода.
-#define LAB6_SIZEBUFFERLIST 22u
+#define LAB6_SIZEBUFFER (10u + 1u + 1u) /* 10 цифр, отрицательные, конец строки. */
+#else
+// Размер листа для буфера вывода.
+#define LAB6_SIZEBUFFER (20u + 1u + 1u)
+#endif _WIN32
 
 enum lab6_logicaloperator
 {
@@ -72,42 +77,71 @@ enum lab6_logicaloperator lab6_searchLogicaloperator(string_t input)
 }
 
 /*
+Вставляет в конец строки число put и уменьшает length в to.
+string_t * to - куда надо вставить число.
+size_t put - число, которое надо вставить.
+Возвращает: код ошибки.
+0 - Всё ок.
+1 - Указатель на строку-вставку или result нулевой.
+2 - Указатель на начало строки-вставки нулевой.
+3 - Недостаточный размер.
+4 - Копирование памяти произошло с ошибкой.
+*/
+int lab6_putSizetToEndString(string_t * to, size_t put, string_t * result)
+{
+	if (to == NULL || result == NULL)
+		return 1;
+	if (to->first == NULL)
+		return 2;
+	char toWrite[LAB6_SIZEBUFFER];
+	result->length =
+#ifdef _MSC_VER
+		sprintf_s(toWrite, sizeof(toWrite) / sizeof(char), "%zu", put);
+#else
+		sprintf(toWrite, "%zu", list->length);
+#endif // _MSC_VER
+	if (result->length > to->length)
+		return 3;
+	result->first = to->first + to->length - result->length;
+#ifdef _MSC_VER
+	if (memcpy_s(result->first, result->length, toWrite, result->length))
+		return 4;
+#else
+	memcpy(buffer->first + buffer->length - result->length, toWrite, result->length);
+#endif // _MSC_VER
+	to->length -= result->length;
+	return 0;
+}
+
+/*
 Ищет последний знак вопроса и заменяет его на последний индекс.
 ArrayList<string_t> list - лист, в котором идёт поиск и замена.
-ArrayList<char[LAB6_SIZEBUFFERLIST]> buffer - лист, в котором 
+ArrayList<char[LAB6_SIZEBUFFER]> buffer - лист, в котором 
 Возвращает: код ошибки.
 0 - Адрес успешно назначен.
 1 - Обращение к листу происходит с ошибкой.
-2 - Значение LAB6_SIZEBUFFERLIST слишком мало. Вообще, скорее программа аварийно завершится, чем данная функция вернёт 2.
-3 - Не получилось добавить данных в ArrayList buffer.
-4 - Ошибка изменения данных в list.
-5 - Метка вставки адреса не найдена.
+2 - Метка вставки адреса не найдена.
+3 - Указатель на строку-вставку нулевой.
+4 - Указатель на начало строки-вставки нулевой.
+5 - Недостаточный размер.
+6 - Копирование памяти произошло с ошибкой.
 */
-int lab6_putLastAddress(ArrayList list, ArrayList buffer)
+int lab6_putLastAddress(ArrayList list, string_t * buffer)
 {
 #define LAB6_SAFE(ACT, CODE) if(ACT) return CODE
-	string_t b;
-	char toWrite[LAB6_SIZEBUFFERLIST];
 	for (size_t i = list->length - 1; i != SIZE_MAX; i--)
 	{
+		string_t b;
 		LAB6_SAFE(ArrayList_get(list, i, &b), 1);
 		if (string_equal(STRING_STATIC0("?"), b))
 		{
-			b.length =
-#ifdef _MSC_VER
-				sprintf_s(toWrite, sizeof(toWrite) / sizeof(char), "%zu", list->length);
-#else
-				sprintf(toWrite, "%zu", list->length);
-#endif // _MSC_VER
-			if (b.length > LAB6_SIZEBUFFERLIST)
-				return 2;
-			LAB6_SAFE(ArrayList_addLast(buffer, toWrite), 3);
-			b.
-			LAB6_SAFE(ArrayList_set(list, i, &b), 4);
+			int err;
+			LAB6_SAFE(err = lab6_putSizetToEndString(buffer, list->length, &b), err + 2);
+			LAB6_SAFE(ArrayList_set(list, i, &b), 7);
 			return 0;
 		}
 	}
-	return 5;
+	return 2;
 #undef LAB6_SAFE
 }
 
@@ -146,9 +180,9 @@ int lab6(string_t * output, string_t input)
 		free(oldIn);
 		return 5;
 	}
-	// Лист, куда помещаются такие символы, которые надо поместить в outList, но которые отсутствуют в input.
-	ArrayList bufferList = ArrayList_malloc(sizeof(char[LAB6_SIZEBUFFERLIST]));
-	if (bufferList == NULL)
+	// Буфер, куда помещаются такие символы, которые надо поместить в outList, но которые отсутствуют в input.
+	string_t bufferForOutput = string_malloc(LAB6_SIZEBUFFER * input.length);
+	if (bufferForOutput.first == NULL)
 	{
 		Stack_free(stk);
 		free(oldIn);
@@ -156,7 +190,7 @@ int lab6(string_t * output, string_t input)
 		return 5;
 	}
 	char previous = '\0';
-#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); ArrayList_free(bufferList); return CODE; }
+#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); string_free(bufferForOutput); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab4_searchOperand(input, previous);
@@ -239,7 +273,7 @@ int lab6(string_t * output, string_t input)
 			}
 			if (*input.first == '}')
 			{
-				LAB6_SAFE(lab6_putLastAddress(outList, bufferList), 4);
+				LAB6_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 			}
 			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
 			{
