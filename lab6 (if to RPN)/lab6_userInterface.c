@@ -13,7 +13,7 @@ void lab6_interface(int argc, char * argv[])
 	string_t output = input;
 	if (input.first == NULL)
 		return;
-	input.length = UserInterface_GetStr("Введите арифметическую запись: ", input.first, mem);
+	input.length = UserInterface_GetStrln("Введите арифметическую запись: ", input.first, mem);
 	int err = lab6(&output, input); // error.
 	if (err != 0)
 		printf("ошибка %d.\n", err);

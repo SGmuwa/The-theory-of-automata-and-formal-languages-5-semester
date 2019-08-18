@@ -103,6 +103,7 @@ LAB6_TEST_MAKE_lab6(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"}                                                            \n"\
 	"print(test);                                                   "
 	, 0);
+LAB6_TEST_MAKE_lab6(63, (char*)NULL, "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 2);
 
 
 
@@ -172,7 +173,8 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(59),
 		LAB6_TEST_GETNAME(60),
 		LAB6_TEST_GETNAME(61),
-		LAB6_TEST_GETNAME(62)
+		LAB6_TEST_GETNAME(62),
+		LAB6_TEST_GETNAME(63)
 	};
 
 	char prototypeName[] = "lab6_test ";
