@@ -66,29 +66,6 @@
 #define LAB6_SIZEBUFFER (20u + 1u + 1u)
 #endif _WIN32
 
-enum lab6_logicaloperator
-{
-	LAB6_LOGICALOPERATOR_NONE = 0,
-	LAB6_LOGICALOPERATOR_IF,
-	LAB6_LOGICALOPERATOR_ELSE
-};
-
-/*
-Ищет логический оператор в входной строке.
-Возвращает найденный оператор.
-*/
-enum lab6_logicaloperator lab6_searchLogicaloperator(string_t input)
-{
-	if (input.first == NULL || input.length < 2)
-		return LAB6_LOGICALOPERATOR_NONE;
-#define LAB6_MAKE(STR, CODE) else if(sizeof(STR) - 1 >= input.length && string_equal(STRING_STATIC0(STR), (string_t){input.first, sizeof(STR) - 1})) return CODE
-	if (0);
-	LAB6_MAKE("if", LAB6_LOGICALOPERATOR_IF);
-	LAB6_MAKE("else", LAB6_LOGICALOPERATOR_ELSE);
-	else return LAB6_LOGICALOPERATOR_NONE;
-#undef LAB6_MAKE
-}
-
 /*
 Вставляет в конец строки число put и уменьшает length в to.
 string_t * to - куда надо вставить число.
