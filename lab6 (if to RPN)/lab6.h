@@ -66,6 +66,12 @@
 #define LAB6_SIZEBUFFER (20u + 1u + 1u)
 #endif _WIN32
 
+typedef struct lab6_parenthesInfo
+{
+	char c; // character.
+	size_t i; // index.
+} lab6_parenthesInfo;
+
 /*
 Вставляет в конец строки число put и уменьшает length в to.
 string_t * to - куда надо вставить число.
@@ -135,7 +141,7 @@ int lab6_putLastAddress(ArrayList list, string_t * buffer)
 #undef LAB6_SAFE
 }
 
-int lab6_putElse(ArrayList outList, string_t * buffer)
+int lab6_putElse(ArrayList outList, string_t * buffer, ArrayList parenthesInfo)
 {
 #define LAB6_SAFE(ACT, CODE) if(ACT) return CODE
 	LAB6_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 1);
@@ -147,22 +153,28 @@ int lab6_putElse(ArrayList outList, string_t * buffer)
 		sprintf(s, "%zu", outList->length - 1)
 #endif
 	};
-	for (size_t i = outList->length - 1; i != 0; i--)
+	if (parenthesInfo->length < 2)
+		return 3;
+	size_t count = 1;
+	size_t i = parenthesInfo->length - 2;
+	lab6_parenthesInfo b;
+	for (; i != SIZE_MAX && count != 0; i--)
 	{
-		string_t a, b;
-		LAB6_SAFE(ArrayList_get(outList, i, &a), 3);
-		if (string_equal(STRING_STATIC0("if"), a))
-		{
-			LAB6_SAFE(ArrayList_get(outList, i - 1, &b), 4);
-			if (string_equal(searchAddress, b))
-			{
-				LAB6_SAFE(lab6_putSizetToEndString(buffer, outList->length, &searchAddress), 5);
-				LAB6_SAFE(ArrayList_set(outList, i - 1, &searchAddress), 6);
-				return 0;
-			}
-		}
+		LAB6_SAFE(ArrayList_get(parenthesInfo, i, &b), 4);
+		if (b.c == '{')
+			count--;
+		else if (b.c == '}')
+			count++;
 	}
-	return 5;
+	if (count != 0)
+		return 5;
+	string_t strBuffer;
+	LAB6_SAFE(ArrayList_get(outList, b.i - 1, &strBuffer), 7);
+	if (!string_equal(STRING_STATIC0("if"), strBuffer))
+		return 8;
+	LAB6_SAFE(lab6_putSizetToEndString(buffer, outList->length, &searchAddress), 9);
+	LAB6_SAFE(ArrayList_set(outList, b.i - 2, &searchAddress), 10);
+	return 0;
 #undef LAB6_SAFE
 }
 
@@ -179,6 +191,7 @@ int lab6_putElse(ArrayList outList, string_t * buffer)
 //				4 - не верные входные данные.
 //				5 - Нехватка памяти.
 //				6 - Ошибка при работе с else.
+//              7 - Ошибка удаления скобок из выходного листа.
 int lab6(string_t * output, string_t input)
 {
 	if (output == NULL || output->first == NULL || output->length == 0 || input.first == NULL || input.length == 0)
@@ -187,7 +200,7 @@ int lab6(string_t * output, string_t input)
 	struct StackMemory stk = Stack_malloc(output->length, sizeof(string_t));
 	if (stk.bottom == NULL)
 		return 5;
-	input = string_removeAllMalloc(input, STRING_STATIC("\n "));
+	input = string_removeAllMalloc(input, STRING_STATIC0("\n \0\t"));
 	char * oldIn = input.first;
 	if (input.first == NULL)
 	{
@@ -211,8 +224,17 @@ int lab6(string_t * output, string_t input)
 		ArrayList_free(outList);
 		return 5;
 	}
+	ArrayList parenthes = ArrayList_malloc(sizeof(lab6_parenthesInfo));
+	if (parenthes == NULL)
+	{
+		Stack_free(stk);
+		free(oldIn);
+		ArrayList_free(outList);
+		string_free(bufferForOutput);
+		return 5;
+	}
 	char previous = '\0';
-#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); string_free(bufferForOutput); return CODE; }
+#define LAB6_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); string_free(bufferForOutput); ArrayList_free(parenthes); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab4_searchOperand(input, previous);
@@ -238,7 +260,7 @@ int lab6(string_t * output, string_t input)
 		{ // Найдена функция
 			if (string_equal(STRING_STATIC0("else"), operand))
 			{
-				LAB6_SAFE(lab6_putElse(outList, &bufferForOutput), 6);
+				LAB6_SAFE(lab6_putElse(outList, &bufferForOutput, parenthes), 6);
 			}
 			else
 			{
@@ -286,12 +308,14 @@ int lab6(string_t * output, string_t input)
 		}
 		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
+			LAB6_SAFE(ArrayList_addLast(parenthes, &(lab6_parenthesInfo) { *input.first, outList->length }), 6);
 			LAB6_SAFE(Stack_push(&stk, &((string_t) { input.first, 1 })), 5);
 			input.first += 1;
 			input.length -= 1;
 		}
 		else if (lab2_isParenthesClose(*input.first))
 		{ // Найдена закрытая скобка. Что делать?
+			LAB6_SAFE(ArrayList_addLast(parenthes, &(lab6_parenthesInfo) { *input.first, outList->length }), 6);
 			string_t stk_elm;
 			while (true)
 			{
@@ -350,6 +374,15 @@ int lab6(string_t * output, string_t input)
 	while (!Stack_pop(&stk, &stk_elm))
 	{
 		LAB6_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+	}
+	for (size_t i = outList->length - 1; i != SIZE_MAX; i--)
+	{
+		string_t b;
+		LAB6_SAFE(ArrayList_get(outList, i, &b), 7);
+		if (b.length == 1 && lab2_isParenthes(*b.first))
+		{
+			LAB6_SAFE(ArrayList_remove(outList, i), 7);
+		}
 	}
 	LAB6_SAFE(lab2_putListToString(output, outList, STRING_STATIC0(" ")), 1);
 	LAB6_SAFE(true, 0);

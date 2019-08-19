@@ -104,6 +104,100 @@ LAB6_TEST_MAKE_lab6(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"print(test);                                                   "
 	, 0);
 LAB6_TEST_MAKE_lab6(63, "3 iri3ri329ri [ [ o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
+LAB6_TEST_MAKE_lab6(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 55 if now print now 2 % 0 == 48 if now print 52 goto 3.14 print 55 goto test 2 = test print",
+	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   2627                                                                             28 29   30   313233   34*/
+	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
+	"test = 0;                                                    \n"\
+	"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n"\
+	"{                                                            \n"\
+	"    test = 1;                                                \n"\
+	"    if(now() % 2 == 0)                                       \n"\
+	"    {                                                        \n"\
+	"		print(now());                                         \n"\
+	"		if(now() % 2 == 0)                                    \n"\
+	"		{                                                     \n"\
+	"			print(now());                                     \n"\
+	"		}                                                     \n"\
+	"		else                                                  \n"\
+	"		{                                                     \n"\
+	"			print(3.14);                                      \n"\
+	"		}                                                     \n"\
+	"    }                                                        \n"\
+	"}                                                            \n"\
+	"else                                                         \n"\
+	"{                                                            \n"\
+	"    test = 2;                                                \n"\
+	"}                                                            \n"\
+	"print(test);                                                   "
+	, 0);
+LAB6_TEST_MAKE_lab6(65, "now print", "print(now());", 0);
+LAB6_TEST_MAKE_lab6(66, "a 14 if AA0 aa 10 if AA 11 goto BB AA1 16 goto BB0 BB1 end",
+	/*                   0 1  2  3   4  5  6  7  8  9    10 11  12 13   14  15  16*/
+	"if(a){AA0();if(aa){AA();}else{BB();}AA1();}else{BB0();BB1();}end();", 0);
+LAB6_TEST_MAKE_lab6(67, "a 11 if AA0 aa 8 if AA AA1 13 goto BB0 BB1 end",
+	/*                   0 1  2  3   4  5 6  7  8   9  10   11  12  13*/
+	"if(a){AA0();if(aa){AA();}AA1();}else{BB0();BB1();}end();", 0);
+LAB6_TEST_MAKE_lab6(68, "body1 if1 18 if body1.1 if1.1 19 if body1.1.1 if1.1.1 15 if body1.1.1.1 18 goto body1.1.1.2 19 goto body1.2 body2",
+	/*                   0     1   2  3  4       5     6  7  8         9       10 11 12          13 14   15          16 17   18      19*/
+	"body1;                  \n"\
+	"if(if1)                 \n"\
+	"{                       \n"\
+	"    body1.1;            \n"\
+	"    if(if1.1)           \n"\
+	"    {                   \n"\
+	"		body1.1.1;       \n"\
+	"		if(if1.1.1)      \n"\
+	"		{                \n"\
+	"			body1.1.1.1; \n"\
+	"		}                \n"\
+	"		else             \n"\
+	"		{                \n"\
+	"			body1.1.1.2; \n"\
+	"		}                \n"\
+	"    }                   \n"\
+	"}                       \n"\
+	"else                    \n"\
+	"{                       \n"\
+	"    body1.2;            \n"\
+	"}                       \n"\
+	"body2;                  \n"\
+	""
+	, 0);
+LAB6_TEST_MAKE_lab6(69, "a 13 if b 11 if c 11 if 13 goto 13 goto",
+	/*                   0 1  2  3 4  5  6 7  8  9  10   11 12  */
+	"if(a)                   \n"\
+	"{                       \n"\
+	"    if(b)               \n"\
+	"    {                   \n"\
+	"		if(c)            \n"\
+	"		{                \n"\
+	"		}                \n"\
+	"		else             \n"\
+	"		{                \n"\
+	"		}                \n"\
+	"    }                   \n"\
+	"}                       \n"\
+	"else                    \n"\
+	"{                       \n"\
+	"}                       \n"\
+	""
+	, 0);
+LAB6_TEST_MAKE_lab6(70, "a 5 if 5 goto", 
+	/*0 1 2*/"  if(a){ \n" /* a 5 if */\
+	/*3 4  */"    }    \n" /* 5 goto */\
+	/*5    */"else{}   \n"\
+	"", 0);
+LAB6_TEST_MAKE_lab6(71, "a 8 if b 6 if 8 goto",
+	/*0 1 2*/ "if(a){   \n" /* a 8 if  */\
+	/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+	/*6 7  */ "} else{} \n" /* 8 goto  */\
+	/*8    */ "         \n" /*         */\
+	"", 0);
+LAB6_TEST_MAKE_lab6(72, "a 6 if b 6 if",
+	/*0 1 2*/ "if(a){   \n" /* a 6 if  */\
+	/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+	/*6    */ "}        \n" /*         */\
+	"", 0);
 
 
 
@@ -174,7 +268,16 @@ void lab6_runTests(void)
 		LAB6_TEST_GETNAME(60),
 		LAB6_TEST_GETNAME(61),
 		LAB6_TEST_GETNAME(62),
-		LAB6_TEST_GETNAME(63)
+		LAB6_TEST_GETNAME(63),
+		LAB6_TEST_GETNAME(64),
+		LAB6_TEST_GETNAME(65),
+		LAB6_TEST_GETNAME(66),
+		LAB6_TEST_GETNAME(67),
+		LAB6_TEST_GETNAME(68),
+		LAB6_TEST_GETNAME(69),
+		LAB6_TEST_GETNAME(70),
+		LAB6_TEST_GETNAME(71),
+		LAB6_TEST_GETNAME(72)
 	};
 
 	char prototypeName[] = "lab6_test ";
