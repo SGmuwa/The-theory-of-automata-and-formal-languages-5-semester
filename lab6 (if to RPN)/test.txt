@@ -1,0 +1,132 @@
+test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 55 if now print now 2 % 0 == 48 if now print 52 goto 3.14 print 55 goto test 2 = test print
+test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 50 if test 1 = now 2 % 0 == 52 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print
+                                                                           !                           !                                            !
+0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56
+
+
+Ожидалось:
+a 13 if b 11 if c 11 if 13 goto 13 goto
+a 11 if b 11 if c 13 if 11 goto 13 goto
+  !               !     !
+0 1  2  3 4  5  6 7  8  9  10   11 12
+- актуально.
+
+
+0 1 2	if(a)           // a 13 if . a 11 if
+		{
+3 4 5		if(b)       // b 11 if 
+			{
+6 7 8			if(c){  // c 11 if . c 13 if 
+9 10			}       // 13 goto . 11 goto
+				else{}
+			}
+11 12	}               // 13 goto
+else{}
+13
+
+Следующий
+
+"/*0 1 2*/  if(a){ /* a 5 if */ \n"\
+"/*3 4*/    }      /* 5 goto */ \n"\
+"else{}                         \n"\
+"/*5*/                          \n"\
+""
+
+Следующий
+
+Ожидалось:
+a 13 if b 11 if c 11 if 13 goto 13 goto
+a 11 if b 11 if c 13 if 11 goto 13 goto
+  !               !     !
+0 1  2  3 4  5  6 7  8  9  10   11 12
+- актуально.
+
+a 8 if b 6 if 8 goto
+/*0 1 2*/ "if(a){   \n" /* a 8 if  */\
+/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+/*6 7  */ "} else{} \n" /* 8 goto  */\
+/*8    */ "         \n" /*         */\
+""
+
+a 6 if b 6 if
+/*0 1 2*/ "if(a){   \n" /* a 6 if  */\
+/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+/*6    */ "}        \n" /*         */\
+""
+
+
+
+
+a 13 if b 11 if c 11 if 13 goto 13 goto
+a 13 if b 11 if c 11 if 11 goto 13 goto
+                         !
+
+/* 0 1 2 */     "if(a){                  \n" /* a 13 if           */\
+/* 3 4 5 */     "    if(b){              \n" /* b 11 if           */\
+/* 6 7 8 */     "		if(c){           \n" /* c 11 if           */\
+/* 9 10  */     "		} else{}         \n" /* 13 goto . 11 goto */\
+/*       */     "    }                   \n" /*                   */\
+/* 11 12 */     "} else {}               \n" /* 13 goto           */\
+/* 13    */     ""
+
+body1 if1 18 if body1.1 if1.1 19 if body1.1.1 if1.1.1 15 if body1.1.1.1 18 goto body1.1.1.2 19 goto body1.2 body2
+body1 if1 18 if body1.1 if1.1 16 if body1.1.1 if1.1.1 15 if body1.1.1.1 16 goto body1.1.1.2 19 goto body1.2 body2
+                               !                                         !                                       
+body1 if1 18 if body1.1 if1.1 16 if body1.1.1 if1.1.1 15 if body1.1.1.1 16 goto body1.1.1.2 19 goto body1.2 body2
+
+/* 0        */ "body1;                        \n" /* body1         */ \
+/* 1 2 3    */ "if(if1){                      \n" /* if1 18 if     */ \
+/* 4        */ "    body1.1;                  \n" /* body1.1       */ \
+/* 5 6 7    */ "    if(if1.1){                \n" /* if1.1 16 if   */ \
+/* 8        */ "		body1.1.1;            \n" /* body1.1.1     */ \
+/* 9 10 11  */ "		if(if1.1.1){          \n" /* if1.1.1 15 if */ \
+/* 12       */ "			body1.1.1.1;      \n" /* body1.1.1.1   */ \
+/* 13 14    */ "		}                     \n" /* 16 goto       */ \
+/* 15       */ "		else { body1.1.1.2; } \n" /* body1.1.1.2   */ \
+/*          */ "    }                         \n" /*               */ \
+/* 16 17    */ "}                             \n" /* 19 goto       */ \
+/* 18       */ "else { body1.2; }             \n" /* body1.2       */ \
+/* 19       */ "body2;                        \n" /* body2         */ \
+/*          */ ""
+
+3 iri3ri329ri [ [ o0r23o2ir3i20ri10ir313rij9j
+3 iri3ri329ri o0r23o2ir3i20ri10ir313rij9j
+
+
+0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56
+test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 55 if now print now 2 % 0 == 48 if now print 52 goto 3.14 print 55 goto test 2 = test print
+test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print
+                                                                                                       !                                            !                                            
+test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print
+                                                                                                       +                                            +                                            
+
+
+
+/*                0 1 2 */ "test = 0;                                                    \n" /* test 0 =                                                               */ \
+/*             3 ... 24 */ "if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if */ \
+/*                      */ "{                                                            \n" /*                                                                        */ \
+/*             25 26 27 */ "    test = 1;                                                \n" /* test 1 =                                                               */ \
+/* 28 29 30 31 32 33 34 */ "    if(now() % 2 == 0)                                       \n" /* now 2 % 0 == 50 if                                                     */ \
+/*                      */ "    {                                                        \n" /*                                                                        */ \
+/*                35 36 */ "		print(now());                                        \n" /* now print                                                              */ \
+/* 37 38 39 40 41 42 43 */ "		if(now() % 2 == 0)                                   \n" /* now 2 % 0 == 48 if                                                     */ \
+/*                      */ "		{                                                    \n" /*                                                                        */ \
+/*                44 45 */ "			print(now());                                    \n" /* now print                                                              */ \
+/*                46 47 */ "		}                                                    \n" /* 50 goto                                                                */ \
+/*                      */ "		else                                                 \n" /*                                                                        */ \
+/*                      */ "		{                                                    \n" /*                                                                        */ \
+/*                48 49 */ "			print(3.14);                                     \n" /* 3.14 print                                                             */ \
+/*                      */ "		}                                                    \n" /*                                                                        */ \
+/*                      */ "    }                                                        \n" /*                                                                        */ \
+/*                50 51 */ "}                                                            \n" /* 55 goto                                                                */ \
+/*                      */ "else                                                         \n" /*                                                                        */ \
+/*                      */ "{                                                            \n" /*                                                                        */ \
+/*             52 53 54 */ "    test = 2;                                                \n" /* test 2 =                                                               */ \
+/*                      */ "}                                                            \n" /*                                                                        */ \
+/*                55 56 */ "print(test);                                                 \n" /* test print                                                             */ \
+/*                      */ ""
+
+
+
+
+

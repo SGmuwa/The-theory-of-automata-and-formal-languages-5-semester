@@ -103,32 +103,33 @@ LAB6_TEST_MAKE_lab6(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"}                                                            \n"\
 	"print(test);                                                   "
 	, 0);
-LAB6_TEST_MAKE_lab6(63, "3 iri3ri329ri [ [ o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
-LAB6_TEST_MAKE_lab6(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 55 if now print now 2 % 0 == 48 if now print 52 goto 3.14 print 55 goto test 2 = test print",
+LAB6_TEST_MAKE_lab6(63, "3 iri3ri329ri o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
+LAB6_TEST_MAKE_lab6(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print",
 	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   2627                                                                             28 29   30   313233   34*/
 	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
-	"test = 0;                                                    \n"\
-	"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n"\
-	"{                                                            \n"\
-	"    test = 1;                                                \n"\
-	"    if(now() % 2 == 0)                                       \n"\
-	"    {                                                        \n"\
-	"		print(now());                                         \n"\
-	"		if(now() % 2 == 0)                                    \n"\
-	"		{                                                     \n"\
-	"			print(now());                                     \n"\
-	"		}                                                     \n"\
-	"		else                                                  \n"\
-	"		{                                                     \n"\
-	"			print(3.14);                                      \n"\
-	"		}                                                     \n"\
-	"    }                                                        \n"\
-	"}                                                            \n"\
-	"else                                                         \n"\
-	"{                                                            \n"\
-	"    test = 2;                                                \n"\
-	"}                                                            \n"\
-	"print(test);                                                   "
+	/*                0 1 2 */ "test = 0;                                                    \n" /* test 0 =                                                               */ \
+	/*             3 ... 24 */ "if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if */ \
+	/*                      */ "{                                                            \n" /*                                                                        */ \
+	/*             25 26 27 */ "    test = 1;                                                \n" /* test 1 =                                                               */ \
+	/* 28 29 30 31 32 33 34 */ "    if(now() % 2 == 0)                                       \n" /* now 2 % 0 == 50 if                                                     */ \
+	/*                      */ "    {                                                        \n" /*                                                                        */ \
+	/*                35 36 */ "		print(now());                                        \n" /* now print                                                              */ \
+	/* 37 38 39 40 41 42 43 */ "		if(now() % 2 == 0)                                   \n" /* now 2 % 0 == 48 if                                                     */ \
+	/*                      */ "		{                                                    \n" /*                                                                        */ \
+	/*                44 45 */ "			print(now());                                    \n" /* now print                                                              */ \
+	/*                46 47 */ "		}                                                    \n" /* 50 goto                                                                */ \
+	/*                      */ "		else                                                 \n" /*                                                                        */ \
+	/*                      */ "		{                                                    \n" /*                                                                        */ \
+	/*                48 49 */ "			print(3.14);                                     \n" /* 3.14 print                                                             */ \
+	/*                      */ "		}                                                    \n" /*                                                                        */ \
+	/*                      */ "    }                                                        \n" /*                                                                        */ \
+	/*                50 51 */ "}                                                            \n" /* 55 goto                                                                */ \
+	/*                      */ "else                                                         \n" /*                                                                        */ \
+	/*                      */ "{                                                            \n" /*                                                                        */ \
+	/*             52 53 54 */ "    test = 2;                                                \n" /* test 2 =                                                               */ \
+	/*                      */ "}                                                            \n" /*                                                                        */ \
+	/*                55 56 */ "print(test);                                                 \n" /* test print                                                             */ \
+	/*                      */ ""
 	, 0);
 LAB6_TEST_MAKE_lab6(65, "now print", "print(now());", 0);
 LAB6_TEST_MAKE_lab6(66, "a 14 if AA0 aa 10 if AA 11 goto BB AA1 16 goto BB0 BB1 end",
@@ -137,50 +138,32 @@ LAB6_TEST_MAKE_lab6(66, "a 14 if AA0 aa 10 if AA 11 goto BB AA1 16 goto BB0 BB1 
 LAB6_TEST_MAKE_lab6(67, "a 11 if AA0 aa 8 if AA AA1 13 goto BB0 BB1 end",
 	/*                   0 1  2  3   4  5 6  7  8   9  10   11  12  13*/
 	"if(a){AA0();if(aa){AA();}AA1();}else{BB0();BB1();}end();", 0);
-LAB6_TEST_MAKE_lab6(68, "body1 if1 18 if body1.1 if1.1 19 if body1.1.1 if1.1.1 15 if body1.1.1.1 18 goto body1.1.1.2 19 goto body1.2 body2",
+LAB6_TEST_MAKE_lab6(68, "body1 if1 18 if body1.1 if1.1 16 if body1.1.1 if1.1.1 15 if body1.1.1.1 16 goto body1.1.1.2 19 goto body1.2 body2",
 	/*                   0     1   2  3  4       5     6  7  8         9       10 11 12          13 14   15          16 17   18      19*/
-	"body1;                  \n"\
-	"if(if1)                 \n"\
-	"{                       \n"\
-	"    body1.1;            \n"\
-	"    if(if1.1)           \n"\
-	"    {                   \n"\
-	"		body1.1.1;       \n"\
-	"		if(if1.1.1)      \n"\
-	"		{                \n"\
-	"			body1.1.1.1; \n"\
-	"		}                \n"\
-	"		else             \n"\
-	"		{                \n"\
-	"			body1.1.1.2; \n"\
-	"		}                \n"\
-	"    }                   \n"\
-	"}                       \n"\
-	"else                    \n"\
-	"{                       \n"\
-	"    body1.2;            \n"\
-	"}                       \n"\
-	"body2;                  \n"\
-	""
+	/* 0        */ "body1;                        \n" /* body1         */ \
+	/* 1 2 3    */ "if(if1){                      \n" /* if1 18 if     */ \
+	/* 4        */ "    body1.1;                  \n" /* body1.1       */ \
+	/* 5 6 7    */ "    if(if1.1){                \n" /* if1.1 16 if   */ \
+	/* 8        */ "		body1.1.1;            \n" /* body1.1.1     */ \
+	/* 9 10 11  */ "		if(if1.1.1){          \n" /* if1.1.1 15 if */ \
+	/* 12       */ "			body1.1.1.1;      \n" /* body1.1.1.1   */ \
+	/* 13 14    */ "		}                     \n" /* 16 goto       */ \
+	/* 15       */ "		else { body1.1.1.2; } \n" /* body1.1.1.2   */ \
+	/*          */ "    }                         \n" /*               */ \
+	/* 16 17    */ "}                             \n" /* 19 goto       */ \
+	/* 18       */ "else { body1.2; }             \n" /* body1.2       */ \
+	/* 19       */ "body2;                        \n" /* body2         */ \
+	/*          */ ""
 	, 0);
-LAB6_TEST_MAKE_lab6(69, "a 13 if b 11 if c 11 if 13 goto 13 goto",
+LAB6_TEST_MAKE_lab6(69, "a 13 if b 11 if c 11 if 11 goto 13 goto",
 	/*                   0 1  2  3 4  5  6 7  8  9  10   11 12  */
-	"if(a)                   \n"\
-	"{                       \n"\
-	"    if(b)               \n"\
-	"    {                   \n"\
-	"		if(c)            \n"\
-	"		{                \n"\
-	"		}                \n"\
-	"		else             \n"\
-	"		{                \n"\
-	"		}                \n"\
-	"    }                   \n"\
-	"}                       \n"\
-	"else                    \n"\
-	"{                       \n"\
-	"}                       \n"\
-	""
+	/* 0 1 2 */     "if(a){                  \n" /* a 13 if */\
+	/* 3 4 5 */     "    if(b){              \n" /* b 11 if */\
+	/* 6 7 8 */     "		if(c){           \n" /* c 11 if */\
+	/* 9 10  */     "		} else{}         \n" /* 11 goto */\
+	/*       */     "    }                   \n" /*         */\
+	/* 11 12 */     "} else {}               \n" /* 13 goto */\
+	/* 13    */     ""
 	, 0);
 LAB6_TEST_MAKE_lab6(70, "a 5 if 5 goto", 
 	/*0 1 2*/"  if(a){ \n" /* a 5 if */\
