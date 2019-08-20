@@ -103,8 +103,85 @@ LAB7_TEST_MAKE_lab7(62, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"}                                                            \n"\
 	"print(test);                                                   "
 	, 0);
-LAB7_TEST_MAKE_lab7(63, "3 iri3ri329ri [ [ o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
-LAB7_TEST_MAKE_lab7(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print",
+LAB7_TEST_MAKE_lab7(63, "3 iri3ri329ri o0r23o2ir3i20ri10ir313rij9j", "o0r23o 2i r3i 20ri 10ir 3 13 rij9       j[3[    iri 3ri 329ri", 0);
+LAB7_TEST_MAKE_lab7(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print",
+	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   2627                                                                             28 29   30   313233   34*/
+	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
+	/*                0 1 2 */ "test = 0;                                                    \n" /* test 0 =                                                               */ \
+	/*             3 ... 24 */ "if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if */ \
+	/*                      */ "{                                                            \n" /*                                                                        */ \
+	/*             25 26 27 */ "    test = 1;                                                \n" /* test 1 =                                                               */ \
+	/* 28 29 30 31 32 33 34 */ "    if(now() % 2 == 0)                                       \n" /* now 2 % 0 == 50 if                                                     */ \
+	/*                      */ "    {                                                        \n" /*                                                                        */ \
+	/*                35 36 */ "		print(now());                                        \n" /* now print                                                              */ \
+	/* 37 38 39 40 41 42 43 */ "		if(now() % 2 == 0)                                   \n" /* now 2 % 0 == 48 if                                                     */ \
+	/*                      */ "		{                                                    \n" /*                                                                        */ \
+	/*                44 45 */ "			print(now());                                    \n" /* now print                                                              */ \
+	/*                46 47 */ "		}                                                    \n" /* 50 goto                                                                */ \
+	/*                      */ "		else                                                 \n" /*                                                                        */ \
+	/*                      */ "		{                                                    \n" /*                                                                        */ \
+	/*                48 49 */ "			print(3.14);                                     \n" /* 3.14 print                                                             */ \
+	/*                      */ "		}                                                    \n" /*                                                                        */ \
+	/*                      */ "    }                                                        \n" /*                                                                        */ \
+	/*                50 51 */ "}                                                            \n" /* 55 goto                                                                */ \
+	/*                      */ "else                                                         \n" /*                                                                        */ \
+	/*                      */ "{                                                            \n" /*                                                                        */ \
+	/*             52 53 54 */ "    test = 2;                                                \n" /* test 2 =                                                               */ \
+	/*                      */ "}                                                            \n" /*                                                                        */ \
+	/*                55 56 */ "print(test);                                                 \n" /* test print                                                             */ \
+	/*                      */ ""
+	, 0);
+LAB7_TEST_MAKE_lab7(65, "now print", "print(now());", 0);
+LAB7_TEST_MAKE_lab7(66, "a 14 if AA0 aa 10 if AA 11 goto BB AA1 16 goto BB0 BB1 end",
+	/*                   0 1  2  3   4  5  6  7  8  9    10 11  12 13   14  15  16*/
+	"if(a){AA0();if(aa){AA();}else{BB();}AA1();}else{BB0();BB1();}end();", 0);
+LAB7_TEST_MAKE_lab7(67, "a 11 if AA0 aa 8 if AA AA1 13 goto BB0 BB1 end",
+	/*                   0 1  2  3   4  5 6  7  8   9  10   11  12  13*/
+	"if(a){AA0();if(aa){AA();}AA1();}else{BB0();BB1();}end();", 0);
+LAB7_TEST_MAKE_lab7(68, "body1 if1 18 if body1.1 if1.1 16 if body1.1.1 if1.1.1 15 if body1.1.1.1 16 goto body1.1.1.2 19 goto body1.2 body2",
+	/*                   0     1   2  3  4       5     6  7  8         9       10 11 12          13 14   15          16 17   18      19*/
+	/* 0        */ "body1;                        \n" /* body1         */ \
+	/* 1 2 3    */ "if(if1){                      \n" /* if1 18 if     */ \
+	/* 4        */ "    body1.1;                  \n" /* body1.1       */ \
+	/* 5 6 7    */ "    if(if1.1){                \n" /* if1.1 16 if   */ \
+	/* 8        */ "		body1.1.1;            \n" /* body1.1.1     */ \
+	/* 9 10 11  */ "		if(if1.1.1){          \n" /* if1.1.1 15 if */ \
+	/* 12       */ "			body1.1.1.1;      \n" /* body1.1.1.1   */ \
+	/* 13 14    */ "		}                     \n" /* 16 goto       */ \
+	/* 15       */ "		else { body1.1.1.2; } \n" /* body1.1.1.2   */ \
+	/*          */ "    }                         \n" /*               */ \
+	/* 16 17    */ "}                             \n" /* 19 goto       */ \
+	/* 18       */ "else { body1.2; }             \n" /* body1.2       */ \
+	/* 19       */ "body2;                        \n" /* body2         */ \
+	/*          */ ""
+	, 0);
+LAB7_TEST_MAKE_lab7(69, "a 13 if b 11 if c 11 if 11 goto 13 goto",
+	/*                   0 1  2  3 4  5  6 7  8  9  10   11 12  */
+	/* 0 1 2 */     "if(a){                  \n" /* a 13 if */\
+	/* 3 4 5 */     "    if(b){              \n" /* b 11 if */\
+	/* 6 7 8 */     "		if(c){           \n" /* c 11 if */\
+	/* 9 10  */     "		} else{}         \n" /* 11 goto */\
+	/*       */     "    }                   \n" /*         */\
+	/* 11 12 */     "} else {}               \n" /* 13 goto */\
+	/* 13    */     ""
+	, 0);
+LAB7_TEST_MAKE_lab7(70, "a 5 if 5 goto", 
+	/*0 1 2*/"  if(a){ \n" /* a 5 if */\
+	/*3 4  */"    }    \n" /* 5 goto */\
+	/*5    */"else{}   \n"\
+	"", 0);
+LAB7_TEST_MAKE_lab7(71, "a 8 if b 6 if 8 goto",
+	/*0 1 2*/ "if(a){   \n" /* a 8 if  */\
+	/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+	/*6 7  */ "} else{} \n" /* 8 goto  */\
+	/*8    */ "         \n" /*         */\
+	"", 0);
+LAB7_TEST_MAKE_lab7(72, "a 6 if b 6 if",
+	/*0 1 2*/ "if(a){   \n" /* a 6 if  */\
+	/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
+	/*6    */ "}        \n" /*         */\
+	"", 0);
+LAB7_TEST_MAKE_lab7(73, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print ...? TODO",
 	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728 29   30   313233   34*/
 	"test = 0;                                                    \n"\
 	"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n"\
@@ -133,7 +210,6 @@ LAB7_TEST_MAKE_lab7(64, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + any
 	"print(s);                                                    \n"\
 	""
 	, 0);
-
 
 
 // Тестирование задания lab7.
@@ -203,7 +279,17 @@ void lab7_runTests(void)
 		LAB7_TEST_GETNAME(60),
 		LAB7_TEST_GETNAME(61),
 		LAB7_TEST_GETNAME(62),
-		LAB7_TEST_GETNAME(63)
+		LAB7_TEST_GETNAME(63),
+		LAB7_TEST_GETNAME(64),
+		LAB7_TEST_GETNAME(65),
+		LAB7_TEST_GETNAME(66),
+		LAB7_TEST_GETNAME(67),
+		LAB7_TEST_GETNAME(68),
+		LAB7_TEST_GETNAME(69),
+		LAB7_TEST_GETNAME(70),
+		LAB7_TEST_GETNAME(71),
+		LAB7_TEST_GETNAME(72),
+		LAB7_TEST_GETNAME(73)
 	};
 
 	char prototypeName[] = "lab7_test ";
