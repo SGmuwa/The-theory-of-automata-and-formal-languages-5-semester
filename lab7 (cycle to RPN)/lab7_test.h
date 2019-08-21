@@ -229,10 +229,12 @@ LAB7_TEST_MAKE_lab7(74, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto s 0 
 	""
 	, 0);
 LAB7_TEST_MAKE_lab7(75, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto",
-	/* 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 */"for(s = 0; s < 4; s = s + 1)\n" /* s 0 = 10 goto s s 1 + = s 4 < 19 if */\
-	/*                                    */"{                           \n"\
-	/* 15 16                              */"    print(s);               \n" /* s print */\
-	/* 17 18                              */"}                           \n" /* 5 goto */\
+	/* 0 1 2 3 4      */"for(s = 0; s < 4; s = s + 1)\n" /* s 0 = 10 goto */\
+	/* 5 6 7 8 9      */"                            \n" /* s s 1 + =     */\
+	/* 10 11 12 13 14 */"                            \n" /* s 4 < 19 if   */\
+	/*                */"{                           \n"\
+	/* 15 16          */"    print(s);               \n" /* s print       */\
+	/* 17 18          */"}                           \n" /* 5 goto        */\
 	""
 	, 0);
 LAB7_TEST_MAKE_lab7(76, "s 0 > 12 if s s 1 - = s print",

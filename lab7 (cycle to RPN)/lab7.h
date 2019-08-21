@@ -60,136 +60,7 @@
 	"test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print"
 /*   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
 
-
-#include <stdlib.h>
-#include "..\stack_t\stack_t.h"
-#include "..\string_t\string_t.h"
-#include <string.h>
-#include "..\byte_t\byte_t.h"
-#include "..\lab1\lab1.h"
-#include "..\lab4 (logical expression to RPN)\lab4.h"
-#include "..\Dynamic_Generic_ArrayList_C\arrayList.h"
-#include <limits.h>
-
-#if _WIN32 && !_WIN64
-// Размер листа для буфера вывода.
-#define LAB7_SIZEBUFFER (10u + 1u + 1u) /* 10 цифр, отрицательные, конец строки. */
-#else
-// Размер листа для буфера вывода.
-#define LAB7_SIZEBUFFER (20u + 1u + 1u)
-#endif _WIN32
-
-typedef struct lab7_parenthesInfo
-{
-	char c; // character.
-	size_t i; // index.
-} lab7_parenthesInfo;
-
-/*
-Вставляет в конец строки число put и уменьшает length в to.
-string_t * to - куда надо вставить число.
-size_t put - число, которое надо вставить.
-Возвращает: код ошибки.
-0 - Всё ок.
-1 - Указатель на строку-вставку или result нулевой.
-2 - Указатель на начало строки-вставки нулевой.
-3 - Недостаточный размер.
-4 - Копирование памяти произошло с ошибкой.
-*/
-int lab7_putSizetToEndString(string_t * to, size_t put, string_t * result)
-{
-	if (to == NULL || result == NULL)
-		return 1;
-	if (to->first == NULL)
-		return 2;
-	char toWrite[LAB7_SIZEBUFFER];
-	result->length =
-#ifdef _MSC_VER
-		sprintf_s(toWrite, sizeof(toWrite) / sizeof(char), "%zu", put);
-#else
-		sprintf(toWrite, "%zu", list->length);
-#endif // _MSC_VER
-	if (result->length > to->length)
-		return 3;
-	result->first = to->first + to->length - result->length;
-#ifdef _MSC_VER
-	if (memcpy_s(result->first, result->length, toWrite, result->length))
-		return 4;
-#else
-	memcpy(buffer->first + buffer->length - result->length, toWrite, result->length);
-#endif // _MSC_VER
-	to->length -= result->length;
-	return 0;
-}
-
-/*
-Ищет последний знак вопроса и заменяет его на последний индекс.
-ArrayList<string_t> list - лист, в котором идёт поиск и замена.
-ArrayList<char[LAB7_SIZEBUFFER]> buffer - лист, в котором 
-Возвращает: код ошибки.
-0 - Адрес успешно назначен.
-1 - Обращение к листу происходит с ошибкой.
-2 - Метка вставки адреса не найдена.
-3 - Указатель на строку-вставку нулевой.
-4 - Указатель на начало строки-вставки нулевой.
-5 - Недостаточный размер.
-6 - Копирование памяти произошло с ошибкой.
-*/
-int lab7_putLastAddress(ArrayList list, string_t * buffer)
-{
-#define LAB7_SAFE(ACT, CODE) if(ACT) return CODE
-	for (size_t i = list->length - 1; i != SIZE_MAX; i--)
-	{
-		string_t b;
-		LAB7_SAFE(ArrayList_get(list, i, &b), 1);
-		if (string_equal(STRING_STATIC0("?"), b))
-		{
-			int err;
-			LAB7_SAFE(err = lab7_putSizetToEndString(buffer, list->length, &b), err + 2);
-			LAB7_SAFE(ArrayList_set(list, i, &b), 7);
-			return 0;
-		}
-	}
-	return 2;
-#undef LAB7_SAFE
-}
-
-int lab7_putElse(ArrayList outList, string_t * buffer, ArrayList parenthesInfo)
-{
-#define LAB7_SAFE(ACT, CODE) if(ACT) return CODE
-	LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 1);
-	LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 2);
-	char s[LAB7_SIZEBUFFER];  string_t searchAddress = {s, 
-#ifdef _MSC_VER
-		sprintf_s(s, sizeof(s) / sizeof(char), "%zu", outList->length - 2)
-#else
-		sprintf(s, "%zu", outList->length - 1)
-#endif
-	};
-	if (parenthesInfo->length < 2)
-		return 3;
-	size_t count = 1;
-	size_t i = parenthesInfo->length - 2;
-	lab7_parenthesInfo b;
-	for (; i != SIZE_MAX && count != 0; i--)
-	{
-		LAB7_SAFE(ArrayList_get(parenthesInfo, i, &b), 4);
-		if (b.c == '{')
-			count--;
-		else if (b.c == '}')
-			count++;
-	}
-	if (count != 0)
-		return 5;
-	string_t strBuffer;
-	LAB7_SAFE(ArrayList_get(outList, b.i - 1, &strBuffer), 7);
-	if (!string_equal(STRING_STATIC0("if"), strBuffer))
-		return 8;
-	LAB7_SAFE(lab7_putSizetToEndString(buffer, outList->length, &searchAddress), 9);
-	LAB7_SAFE(ArrayList_set(outList, b.i - 2, &searchAddress), 10);
-	return 0;
-#undef LAB7_SAFE
-}
+#include "..\lab6 (if to RPN)\lab6.h"
 
 // Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
 // const string_t output - указатель, куда поместить результат.
@@ -205,6 +76,7 @@ int lab7_putElse(ArrayList outList, string_t * buffer, ArrayList parenthesInfo)
 //				5 - Нехватка памяти.
 //				6 - Ошибка при работе с else.
 //              7 - Ошибка удаления скобок из выходного листа.
+//              8 - Заполнение аргументов цикла for произошло с ошибкой.
 int lab7(string_t * output, string_t input)
 {
 	if (output == NULL || output->first == NULL || output->length == 0 || input.first == NULL || input.length == 0)
@@ -229,7 +101,7 @@ int lab7(string_t * output, string_t input)
 		return 5;
 	}
 	// Буфер, куда помещаются такие символы, которые надо поместить в outList, но которые отсутствуют в input.
-	string_t bufferForOutput = string_malloc(LAB7_SIZEBUFFER * input.length);
+	string_t bufferForOutput = string_malloc(LAB6_SIZEBUFFER * input.length);
 	if (bufferForOutput.first == NULL)
 	{
 		Stack_free(stk);
@@ -237,7 +109,7 @@ int lab7(string_t * output, string_t input)
 		ArrayList_free(outList);
 		return 5;
 	}
-	ArrayList parenthes = ArrayList_malloc(sizeof(lab7_parenthesInfo));
+	ArrayList parenthes = ArrayList_malloc(sizeof(lab6_parenthesInfo));
 	if (parenthes == NULL)
 	{
 		Stack_free(stk);
@@ -247,7 +119,16 @@ int lab7(string_t * output, string_t input)
 		return 5;
 	}
 	char previous = '\0';
-#define LAB7_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); string_free(bufferForOutput); ArrayList_free(parenthes); return CODE; }
+	enum lab7_CycleFor
+	{
+		LAB7_CYCLEFOR_NONE, // Сейчас не заполняются аргументы цикла for.
+		LAB7_CYCLEFOR_ARG1, // Сейчас заполняется первый аргумент for.
+		LAB7_CYCLEFOR_ARG2, // Сейчас заполняется второй аргумент for.
+		LAB7_CYCLEFOR_ARG3, // Сейчас запоняется третий аргумент for.
+		LAB7_CYCLEFOR_COUNT // Количество полей в lab7_CycleFor
+	} CycleFor = LAB7_CYCLEFOR_NONE; // Стадии заполнения цикла for.
+	ArrayList anyMarks = ArrayList_malloc(sizeof(lab7_marks));
+#define LAB7_SAFE(ACT, CODE) if(ACT) { Stack_free(stk); free(oldIn); ArrayList_free(outList); string_free(bufferForOutput); ArrayList_free(parenthes); ArrayList_free(anyMarks); return CODE; }
 	while (input.length > 0)
 	{ // Пока мы ещё имеем входную строку.
 		string_t operand = lab4_searchOperand(input, previous);
@@ -273,7 +154,12 @@ int lab7(string_t * output, string_t input)
 		{ // Найдена функция
 			if (string_equal(STRING_STATIC0("else"), operand))
 			{
-				LAB7_SAFE(lab7_putElse(outList, &bufferForOutput, parenthes), 6);
+				LAB7_SAFE(lab6_putElse(outList, &bufferForOutput, parenthes), 6);
+			}
+			else if (string_equal(STRING_STATIC0("for"), operand))
+			{
+				LAB7_SAFE(CycleFor == LAB7_CYCLEFOR_NONE, 8);
+				CycleFor = LAB7_CYCLEFOR_ARG1;
 			}
 			else
 			{
@@ -321,14 +207,14 @@ int lab7(string_t * output, string_t input)
 		}
 		else if (lab2_isParenthesOpen(*input.first))
 		{ // Найдена открытая скобка. Что делать?
-			LAB7_SAFE(ArrayList_addLast(parenthes, &(lab7_parenthesInfo) { *input.first, outList->length }), 6);
+			LAB7_SAFE(ArrayList_addLast(parenthes, &(lab6_parenthesInfo) { *input.first, outList->length }), 6);
 			LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, 1 })), 5);
 			input.first += 1;
 			input.length -= 1;
 		}
 		else if (lab2_isParenthesClose(*input.first))
 		{ // Найдена закрытая скобка. Что делать?
-			LAB7_SAFE(ArrayList_addLast(parenthes, &(lab7_parenthesInfo) { *input.first, outList->length }), 6);
+			LAB7_SAFE(ArrayList_addLast(parenthes, &(lab6_parenthesInfo) { *input.first, outList->length }), 6);
 			string_t stk_elm;
 			while (true)
 			{
@@ -339,7 +225,7 @@ int lab7(string_t * output, string_t input)
 			}
 			if (*input.first == '}')
 			{
-				LAB7_SAFE(lab7_putLastAddress(outList, &bufferForOutput), 4);
+				LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 			}
 			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
 			{
@@ -348,6 +234,11 @@ int lab7(string_t * output, string_t input)
 					if (string_equal(STRING_STATIC0("if"), stk_elm))
 					{
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
+					}
+					else if (string_equal(STRING_STATIC0("for"), stk_elm))
+					{
+						LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_NONE, 8);
+						CycleFor = LAB7_CYCLEFOR_ARG1;
 					}
 					LAB7_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 					LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
@@ -360,6 +251,21 @@ int lab7(string_t * output, string_t input)
 		{
 			if (*input.first == ';')
 			{
+				if (CycleFor > LAB7_CYCLEFOR_NONE)
+				{
+					CycleFor++;
+					if (CycleFor == LAB7_CYCLEFOR_ARG2)
+					{ // Закончил первый аргумент, начал второй аргумент.
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 8);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 8);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("<$>_FOR_ARG1_2")), 8);
+					}
+					else if (CycleFor == LAB7_CYCLEFOR_ARG3)
+					{
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("<$>_FOR_ARG2_3")), 8);
+					}
+					else LAB7_SAFE(CycleFor > LAB7_CYCLEFOR_ARG3, 8);
+				}
 				string_t stk_elm = { NULL, 0u };
 				while (true)
 				{
