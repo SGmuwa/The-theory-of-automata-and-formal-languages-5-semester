@@ -1,10 +1,9 @@
 ﻿#pragma once
-#include "..\lab2\lab2.h"
 
 #define LAB7_HELP_STR \
 	"Постановка задачи: " \
-	"\"Создать обратную польскую запись для условного оператора.\" " \
-	"Так как за основу взята lab4, то программа поддерживает и арифметические, и логические записи." \
+	"\"Создать обратную польскую запись для TODO.\" " \
+	"Так как за основу взята lab6, то программа поддерживает и арифметические, и логические записи." \
 	"С помощью данной программы возможно преобразовывать " \
 	"математико-логическую запись с условиями в обратную польскую запись. " \
 	"Поддерживаются операторы:\n" \
@@ -31,6 +30,9 @@
 	"! (логическое отрицание),\n" \
 	"\"if (условие) {выражение}\" (условный оператор),\n" \
 	"\"else {выражение}\" (переход по лжи от if).\n" \
+	"\"for(<операция>;<условие>;<операция>){ <Тело цикла> }\" цикл for).\n" \
+	"\"where(<условие>){ <Тело цикла> }\" цикл <where>).\n" \
+	"\"do{ <Тело цикла> } while(<Тело цикда>);\" цикл do-while).\n" \
 	"И скобки: (, ), [, ], {, }.\n" \
 	"Также поддерживаются вещественные числа и точка в операндах.\n" \
 	"Пример:\n" \
@@ -191,6 +193,63 @@ int lab7_putElse(ArrayList outList, string_t * buffer, ArrayList parenthesInfo)
 #undef LAB7_SAFE
 }
 
+/*
+Функция меняет второй и третий аргумент цикла for местами.
+ArrayList<lab7_mark> anyMarks - тут должна быть метка, где начинается аргумент 1 и где начинется аргумент 2.
+	Поддерживаемые марки:
+		<$>_FOR_ARG1_ARG2 - Указывает на первую команду второго аргумента цикла FOR.
+		<$>_FOR_ARG2_ARG3 - Указывает на первую команду третьего аргумента цикла FOR.
+ArrayList<string_t> outList - выходной лист, в котором надо менять местами аргументы цикла for.
+Возвращает: код ошибки.
+*/
+int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_t*/ outList)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	size_t mark[2] = {SIZE_MAX, SIZE_MAX, SIZE_MAX}; // Две марки.
+	size_t toRemove[2];
+	lab7_mark buffer;
+	for(size_t i = anyMark->length; i != SIZE_MAX; i--)
+	{
+		LAB7_SAFE(ArrayList_get(anyMarks, i, &buffer), 1);
+		if(string_equal(STRING_STATIC0("<$>_FOR_ARG2_ARG3"), buffer.text))
+		{
+			mark[1] = buffer.position;
+			toRemove[1] = i;
+			break;
+		}
+	}
+	LAB7_SAFE(mark[1] == SIZE_MAX, 2);
+	for(size_t i = mark[1]; i != SIZE_MAX; i--)
+	{
+		LAB7_SAFE(ArrayList_get(anyMarks, i, &buffer), 3);
+		if(string_equal(STRING_STATIC0("<$>_FOR_ARG1_ARG2"), buffer.text))
+		{
+			mark[0] = buffer.position;
+			toRemove[0] = i;
+			break;
+		}
+	}
+	LAB7_SAFE(mark[0] == SIZE_MAX, 4);
+	string_t * bufferOutList = (string_t *) malloc((outList->length - mark[1]) * sizeof(string_t));
+	LAB7_SAFE(bufferOutList == NULL, 5);
+#define LAB7_SAFE(ACT, CODE) if(ACT) { free(buferOutList); return CODE; }
+	for(size_t i = outList->length - 1; i >= mark[1]; i--)
+	{
+		LAB7_SAFE(ArrayList_get(outList, i, bufferOutList + i - mark[1]), 6);
+		LAB7_SAFE(ArrayList_remove(outList, i), 7);
+	}
+	for(size_t i = mark[0]; i < makr[1]; i++)
+	{
+		LAB7_SAFE(ArrayList_add(outList, i, bufferOutList + i - mark[0]), 8);
+	}
+	free(bufferOutList);
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[1]), 9);
+	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[0]), 10);
+	return 0;
+#undef LAB7_SAFE
+}
+
 // Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
 // const string_t output - указатель, куда поместить результат.
 //							Память должна быть уже выделена и должно
@@ -244,6 +303,15 @@ int lab7(string_t * output, string_t input)
 		free(oldIn);
 		ArrayList_free(outList);
 		string_free(bufferForOutput);
+		return 5;
+	}
+	if(anyMark == NULL)
+	{
+		Stack_free(stk);
+		free(oldIn);
+		ArrayList_free(outList);
+		string_free(bufferForOutput);
+		ArrayList_free(parenthes);
 		return 5;
 	}
 	char previous = '\0';
@@ -352,6 +420,10 @@ int lab7(string_t * output, string_t input)
 					LAB7_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
 					LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
 				}
+			}
+			if (stateFor == LAB7_STATEFOR_ARG3)
+			{ // Завершилось заполнение третьего аргумента for.
+				LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList), 8);
 			}
 			input.first++;
 			input.length--;
