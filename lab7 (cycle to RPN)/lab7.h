@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "..\lab6 (if to RPN)\lab6.h"
+
 #define LAB7_HELP_STR \
 	"Постановка задачи: " \
 	"\"Создать обратную польскую запись для TODO.\" " \
@@ -62,7 +64,24 @@
 	"test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print"
 /*   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
 
-#include "..\lab6 (if to RPN)\lab6.h"
+
+typedef struct lab7_mark
+{
+	// Местоположение метки.
+	size_t position;
+	// Текстовая информация метки.
+	string_t text;
+} lab7_mark;
+
+
+/*
+Вставить метку.
+NAME - Имя метки.
+ALT_POS - позиция относительно последнего доступного элемента.
+ERRORCODE - код ошибки в случае неудачи.
+*/
+#define LAB7_INSERTMARK(NAME, ALT_POS, ERRORCODE) LAB7_SAFE(ArrayList_addLast(anyMarks, &(lab7_mark){ outList->length - 1 + ALT_POS, STRING_STATIC0(NAME) }), ERRORCODE)
+
 
 /*
 Функция меняет второй и третий аргумент цикла for местами.
@@ -79,7 +98,7 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 	size_t mark[2] = { SIZE_MAX, SIZE_MAX }; // Две марки.
 	size_t toRemove[2];
 	lab7_mark buffer;
-	for(size_t i = anyMarks->length; i != SIZE_MAX; i--)
+	for(size_t i = anyMarks->length - 1; i != SIZE_MAX; i--)
 	{
 		LAB7_SAFE(ArrayList_get(anyMarks, i, &buffer), 1);
 		if(string_equal(STRING_STATIC0("<$>_FOR_ARG2_ARG3"), buffer.text))
@@ -90,34 +109,37 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 		}
 	}
 	LAB7_SAFE(mark[1] == SIZE_MAX, 2);
-	for(size_t i = mark[1]; i != SIZE_MAX; i--)
+	for(size_t i = mark[1] - 1; i != SIZE_MAX; i--)
 	{
-		LAB7_SAFE(ArrayList_get(anyMarks, i, &buffer), 3);
+		LAB7_SAFE(ArrayList_get(anyMarks, i - mark[1] + anyMarks->length - 1, &buffer), 3);
 		if(string_equal(STRING_STATIC0("<$>_FOR_ARG1_ARG2"), buffer.text))
 		{
 			mark[0] = buffer.position;
-			toRemove[0] = i;
+			toRemove[0] = i - mark[1] + anyMarks->length - 1;
 			break;
 		}
 	}
 	LAB7_SAFE(mark[0] == SIZE_MAX, 4);
-	string_t * bufferOutList = (string_t *) malloc((outList->length - mark[1]) * sizeof(string_t));
+	size_t countBufferOutList = outList->length - mark[1];
+	string_t * bufferOutList = (string_t *) malloc(countBufferOutList * sizeof(string_t));
 	LAB7_SAFE(bufferOutList == NULL, 5);
+#undef LAB7_SAFE
 #define LAB7_SAFE(ACT, CODE) if(ACT) { free(bufferOutList); return CODE; }
 	for(size_t i = outList->length - 1; i >= mark[1]; i--)
 	{
 		LAB7_SAFE(ArrayList_get(outList, i, bufferOutList + i - mark[1]), 6);
 		LAB7_SAFE(ArrayList_remove(outList, i), 7);
 	}
-	for(size_t i = mark[0]; i < mark[1]; i++)
+	for(size_t i = countBufferOutList - 1; i != SIZE_MAX; i--)
 	{
-		LAB7_SAFE(ArrayList_add(outList, i, bufferOutList + i - mark[0]), 8);
+		LAB7_SAFE(ArrayList_add(outList, i, bufferOutList + i), 8);
 	}
 	free(bufferOutList);
+#undef LAB7_SAFE
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[1]), 9);
 	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[0]), 10);
-	return 0;
+	LAB7_SAFE(true, 0);
 #undef LAB7_SAFE
 }
 
@@ -186,7 +208,7 @@ int lab7(string_t * output, string_t input)
 		LAB7_CYCLEFOR_ARG3, // Сейчас запоняется третий аргумент for.
 		LAB7_CYCLEFOR_COUNT // Количество полей в lab7_CycleFor
 	} CycleFor = LAB7_CYCLEFOR_NONE; // Стадии заполнения цикла for.
-	ArrayList anyMarks = ArrayList_malloc(sizeof(lab7_marks));
+	ArrayList anyMarks = ArrayList_malloc(sizeof(lab7_mark));
 	if (anyMarks == NULL)
 	{
 		Stack_free(stk);
@@ -226,8 +248,9 @@ int lab7(string_t * output, string_t input)
 			}
 			else if (string_equal(STRING_STATIC0("for"), operand))
 			{
-				LAB7_SAFE(CycleFor == LAB7_CYCLEFOR_NONE, 8);
+				LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_NONE, 8);
 				CycleFor = LAB7_CYCLEFOR_ARG1;
+				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 8);
 			}
 			else
 			{
@@ -302,19 +325,24 @@ int lab7(string_t * output, string_t input)
 					if (string_equal(STRING_STATIC0("if"), stk_elm))
 					{
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 3);
+						LAB7_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
 					}
 					else if (string_equal(STRING_STATIC0("for"), stk_elm))
-					{
-						LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_NONE, 8);
-						CycleFor = LAB7_CYCLEFOR_ARG1;
+					{ // Завершилось заполнение третьего аргумента for.
+						LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_ARG3, 8);
+						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
+						LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList), 8);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 5);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 5);
+						CycleFor = LAB7_CYCLEFOR_NONE;
 					}
-					LAB7_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
-					LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
+					else
+					{
+						LAB7_SAFE(ArrayList_addLast(outList, &stk_elm), 3);
+						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
+					}
 				}
-			}
-			if (CycleFor == LAB7_CYCLEFOR_ARG3)
-			{ // Завершилось заполнение третьего аргумента for.
-				LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList), 8);
 			}
 			input.first++;
 			input.length--;
@@ -323,21 +351,6 @@ int lab7(string_t * output, string_t input)
 		{
 			if (*input.first == ';')
 			{
-				if (CycleFor > LAB7_CYCLEFOR_NONE)
-				{
-					CycleFor++;
-					if (CycleFor == LAB7_CYCLEFOR_ARG2)
-					{ // Закончил первый аргумент, начал второй аргумент.
-						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 8);
-						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 8);
-						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("<$>_FOR_ARG1_2")), 8);
-					}
-					else if (CycleFor == LAB7_CYCLEFOR_ARG3)
-					{
-						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("<$>_FOR_ARG2_3")), 8);
-					}
-					else LAB7_SAFE(CycleFor > LAB7_CYCLEFOR_ARG3, 8);
-				}
 				string_t stk_elm = { NULL, 0u };
 				while (true)
 				{
@@ -350,6 +363,21 @@ int lab7(string_t * output, string_t input)
 				if (stk_elm.first != NULL && lab2_isParenthesOpen(*stk_elm.first))
 				{
 					LAB7_SAFE(Stack_push(&stk, &stk_elm), 5);
+				}
+				if (CycleFor > LAB7_CYCLEFOR_NONE)
+				{
+					CycleFor++;
+					if (CycleFor == LAB7_CYCLEFOR_ARG2)
+					{ // Закончил первый аргумент, начал второй аргумент.
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 8);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 8);
+						LAB7_INSERTMARK("<$>_FOR_ARG1_ARG2", 1, 8);
+					}
+					else if (CycleFor == LAB7_CYCLEFOR_ARG3)
+					{
+						LAB7_INSERTMARK("<$>_FOR_ARG2_ARG3", 1, 8);
+					}
+					else LAB7_SAFE(CycleFor > LAB7_CYCLEFOR_ARG3, 8);
 				}
 			}
 			input.first++;
