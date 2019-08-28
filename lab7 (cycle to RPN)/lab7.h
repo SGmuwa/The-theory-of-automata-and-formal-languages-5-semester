@@ -83,6 +83,26 @@ ERRORCODE - код ошибки в случае неудачи.
 #define LAB7_INSERTMARK(NAME, ALT_POS, ERRORCODE) LAB7_SAFE(ArrayList_addLast(anyMarks, &(lab7_mark){ outList->length - 1 + ALT_POS, STRING_STATIC0(NAME) }), ERRORCODE)
 
 
+inline void lab7_printArrayListOfString(ArrayList toPrint)
+{
+#if _DEBUG == 1
+	string_t b;
+	size_t sizeToPrint = 1;
+	for (size_t i = 0; i < toPrint->length; i++)
+	{
+		ArrayList_get(toPrint, i, &b);
+		sizeToPrint += b.length + 2;
+	}
+	b = string_malloc(sizeToPrint);
+	if (b.first == NULL)
+		return;
+	if (lab2_putListToString(&b, toPrint, STRING_STATIC0(", "))) return;
+	printf("%.*s\n", (int)b.length, b.first);
+	string_free(b);
+#endif
+}
+
+
 /*
 Функция меняет второй и третий аргумент цикла for местами.
 ArrayList<lab7_mark> anyMarks - тут должна быть метка, где начинается аргумент 1 и где начинется аргумент 2.
@@ -90,11 +110,13 @@ ArrayList<lab7_mark> anyMarks - тут должна быть метка, где 
 		<$>_FOR_ARG1_ARG2 - Указывает на первую команду второго аргумента цикла FOR.
 		<$>_FOR_ARG2_ARG3 - Указывает на первую команду третьего аргумента цикла FOR.
 ArrayList<string_t> outList - выходной лист, в котором надо менять местами аргументы цикла for.
+string_t * bufferGoto - буфер, куда вставляется адрес goto.
 Возвращает: код ошибки.
 */
-int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_t*/ outList)
+int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_t*/ outList, string_t * bufferGoto)
 {
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	lab7_printArrayListOfString(outList);
 	size_t mark[2] = { SIZE_MAX, SIZE_MAX }; // Две марки.
 	size_t toRemove[2];
 	lab7_mark buffer;
@@ -129,12 +151,18 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 	{
 		LAB7_SAFE(ArrayList_get(outList, i, bufferOutList + i - mark[1]), 6);
 		LAB7_SAFE(ArrayList_remove(outList, i), 7);
+		lab7_printArrayListOfString(outList);
 	}
 	for(size_t i = countBufferOutList - 1; i != SIZE_MAX; i--)
 	{
-		LAB7_SAFE(ArrayList_add(outList, i, bufferOutList + i), 8);
+		LAB7_SAFE(ArrayList_add(outList, mark[0], bufferOutList + i), 8);
+		lab7_printArrayListOfString(outList);
 	}
 	free(bufferOutList);
+	string_t setToAddressGoto;
+	LAB7_SAFE(lab6_putSizetToEndString(bufferGoto, mark[0] + countBufferOutList, &setToAddressGoto), 11);
+	LAB7_SAFE(ArrayList_set(outList, mark[0] - 2, &setToAddressGoto), 12);
+
 #undef LAB7_SAFE
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[1]), 9);
@@ -332,7 +360,7 @@ int lab7(string_t * output, string_t input)
 					{ // Завершилось заполнение третьего аргумента for.
 						LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_ARG3, 8);
 						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
-						LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList), 8);
+						LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList, &bufferForOutput), 8);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 5);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 5);
 						CycleFor = LAB7_CYCLEFOR_NONE;
@@ -388,6 +416,9 @@ int lab7(string_t * output, string_t input)
 			LAB7_SAFE(true, 2);
 		}
 		previous = previous == ')' ? '*' : *(input.first - 1);
+#if _DEBUG == 1
+		lab7_printArrayListOfString(outList);
+#endif
 	}
 	string_t stk_elm;
 	while (!Stack_pop(&stk, &stk_elm))
