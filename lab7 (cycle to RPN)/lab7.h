@@ -171,6 +171,79 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 #undef LAB7_SAFE
 }
 
+/*
+Находит парную скобку для текущего индекса.
+ArrayList parenthes - список кобок.
+size_t start - индекс, для какой скобки мы ищем пару.
+lab7_parenthesInfo * result - указатель, куда отправить результат.
+size_t * indexOfResult - указатель, куда надо поместить индекс результата.
+Возвращает: код ошибки.
+*/
+int lab7_findOpenParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t start, lab6_parenthesInfo * result, size_t * indexOfResult)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	lab6_parenthesInfo current;
+	byte_t(*searchEngine)(char);
+	LAB7_SAFE(ArrayList_get(parenthes, start, &current), 1);
+	if (lab2_isParenthesOpen(current.c))
+		searchEngine = lab2_isParenthesClose;
+	else if (lab2_isParenthesClose(current.c))
+		searchEngine = lab2_isParenthesOpen;
+	else
+		LAB7_SAFE(true, 2);
+	size_t i = start;
+	size_t countOfCorrectOfSearchEngineParenthes = 0;
+	while (true)
+	{
+		LAB7_SAFE(ArrayList_get(parenthes, i, &current), 3);
+		if (searchEngine(current.c))
+			countOfCorrectOfSearchEngineParenthes++;
+		else
+			countOfCorrectOfSearchEngineParenthes--;
+		if (countOfCorrectOfSearchEngineParenthes == 0)
+			break;
+		i += searchEngine == lab2_isParenthesOpen ? -1 : 1;
+	}
+	if(result != NULL)
+		*result = current;
+	if (indexOfResult != NULL)
+		*indexOfResult = i;
+	LAB7_SAFE(result == NULL && indexOfResult == NULL, 4);
+	LAB7_SAFE(true, 0);
+#undef LAB7_SAFE
+}
+
+/*
+Вставляет после body циклов for и while команду goto в outList.
+ArrayList outList - куда надо вставить goto и откуда брать информацию.
+ArrayList parenthes - информация о местоположении скобках.
+string_t * bufferForOutput - в конец данной строки вставится size_t адрес для goto.
+Возвращает: код ошибки.
+*/
+int lab7_putGotoToEndBodyOfAForOrAWhile(ArrayList /*string_t*/ outList, ArrayList /*lab6_parenthesInfo*/ parenthes, string_t * bufferForOutput)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	lab6_parenthesInfo endArgsFor;
+	size_t indexOfParenthesEndArgsFor;
+	LAB7_SAFE(lab7_findOpenParenthes(parenthes, parenthes->length - 1, &endArgsFor, &indexOfParenthesEndArgsFor), 1);
+	string_t b;
+	for (size_t i = endArgsFor.i; i != SIZE_MAX; i--)
+	{
+		LAB7_SAFE(ArrayList_get(outList, i, &b), 2);
+		if (string_equal(b, STRING_STATIC0("goto")))
+		{
+			i = i + 1;
+			LAB7_SAFE(lab6_putSizetToEndString(bufferForOutput, i, &b), 4);
+			LAB7_SAFE(ArrayList_addLast(outList, &b), 5);
+			LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 5);
+			LAB7_SAFE(true, 0);
+		}
+	}
+	LAB7_SAFE(true, 3);
+#undef LAB7_SAFE
+}
+
+
 // Создать обратную польскую запись для арифметической, логической формулы с поддержкой условных операторов if if-else.
 // const string_t output - указатель, куда поместить результат.
 //							Память должна быть уже выделена и должно
@@ -344,6 +417,7 @@ int lab7(string_t * output, string_t input)
 			}
 			if (*input.first == '}')
 			{
+				LAB7_SAFE(lab7_putGotoToEndBodyOfAForOrAWhile(outList, parenthes, &bufferForOutput), 8);
 				LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 			}
 			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
