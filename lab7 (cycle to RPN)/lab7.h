@@ -65,9 +65,10 @@
 /*   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
 
 
+// Представляет из себя метку позиции и текста.
 typedef struct lab7_mark
 {
-	// Местоположение метки.
+	// Местоположение метки относительно outList.
 	size_t position;
 	// Текстовая информация метки.
 	string_t text;
@@ -96,7 +97,7 @@ inline void lab7_printArrayListOfString(ArrayList toPrint)
 	b = string_malloc(sizeToPrint);
 	if (b.first == NULL)
 		return;
-	if (lab2_putListToString(&b, toPrint, STRING_STATIC0(", "))) return;
+	if (lab2_putListToString(&b, toPrint, STRING_STATIC0(" "))) return;
 	printf("%.*s\n", (int)b.length, b.first);
 	string_free(b);
 #endif
@@ -118,7 +119,7 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	lab7_printArrayListOfString(outList);
 	size_t mark[2] = { SIZE_MAX, SIZE_MAX }; // Две марки.
-	size_t toRemove[2];
+	size_t toEdit[2];
 	lab7_mark buffer;
 	for(size_t i = anyMarks->length - 1; i != SIZE_MAX; i--)
 	{
@@ -126,7 +127,7 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 		if(string_equal(STRING_STATIC0("<$>_FOR_ARG2_ARG3"), buffer.text))
 		{
 			mark[1] = buffer.position;
-			toRemove[1] = i;
+			toEdit[1] = i;
 			break;
 		}
 	}
@@ -137,7 +138,7 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 		if(string_equal(STRING_STATIC0("<$>_FOR_ARG1_ARG2"), buffer.text))
 		{
 			mark[0] = buffer.position;
-			toRemove[0] = i - mark[1] + anyMarks->length - 1;
+			toEdit[0] = i - mark[1] + anyMarks->length - 1;
 			break;
 		}
 	}
@@ -159,14 +160,20 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 		lab7_printArrayListOfString(outList);
 	}
 	free(bufferOutList);
+	buffer.text = STRING_STATIC0("<$>_FOR_EDITED_ARG3");
+	buffer.position = mark[0];
+	LAB7_SAFE(ArrayList_set(anyMarks, toEdit[1], &buffer), 13);
+	buffer.text = STRING_STATIC0("<$>_FOR_EDITED_ARG2");
+	buffer.position = mark[0] + countBufferOutList;
+	LAB7_SAFE(ArrayList_set(anyMarks, toEdit[0], &buffer), 14);
 	string_t setToAddressGoto;
 	LAB7_SAFE(lab6_putSizetToEndString(bufferGoto, mark[0] + countBufferOutList, &setToAddressGoto), 11);
 	LAB7_SAFE(ArrayList_set(outList, mark[0] - 2, &setToAddressGoto), 12);
 
 #undef LAB7_SAFE
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
-	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[1]), 9);
-	LAB7_SAFE(ArrayList_remove(anyMarks, toRemove[0]), 10);
+	LAB7_SAFE(ArrayList_remove(anyMarks, toEdit[1]), 9);
+	LAB7_SAFE(ArrayList_remove(anyMarks, toEdit[0]), 10);
 	LAB7_SAFE(true, 0);
 #undef LAB7_SAFE
 }
@@ -179,7 +186,7 @@ lab7_parenthesInfo * result - указатель, куда отправить р
 size_t * indexOfResult - указатель, куда надо поместить индекс результата.
 Возвращает: код ошибки.
 */
-int lab7_findOpenParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t start, lab6_parenthesInfo * result, size_t * indexOfResult)
+int lab7_findPairParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t start, lab6_parenthesInfo * result, size_t * indexOfResult)
 {
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	lab6_parenthesInfo current;
@@ -214,18 +221,18 @@ int lab7_findOpenParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t st
 }
 
 /*
-Вставляет после body циклов for и while команду goto в outList.
+Вставляет после body цикла for команду goto в outList.
 ArrayList outList - куда надо вставить goto и откуда брать информацию.
 ArrayList parenthes - информация о местоположении скобках.
 string_t * bufferForOutput - в конец данной строки вставится size_t адрес для goto.
 Возвращает: код ошибки.
 */
-int lab7_putGotoToEndBodyOfAForOrAWhile(ArrayList /*string_t*/ outList, ArrayList /*lab6_parenthesInfo*/ parenthes, string_t * bufferForOutput)
+int lab7_putGotoToEndBodyOfAFor(ArrayList /*string_t*/ outList, ArrayList /*lab6_parenthesInfo*/ parenthes, string_t * bufferForOutput)
 {
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	lab6_parenthesInfo endArgsFor;
 	size_t indexOfParenthesEndArgsFor;
-	LAB7_SAFE(lab7_findOpenParenthes(parenthes, parenthes->length - 1, &endArgsFor, &indexOfParenthesEndArgsFor), 1);
+	LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &endArgsFor, &indexOfParenthesEndArgsFor), 1);
 	string_t b;
 	for (size_t i = endArgsFor.i; i != SIZE_MAX; i--)
 	{
@@ -240,6 +247,106 @@ int lab7_putGotoToEndBodyOfAForOrAWhile(ArrayList /*string_t*/ outList, ArrayLis
 		}
 	}
 	LAB7_SAFE(true, 3);
+#undef LAB7_SAFE
+}
+
+enum lab7_findnearmark
+{
+	// Надо искать марку, которая меньше заданной позиции.
+	LAB7_FINDNEARMARK_LESS,
+	// Надо искать марку, которая больше заданной позиции.
+	LAB7_FINDNEARMARK_MORE,
+	// Надо искать марку, которая равна заданной позиции.
+	LAB7_FINDNEARMARK_EQUAL,
+	// Надо искать марку, которая меньше или равна заданной позиции.
+	LAB7_FINDNEARMARK_LESS_EQUAL,
+	// Надо искать марку, которая больше или равна заданной позиции.
+	LAB7_FINDNEARMARK_MORE_EQUAL,
+	// Надо искать марку, которая не равна заданной позиции.
+	LAB7_FINDNEARMARK_NOT_EQUAL
+};
+
+/*
+Ищет метку поблизости.
+ArrayList lab7_mark anyMarks - Список меток.
+lab7_mark toFind - Метка, которую надо найти.
+enum lab7_findnearmark searchType - Тип поиска метки.
+lab7_mark * result - Указатель, куда поместить результат.
+Возвращает: номер ошибки.
+*/
+int lab7_findNearMark(ArrayList /*lab7_mark*/ anyMarks, lab7_mark toFind, enum lab7_findnearmark searchType, lab7_mark * result)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+#define LAB7_SIZE_DISTANCE(S1, S2) (S1 > S2 ? S1 - S2 : S2 - S1)
+	#define LAB7_FIND_MAKE(CRITERION) \
+	{ \
+		lab7_mark b; \
+		size_t lastFoundPosition = SIZE_MAX; \
+		lab7_mark reslt = {SIZE_MAX, STRING_STATIC0("")}; \
+		for (size_t i = anyMarks->length - 1; i != SIZE_MAX; i--) \
+		{ \
+			LAB7_SAFE(ArrayList_get(anyMarks, i, &b), 2); \
+			if(string_equal(b.text, toFind.text) && toFind.position CRITERION b.position && LAB7_SIZE_DISTANCE(toFind.position, lastFoundPosition)) \
+			{ \
+				reslt = b; \
+			}\
+		} \
+		LAB7_SAFE(reslt.position == SIZE_MAX && lastFoundPosition == SIZE_MAX, 3); \
+		*result = reslt; \
+		break; \
+	}
+	switch (searchType)
+	{
+		case LAB7_FINDNEARMARK_LESS:		LAB7_FIND_MAKE(< );
+		case LAB7_FINDNEARMARK_MORE:		LAB7_FIND_MAKE(> );
+		case LAB7_FINDNEARMARK_EQUAL:		LAB7_FIND_MAKE(==);
+		case LAB7_FINDNEARMARK_LESS_EQUAL:	LAB7_FIND_MAKE(<=);
+		case LAB7_FINDNEARMARK_MORE_EQUAL:	LAB7_FIND_MAKE(>=);
+		case LAB7_FINDNEARMARK_NOT_EQUAL:	LAB7_FIND_MAKE(!=);
+	}
+	LAB7_SAFE(true, 1);
+#undef LAB7_FIND_MAKE
+#undef LAB7_SIZE_DISTANCE
+#undef LAB7_SAFE
+}
+
+/*
+Вставляет после body цикла while команду goto в outList.
+ArrayList outList - куда надо вставить goto и откуда брать информацию.
+ArrayList parenthes - информация о местоположении скобках.
+string_t * bufferForOutput - в конец данной строки вставится size_t адрес для goto.
+Возвращает: код ошибки.
+*/
+int lab7_putGotoToEndBodyOfAWhile(ArrayList /*string_t*/ outList, ArrayList /*lab6_parenthesInfo*/ parenthes, string_t * bufferForOutput, ArrayList /*lab7_mark*/ anyMarks)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	lab6_parenthesInfo endArgWhile;
+	size_t indexOfParenthesEndArgsFor;
+	LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &endArgWhile, &indexOfParenthesEndArgsFor), 1);
+	lab7_mark beginArgWhile;
+	LAB7_SAFE(lab7_findNearMark(anyMarks, (lab7_mark) { endArgWhile.i, "<$>_WHILE_ARG1" }, LAB7_FINDNEARMARK_LESS, &beginArgWhile), 2);
+	string_t b;
+	LAB7_SAFE(lab6_putSizetToEndString(bufferForOutput, beginArgWhile.position, &b), 3);
+	LAB7_SAFE(ArrayList_addLast(outList, &b), 4);
+	LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 5);
+	LAB7_SAFE(true, 6);
+#undef LAB7_SAFE
+}
+
+
+/*
+Отвечает на вопрос, существует ли марка expect в списке anyMarks.
+*/
+bool lab7_isMakrExists(ArrayList /*lab7_mark*/ anyMarks, lab7_mark expect)
+{
+#define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
+	lab7_mark b;
+	for (size_t i = anyMarks->length - 1; i != SIZE_MAX; i--)
+	{
+		LAB7_SAFE(ArrayList_get(anyMarks, i, &b), false);
+		LAB7_SAFE(b.position == expect.position && string_equal(b.text, expect.text), true);
+	}
+	LAB7_SAFE(true, false);
 #undef LAB7_SAFE
 }
 
@@ -259,6 +366,7 @@ int lab7_putGotoToEndBodyOfAForOrAWhile(ArrayList /*string_t*/ outList, ArrayLis
 //				6 - Ошибка при работе с else.
 //              7 - Ошибка удаления скобок из выходного листа.
 //              8 - Заполнение аргументов цикла for произошло с ошибкой.
+//              9 - Работа с циклом while нарушена.
 int lab7(string_t * output, string_t input)
 {
 	if (output == NULL || output->first == NULL || output->length == 0 || input.first == NULL || input.length == 0)
@@ -307,8 +415,7 @@ int lab7(string_t * output, string_t input)
 		LAB7_CYCLEFOR_ARG1, // Сейчас заполняется первый аргумент for.
 		LAB7_CYCLEFOR_ARG2, // Сейчас заполняется второй аргумент for.
 		LAB7_CYCLEFOR_ARG3, // Сейчас запоняется третий аргумент for.
-		LAB7_CYCLEFOR_COUNT // Количество полей в lab7_CycleFor
-	} CycleFor = LAB7_CYCLEFOR_NONE; // Стадии заполнения цикла for.
+	} CycleState = LAB7_CYCLEFOR_NONE; // Стадии заполнения цикла for.
 	ArrayList anyMarks = ArrayList_malloc(sizeof(lab7_mark));
 	if (anyMarks == NULL)
 	{
@@ -349,8 +456,8 @@ int lab7(string_t * output, string_t input)
 			}
 			else if (string_equal(STRING_STATIC0("for"), operand))
 			{
-				LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_NONE, 8);
-				CycleFor = LAB7_CYCLEFOR_ARG1;
+				LAB7_SAFE(CycleState != LAB7_CYCLEFOR_NONE, 8);
+				CycleState = LAB7_CYCLEFOR_ARG1;
 				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 8);
 			}
 			else
@@ -417,7 +524,13 @@ int lab7(string_t * output, string_t input)
 			}
 			if (*input.first == '}')
 			{
-				LAB7_SAFE(lab7_putGotoToEndBodyOfAForOrAWhile(outList, parenthes, &bufferForOutput), 8);
+				lab6_parenthesInfo pair;
+				LAB7_SAFE(lab7_findPairParenthes(parenthes, outList->length - 1, &pair, NULL), 8);
+				if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_FOR_BODY_BEGIN") }))
+				{
+					LAB7_INSERTMARK("<$>_FOR_BODY_END", 3, 8);
+					LAB7_SAFE(lab7_putGotoToEndBodyOfAFor(outList, parenthes, &bufferForOutput), 8);
+				}
 				LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 			}
 			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
@@ -432,12 +545,19 @@ int lab7(string_t * output, string_t input)
 					}
 					else if (string_equal(STRING_STATIC0("for"), stk_elm))
 					{ // Завершилось заполнение третьего аргумента for.
-						LAB7_SAFE(CycleFor != LAB7_CYCLEFOR_ARG3, 8);
+						LAB7_SAFE(CycleState != LAB7_CYCLEFOR_ARG3, 8);
 						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 3);
 						LAB7_SAFE(lab7_switchArg2Arg3End(anyMarks, outList, &bufferForOutput), 8);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 5);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 5);
-						CycleFor = LAB7_CYCLEFOR_NONE;
+						CycleState = LAB7_CYCLEFOR_NONE;
+						LAB7_INSERTMARK("<$>_CYCLE_BODY_BEGIN", 1, 8);
+					}
+					else if (string_equal(STRING_STATIC0("while"), stk_elm))
+					{ // Завершилось заполнение аргумента while.
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 9);
+						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 9);
+						LAB7_INSERTMARK("<$>_CYCLE_BODY_BEGIN", 1, 9);
 					}
 					else
 					{
@@ -466,20 +586,20 @@ int lab7(string_t * output, string_t input)
 				{
 					LAB7_SAFE(Stack_push(&stk, &stk_elm), 5);
 				}
-				if (CycleFor > LAB7_CYCLEFOR_NONE)
+				if (CycleState > LAB7_CYCLEFOR_NONE)
 				{
-					CycleFor++;
-					if (CycleFor == LAB7_CYCLEFOR_ARG2)
+					CycleState++;
+					if (CycleState == LAB7_CYCLEFOR_ARG2)
 					{ // Закончил первый аргумент, начал второй аргумент.
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 8);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 8);
 						LAB7_INSERTMARK("<$>_FOR_ARG1_ARG2", 1, 8);
 					}
-					else if (CycleFor == LAB7_CYCLEFOR_ARG3)
+					else if (CycleState == LAB7_CYCLEFOR_ARG3)
 					{
 						LAB7_INSERTMARK("<$>_FOR_ARG2_ARG3", 1, 8);
 					}
-					else LAB7_SAFE(CycleFor > LAB7_CYCLEFOR_ARG3, 8);
+					else LAB7_SAFE(CycleState > LAB7_CYCLEFOR_ARG3, 8);
 				}
 			}
 			input.first++;

@@ -237,12 +237,12 @@ LAB7_TEST_MAKE_lab7(75, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto",
 	/* 17 18          */"}                           \n" /* 5 goto        */\
 	""
 	, 0);
-LAB7_TEST_MAKE_lab7(76, "s 0 > 12 if s s 1 - = s print",
+LAB7_TEST_MAKE_lab7(76, "s 0 > 14 if s s 1 - = s print 0 goto",
 	/* 0 1 2 3 4 */"while(s > 0)   \n" /* s 0 > 12 if */\
 	/*           */"{              \n"\
 	/* 5 6 7 8 9 */"    s = s - 1; \n" /* s s 1 - = */\
 	/* 10 11     */"    print(s);  \n" /* s print */\
-	/* 12        */"}              \n"\
+	/* 12 13      */"}             \n" /* 0 goto */\
 	""
 	, 0);
 LAB7_TEST_MAKE_lab7(77, "s s 1 + = s print s 4 < ! 0 if",
