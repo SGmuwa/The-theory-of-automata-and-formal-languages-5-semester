@@ -292,14 +292,14 @@ int lab7_findNearMark(ArrayList /*lab7_mark*/ anyMarks, lab7_mark toFind, enum l
 		for (size_t i = anyMarks->length - 1; i != SIZE_MAX; i--) \
 		{ \
 			LAB7_SAFE(ArrayList_get(anyMarks, i, &b), 2); \
-			if(string_equal(b.text, toFind.text) && toFind.position CRITERION b.position && LAB7_SIZE_DISTANCE(toFind.position, lastFoundPosition)) \
+			if(string_equal(b.text, toFind.text) && b.position CRITERION toFind.position && LAB7_SIZE_DISTANCE(toFind.position, lastFoundPosition)) \
 			{ \
 				reslt = b; \
 			}\
 		} \
 		LAB7_SAFE(reslt.position == SIZE_MAX && lastFoundPosition == SIZE_MAX, 3); \
 		*result = reslt; \
-		break; \
+		LAB7_SAFE(true, 0); \
 	}
 	switch (searchType)
 	{
@@ -330,12 +330,12 @@ int lab7_putGotoToEndBodyOfAWhile(ArrayList /*string_t*/ outList, ArrayList /*la
 	size_t indexOfParenthesEndArgsFor;
 	LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &endArgWhile, &indexOfParenthesEndArgsFor), 1);
 	lab7_mark beginArgWhile;
-	LAB7_SAFE(lab7_findNearMark(anyMarks, (lab7_mark) { endArgWhile.i, "<$>_WHILE_ARG1" }, LAB7_FINDNEARMARK_LESS, &beginArgWhile), 2);
+	LAB7_SAFE(lab7_findNearMark(anyMarks, (lab7_mark) { endArgWhile.i, STRING_STATIC0("<$>_WHILE_ARG1") }, LAB7_FINDNEARMARK_LESS_EQUAL, &beginArgWhile), 2);
 	string_t b;
 	LAB7_SAFE(lab6_putSizetToEndString(bufferForOutput, beginArgWhile.position, &b), 3);
 	LAB7_SAFE(ArrayList_addLast(outList, &b), 4);
 	LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("goto")), 5);
-	LAB7_SAFE(true, 6);
+	LAB7_SAFE(true, 0);
 #undef LAB7_SAFE
 }
 
@@ -466,6 +466,11 @@ int lab7(string_t * output, string_t input)
 				CycleState = LAB7_CYCLEFOR_ARG1;
 				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 8);
 			}
+			else if (string_equal(STRING_STATIC0("while"), operand))
+			{
+				LAB7_INSERTMARK("<$>_WHILE_ARG1", 1, 9);
+				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 9);
+			}
 			else
 			{
 				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 5);
@@ -537,6 +542,11 @@ int lab7(string_t * output, string_t input)
 					LAB7_INSERTMARK("<$>_FOR_BODY_END", 3, 8);
 					LAB7_SAFE(lab7_putGotoToEndBodyOfAFor(outList, parenthes, &bufferForOutput), 8);
 				}
+				else if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_WHILE_BODY_BEGIN") }))
+				{
+					LAB7_INSERTMARK("<$>_WHILE_BODY_END", 3, 9);
+					LAB7_SAFE(lab7_putGotoToEndBodyOfAWhile(outList, parenthes, &bufferForOutput, anyMarks), 9);
+				}
 				LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 			}
 			if (Stack_get(stk, &stk_elm) == 0) // Вставка функций.
@@ -561,6 +571,7 @@ int lab7(string_t * output, string_t input)
 					}
 					else if (string_equal(STRING_STATIC0("while"), stk_elm))
 					{ // Завершилось заполнение аргумента while.
+						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 9);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 9);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 9);
 						LAB7_INSERTMARK("<$>_WHILE_BODY_BEGIN", 1, 9);
