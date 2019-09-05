@@ -191,14 +191,20 @@ int lab7_findPairParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t st
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	lab6_parenthesInfo current;
 	byte_t(*searchEngine)(char);
-	LAB7_SAFE(ArrayList_get(parenthes, start, &current), 1);
+	size_t i = parenthes->length - 1;
+	for (; i != SIZE_MAX; i--)
+	{
+		LAB7_SAFE(ArrayList_get(parenthes, i, &current), 1);
+		if (current.i == current.i)
+			break;
+		LAB7_SAFE(i == 0, 5);
+	}
 	if (lab2_isParenthesOpen(current.c))
 		searchEngine = lab2_isParenthesClose;
 	else if (lab2_isParenthesClose(current.c))
 		searchEngine = lab2_isParenthesOpen;
 	else
 		LAB7_SAFE(true, 2);
-	size_t i = start;
 	size_t countOfCorrectOfSearchEngineParenthes = 0;
 	while (true)
 	{
@@ -525,7 +531,7 @@ int lab7(string_t * output, string_t input)
 			if (*input.first == '}')
 			{
 				lab6_parenthesInfo pair;
-				LAB7_SAFE(lab7_findPairParenthes(parenthes, outList->length - 1, &pair, NULL), 8);
+				LAB7_SAFE(lab7_findPairParenthes(parenthes, outList->length, &pair, NULL), 8);
 				if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_FOR_BODY_BEGIN") }))
 				{
 					LAB7_INSERTMARK("<$>_FOR_BODY_END", 3, 8);
@@ -551,13 +557,13 @@ int lab7(string_t * output, string_t input)
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 5);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 5);
 						CycleState = LAB7_CYCLEFOR_NONE;
-						LAB7_INSERTMARK("<$>_CYCLE_BODY_BEGIN", 1, 8);
+						LAB7_INSERTMARK("<$>_FOR_BODY_BEGIN", 1, 8);
 					}
 					else if (string_equal(STRING_STATIC0("while"), stk_elm))
 					{ // Завершилось заполнение аргумента while.
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("?")), 9);
 						LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 9);
-						LAB7_INSERTMARK("<$>_CYCLE_BODY_BEGIN", 1, 9);
+						LAB7_INSERTMARK("<$>_WHILE_BODY_BEGIN", 1, 9);
 					}
 					else
 					{
