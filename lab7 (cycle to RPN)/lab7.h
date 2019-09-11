@@ -4,10 +4,10 @@
 
 #define LAB7_HELP_STR \
 	"Постановка задачи: " \
-	"\"Создать обратную польскую запись для TODO.\" " \
+	"\"Создать обратную польскую запись для оператора цикла.\" " \
 	"Так как за основу взята lab6, то программа поддерживает и арифметические, и логические записи." \
 	"С помощью данной программы возможно преобразовывать " \
-	"математико-логическую запись с условиями в обратную польскую запись. " \
+	"математико-логическую запись с условиями и циклами в обратную польскую запись. " \
 	"Поддерживаются операторы:\n" \
 	"|| (логическое или),\n" \
 	"&& (логическое и),\n" \
@@ -32,37 +32,39 @@
 	"! (логическое отрицание),\n" \
 	"\"if (условие) {выражение}\" (условный оператор),\n" \
 	"\"else {выражение}\" (переход по лжи от if).\n" \
-	"\"for(<операция>;<условие>;<операция>){ <Тело цикла> }\" цикл for).\n" \
-	"\"where(<условие>){ <Тело цикла> }\" цикл <where>).\n" \
-	"\"do{ <Тело цикла> } while(<Тело цикда>);\" цикл do-while).\n" \
+	"\"for(<операция перед телом цикла>;<условие цикла>;<операция после тела цикла>) { <Тело цикла> }\" - цикл for.\n" \
+	"\"while(<условие цикла>) { <Тело цикла> }\" - цикл while.\n" \
+	"\"do{ <Тело цикла> } while(<условие цикла>);\" - цикл do-while.\n" \
 	"И скобки: (, ), [, ], {, }.\n" \
 	"Также поддерживаются вещественные числа и точка в операндах.\n" \
 	"Пример:\n" \
-	/*                0 1 2 */ "test = 0;                                                    \n" /* test 0 =                                                               */ \
-	/*             3 ... 24 */ "if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if */ \
-	/*                      */ "{                                                            \n" /*                                                                        */ \
-	/*             25 26 27 */ "    test = 1;                                                \n" /* test 1 =                                                               */ \
-	/* 28 29 30 31 32 33 34 */ "    if(now() % 2 == 0)                                       \n" /* now 2 % 0 == 50 if                                                     */ \
-	/*                      */ "    {                                                        \n" /*                                                                        */ \
-	/*                35 36 */ "		print(now());                                        \n" /* now print                                                              */ \
-	/* 37 38 39 40 41 42 43 */ "		if(now() % 2 == 0)                                   \n" /* now 2 % 0 == 48 if                                                     */ \
-	/*                      */ "		{                                                    \n" /*                                                                        */ \
-	/*                44 45 */ "			print(now());                                    \n" /* now print                                                              */ \
-	/*                46 47 */ "		}                                                    \n" /* 50 goto                                                                */ \
-	/*                      */ "		else                                                 \n" /*                                                                        */ \
-	/*                      */ "		{                                                    \n" /*                                                                        */ \
-	/*                48 49 */ "			print(3.14);                                     \n" /* 3.14 print                                                             */ \
-	/*                      */ "		}                                                    \n" /*                                                                        */ \
-	/*                      */ "    }                                                        \n" /*                                                                        */ \
-	/*                50 51 */ "}                                                            \n" /* 55 goto                                                                */ \
-	/*                      */ "else                                                         \n" /*                                                                        */ \
-	/*                      */ "{                                                            \n" /*                                                                        */ \
-	/*             52 53 54 */ "    test = 2;                                                \n" /* test 2 =                                                               */ \
-	/*                      */ "}                                                            \n" /*                                                                        */ \
-	/*                55 56 */ "print(test);                                                 \n" /* test print                                                             */ \
+	/* 0 1 2                                        */"test = 0;                                                    \n" /* test 0 =                                                               */\
+	/* 3 ... 24                                     */"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if */\
+	/*                                              */"{                                                            \n" /*                                                                        */\
+	/* 25 26 27                                     */"    test = 1;                                                \n" /* test 1 =                                                               */\
+	/* 28 29                                        */"}                                                            \n" /* 33 goto                                                                */\
+	/*                                              */"else                                                         \n" /*                                                                        */\
+	/*                                              */"{                                                            \n" /*                                                                        */\
+	/* 30 31 32                                     */"    test = 2;                                                \n" /* test 2 =                                                               */\
+	/*                                              */"}                                                            \n" /*                                                                        */\
+	/* 33 34                                        */"print(test);                                                 \n" /* test print                                                             */\
+	/* 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 */"for(s = 0; s < 4; s = s + 1)                                 \n" /* s 0 = 45 goto s s 1 + = s 4 < 54 if                                    */\
+	/*                                              */"{                                                            \n" /*                                                                        */\
+	/* 50 51                                        */"    print(s);                                                \n" /* s print                                                                */\
+	/* 52 53                                        */"}                                                            \n" /* 40 goto                                                                */\
+	/* 54 55 56 57 58                               */"while(s > 0)                                                 \n" /* s 0 > 68 if                                                            */\
+	/*                                              */"{                                                            \n" /*                                                                        */\
+	/* 59 60 61 62 63                               */"    s = s - 1;                                               \n" /* s s 1 - =                                                              */\
+	/* 64 65                                        */"    print(s);                                                \n" /* s print                                                                */\
+	/* 66 67                                        */"}                                                            \n" /* 54 goto                                                                */\
+	/*                                              */"do                                                           \n" /*                                                                        */\
+	/*                                              */"{                                                            \n" /*                                                                        */\
+	/* 68 69 70 71 72                               */"    s = s + 1;                                               \n" /* s s 1 + =                                                              */\
+	/* 73 74                                        */"    print(s);                                                \n" /* s print                                                                */\
+	/* 75 76 77 78 79 80                            */"} while(s < 4);                                              \n" /* s 4 < ! 68 if                                                          */\
+	/* 81 82                                        */"print(s);                                                    \n" /* s print                                                                */\
 	"В результате должно получиться:\n" \
-	"test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 52 if test 1 = now 2 % 0 == 50 if now print now 2 % 0 == 48 if now print 50 goto 3.14 print 55 goto test 2 = test print"
-/*   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728  29303132 33 34 35  36    37  38394041 42 43 44  45    46 47   48   49    50 51   52   535455   56*/
+	"test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print s 0 = 45 goto s s 1 + = s 4 < 54 if s print 40 goto s 0 > 68 if s s 1 - = s print 54 goto s s 1 + = s print s 4 < ! 68 if s print"
 
 
 // Представляет из себя метку позиции и текста.
@@ -83,8 +85,10 @@ ERRORCODE - код ошибки в случае неудачи.
 */
 #define LAB7_INSERTMARK(NAME, ALT_POS, ERRORCODE) LAB7_SAFE(ArrayList_addLast(anyMarks, &(lab7_mark){ outList->length - 1 + ALT_POS, STRING_STATIC0(NAME) }), ERRORCODE)
 
-
-inline void lab7_printArrayListOfString(ArrayList toPrint)
+/*
+Функция печатает массив типа string_t в консоль. Во время Debug не включается в компиляцию.
+*/
+inline void lab7_printArrayListOfStringDebug(ArrayList toPrint)
 {
 #if _DEBUG == 1
 	string_t b;
@@ -117,7 +121,7 @@ string_t * bufferGoto - буфер, куда вставляется адрес g
 int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_t*/ outList, string_t * bufferGoto)
 {
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
-	lab7_printArrayListOfString(outList);
+	lab7_printArrayListOfStringDebug(outList);
 	size_t mark[2] = { SIZE_MAX, SIZE_MAX }; // Две марки.
 	size_t toEdit[2];
 	lab7_mark buffer;
@@ -152,12 +156,12 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 	{
 		LAB7_SAFE(ArrayList_get(outList, i, bufferOutList + i - mark[1]), 6);
 		LAB7_SAFE(ArrayList_remove(outList, i), 7);
-		lab7_printArrayListOfString(outList);
+		lab7_printArrayListOfStringDebug(outList);
 	}
 	for(size_t i = countBufferOutList - 1; i != SIZE_MAX; i--)
 	{
 		LAB7_SAFE(ArrayList_add(outList, mark[0], bufferOutList + i), 8);
-		lab7_printArrayListOfString(outList);
+		lab7_printArrayListOfStringDebug(outList);
 	}
 	free(bufferOutList);
 	buffer.text = STRING_STATIC0("<$>_FOR_EDITED_ARG3");
@@ -666,7 +670,7 @@ int lab7(string_t * output, string_t input)
 		}
 		previous = previous == ')' ? '*' : *(input.first - 1);
 #if _DEBUG == 1
-		lab7_printArrayListOfString(outList);
+		lab7_printArrayListOfStringDebug(outList);
 #endif
 	}
 	string_t stk_elm;
