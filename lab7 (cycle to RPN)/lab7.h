@@ -464,7 +464,9 @@ int lab7(string_t * output, string_t input)
 			}
 			else if (string_equal(STRING_STATIC0("while"), operand))
 			{
-				LAB7_INSERTMARK("<$>_WHILE_ARG1", 1, 9);
+				lab7_mark mark;
+				if(ArrayList_get(anyMarks, anyMarks->length - 1, &mark) != 0 || mark.position != outList->length || !string_equal(mark.text, STRING_STATIC0("<$>_DO_ARG1")))
+					LAB7_INSERTMARK("<$>_WHILE_ARG1", 1, 9); // Надо быть увереным, что это менно цикл while, а не do-while.
 				LAB7_SAFE(Stack_push(&stk, &((string_t) { input.first, countOfFun })), 9);
 			}
 			else if (string_equal(STRING_STATIC0("do"), operand))
@@ -550,6 +552,10 @@ int lab7(string_t * output, string_t input)
 					LAB7_SAFE(lab7_putGotoToEndBodyOfAWhile(outList, parenthes, &bufferForOutput, anyMarks), 9);
 					LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
 				}
+				else if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_DO_BODY_BEGIN") }))
+				{
+					LAB7_INSERTMARK("<$>_DO_BODY_END", 3, 9);
+				}
 				else
 				{
 					LAB7_SAFE(lab6_putLastAddress(outList, &bufferForOutput), 4);
@@ -579,12 +585,14 @@ int lab7(string_t * output, string_t input)
 					{ // Завершилось заполнение аргумента while.
 						// TODO
 						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 10); // while в стеке не нужен.
-						lab6_parenthesInfo pair;
-						LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &pair, NULL), 9);
+						lab6_parenthesInfo pair; size_t pair_i;
+						LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &pair, &pair_i), 9);
 						if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_DO_ARG1") }))
 						{
 							string_t str;
+							LAB7_SAFE(lab7_findPairParenthes(parenthes, pair_i - 1, &pair, NULL), 10);
 							LAB7_SAFE(lab6_putSizetToEndString(&bufferForOutput, pair.i, &str), 10);
+							LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("!")), 10);
 							LAB7_SAFE(ArrayList_addLast(outList, &str), 10);
 							LAB7_SAFE(ArrayList_addLast(outList, &STRING_STATIC0("if")), 10);
 						}
@@ -603,8 +611,8 @@ int lab7(string_t * output, string_t input)
 						&& input.length != 0
 						&& string_equal(STRING_STATIC0("while"), (string_t) { input.first + 1 , lab2_isFunction((string_t) {input.first + 1, input.length - 1})}))
 					{
-						LAB7_INSERTMARK("<$>_DO_BODY_END", 0, 9);
-						LAB7_INSERTMARK("<$>_DO_ARG1", 1, 9);
+						LAB7_INSERTMARK("<$>_DO_ARG1", 1, 10);
+						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 10);
 					}
 					else
 					{

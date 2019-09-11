@@ -181,51 +181,51 @@ LAB7_TEST_MAKE_lab7(72, "a 6 if b 6 if",
 	/*3 4 5*/ " if(b){} \n" /* b 6 if  */\
 	/*6    */ "}        \n" /*         */\
 	"", 0);
-LAB7_TEST_MAKE_lab7(73, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print ...? TODO",
+LAB7_TEST_MAKE_lab7(73, "test 0 = 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if test 1 = 33 goto test 2 = test print s 0 = 45 goto s s 1 + = s 4 < 54 if s print 40 goto s 0 > 68 if s s 1 - = s print 54 goto s s 1 + = s print s 4 < ! 68 if s print",
 	/*                   0    1 2 3   4 5    6   7   8 9 10  11  1213  14151617       1819  202122 23 24 25   262728 29   30   313233   34*/
-	/*                                              */"test = 0;                                                    \n" /* test 0 =                                                               */\
-	/*                                              */"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if */\
+	/* 0 1 2                                        */"test = 0;                                                    \n" /* test 0 =                                                               */\
+	/* 3 ... 24                                     */"if(!anywhere(!1.0, 2.00 + 5.1 * 3.2 + 2.3^~2.4^2.5)s.a == 0) \n" /* 1.0 ! 2.00 5.1 3.2 * + 2.3 2.4 ~ 2.5 ^ ^ + anywhere ! s.a * 0 == 30 if */\
 	/*                                              */"{                                                            \n" /*                                                                        */\
-	/*                                              */"    test = 1;                                                \n" /* test 1 =                                                               */\
-	/*                                              */"}                                                            \n" /* 33 goto                                                                */\
+	/* 25 26 27                                     */"    test = 1;                                                \n" /* test 1 =                                                               */\
+	/* 28 29                                        */"}                                                            \n" /* 33 goto                                                                */\
 	/*                                              */"else                                                         \n" /*                                                                        */\
 	/*                                              */"{                                                            \n" /*                                                                        */\
-	/*                                              */"    test = 2;                                                \n" /* test 2 =                                                               */\
+	/* 30 31 32                                     */"    test = 2;                                                \n" /* test 2 =                                                               */\
 	/*                                              */"}                                                            \n" /*                                                                        */\
 	/* 33 34                                        */"print(test);                                                 \n" /* test print                                                             */\
 	/* 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 */"for(s = 0; s < 4; s = s + 1)                                 \n" /* s 0 = 45 goto s s 1 + = s 4 < 54 if                                    */\
 	/*                                              */"{                                                            \n" /*                                                                        */\
 	/* 50 51                                        */"    print(s);                                                \n" /* s print                                                                */\
 	/* 52 53                                        */"}                                                            \n" /* 40 goto                                                                */\
-	/* 54 55 56 57 58                               */"while(s > 0)                                                 \n" /* s 0 > 66 if                                                            */\
+	/* 54 55 56 57 58                               */"while(s > 0)                                                 \n" /* s 0 > 68 if                                                            */\
 	/*                                              */"{                                                            \n" /*                                                                        */\
 	/* 59 60 61 62 63                               */"    s = s - 1;                                               \n" /* s s 1 - =                                                              */\
 	/* 64 65                                        */"    print(s);                                                \n" /* s print                                                                */\
-	/*                                              */"}                                                            \n" /*                                                                        */\
+	/* 66 67                                        */"}                                                            \n" /* 54 goto                                                                */\
 	/*                                              */"do                                                           \n" /*                                                                        */\
 	/*                                              */"{                                                            \n" /*                                                                        */\
-	/* 66 67 68 69 70                               */"    s = s + 1;                                               \n" /* s s 1 + =                                                              */\
-	/* 71 72                                        */"    print(s);                                                \n" /* s print                                                                */\
-	/* 73 74 75 76 77 78                            */"} while(s < 4);                                              \n" /* s 4 < ! 66 if                                                          */\
-	/* 79 80                                        */"print(s);                                                    \n" /* s print                                                                */\
+	/* 68 69 70 71 72                               */"    s = s + 1;                                               \n" /* s s 1 + =                                                              */\
+	/* 73 74                                        */"    print(s);                                                \n" /* s print                                                                */\
+	/* 75 76 77 78 79 80                            */"} while(s < 4);                                              \n" /* s 4 < ! 68 if                                                          */\
+	/* 81 82                                        */"print(s);                                                    \n" /* s print                                                                */\
 	""
 	, 0);
-LAB7_TEST_MAKE_lab7(74, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto s 0 > 31 if s s 1 - = s print s s 1 + = s print s 4 < ! 31 if s print",
+LAB7_TEST_MAKE_lab7(74, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto s 0 > 33 if s s 1 - = s print 19 goto s s 1 + = s print s 4 < ! 33 if s print",
 	/* 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 */"for(s = 0; s < 4; s = s + 1)\n" /* s 0 = 10 goto s s 1 + = s 4 < 19 if */\
 	/*                                    */"{                           \n" /*                                     */\
 	/* 15 16                              */"    print(s);               \n" /* s print                             */\
 	/* 17 18                              */"}                           \n" /* 5 goto                              */\
-	/* 19 20 21 22 23                     */"while(s > 0)                \n" /* s 0 > 31 if                         */\
+	/* 19 20 21 22 23                     */"while(s > 0)                \n" /* s 0 > 33 if                         */\
 	/*                                    */"{                           \n" /*                                     */\
 	/* 24 25 26 27 28                     */"    s = s - 1;              \n" /* s s 1 - =                           */\
 	/* 29 30                              */"    print(s);               \n" /* s print                             */\
-	/*                                    */"}                           \n" /*                                     */\
+	/* 31 32                              */"}                           \n" /* 19 goto                             */\
 	/*                                    */"do                          \n" /*                                     */\
 	/*                                    */"{                           \n" /*                                     */\
-	/* 31 32 33 34 35                     */"    s = s + 1;              \n" /* s s 1 + =                           */\
-	/* 36 37                              */"    print(s);               \n" /* s print                             */\
-	/* 38 39 40 41 42 43                  */"} while(s < 4);             \n" /* s 4 < ! 31 if                       */\
-	/* 44 45                              */"print(s);                   \n" /* s print                             */\
+	/* 33 34 35 36 37                     */"    s = s + 1;              \n" /* s s 1 + =                           */\
+	/* 38 39                              */"    print(s);               \n" /* s print                             */\
+	/* 40 41 42 43 44 45                  */"} while(s < 4);             \n" /* s 4 < ! 33 if                       */\
+	/* 46 47                              */"print(s);                   \n" /* s print                             */\
 	""
 	, 0);
 LAB7_TEST_MAKE_lab7(75, "s 0 = 10 goto s s 1 + = s 4 < 19 if s print 5 goto",
@@ -254,7 +254,7 @@ LAB7_TEST_MAKE_lab7(77, "s s 1 + = s print s 4 < ! 0 if",
 	, 0);
 LAB7_TEST_MAKE_lab7(78, "n 0 = n n 1 + = n print n 4 < ! 3 if s s 1 + = s print s 4 < ! 0 if",
 	/*                   */"do {                 \n"\
-	/* 0 1 2             */"    n = 0            \n" /* n 0 = */\
+	/* 0 1 2             */"    n = 0;           \n" /* n 0 = */\
 	/*                   */"    do{              \n"\
 	/* 3 4 5 6 7         */"        n = n + 1;   \n" /* n n 1 + = */\
 	/* 8 9               */"        print(n);    \n" /* n print */\
@@ -264,11 +264,11 @@ LAB7_TEST_MAKE_lab7(78, "n 0 = n n 1 + = n print n 4 < ! 3 if s s 1 + = s print 
 	/* 23 24 25 26 27 28 */"} while(s < 4);      \n" /* s 4 < ! 0 if */\
 	""
 	, 0);
-LAB7_TEST_MAKE_lab7(79, "s 4 = s 0 > 29 if n 4 = n 0 > 23 if n n 1 - = n print 11 goto s s 1 - = s print 3 goto",
+LAB7_TEST_MAKE_lab7(79, "s 4 = s 0 > 34 if n 4 = n 0 > 25 if n n 1 - = n print 11 goto s s 1 - = s print 3 goto",
 	/* 0 1 2          */"s = 4;             \n" /* s 4 =       */\
-	/* 3 4 5 6 7      */"while(s > 0) {     \n" /* s 0 > 29 if */\
+	/* 3 4 5 6 7      */"while(s > 0) {     \n" /* s 0 > 34 if */\
 	/* 8 9 10         */"    n = 4;         \n" /* n 4 =       */\
-	/* 11 12 13 14 15 */"    while(n > 0) { \n" /* n 0 > 23 if */\
+	/* 11 12 13 14 15 */"    while(n > 0) { \n" /* n 0 > 25 if */\
 	/* 16 17 18 19 20 */"        n = n - 1; \n" /* n n 1 - =   */\
 	/* 21 22          */"        print(n);  \n" /* n print     */\
 	/* 23 24          */"    }              \n" /* 11 goto     */\
@@ -289,6 +289,11 @@ LAB7_TEST_MAKE_lab7(81, "8 if 6 if 2 goto 0 goto",
 	/* 2 3   */"    while() {  \n" /* 6 if   */\
 	/* 4 5   */"    }          \n" /* 2 goto */\
 	/* 6 7   */"}              \n" /* 0 goto */\
+	""
+	, 0);
+LAB7_TEST_MAKE_lab7(82, "! 0 if",
+	/*       */"do {       \n"\
+	/* 0 1 2 */"} while(); \n" /* ! 0 if */\
 	""
 	, 0);
 
@@ -378,7 +383,8 @@ void lab7_runTests(void)
 		LAB7_TEST_GETNAME(78),
 		LAB7_TEST_GETNAME(79),
 		LAB7_TEST_GETNAME(80),
-		LAB7_TEST_GETNAME(81)
+		LAB7_TEST_GETNAME(81),
+		LAB7_TEST_GETNAME(82)
 	};
 
 	char prototypeName[] = "lab7_test ";
