@@ -264,17 +264,31 @@ LAB7_TEST_MAKE_lab7(78, "n 0 = n n 1 + = n print n 4 < ! 3 if s s 1 + = s print 
 	/* 23 24 25 26 27 28 */"} while(s < 4);      \n" /* s 4 < ! 0 if */\
 	""
 	, 0);
-LAB7_TEST_MAKE_lab7(79, "s 4 = s 0 > 29 if n 4 = n 0 > 23 if n n 1 - = n print s s 1 - = s print",
+LAB7_TEST_MAKE_lab7(79, "s 4 = s 0 > 29 if n 4 = n 0 > 23 if n n 1 - = n print 11 goto s s 1 - = s print 3 goto",
 	/* 0 1 2          */"s = 4;             \n" /* s 4 =       */\
 	/* 3 4 5 6 7      */"while(s > 0) {     \n" /* s 0 > 29 if */\
 	/* 8 9 10         */"    n = 4;         \n" /* n 4 =       */\
 	/* 11 12 13 14 15 */"    while(n > 0) { \n" /* n 0 > 23 if */\
 	/* 16 17 18 19 20 */"        n = n - 1; \n" /* n n 1 - =   */\
 	/* 21 22          */"        print(n);  \n" /* n print     */\
-	/*                */"    }              \n" /*             */\
-	/* 23 24 25 26 27 */"    s = s - 1;     \n" /* s s 1 - =   */\
-	/* 28 29          */"    print(s);      \n" /* s print     */\
-	/*                */"}                  \n" /*             */\
+	/* 23 24          */"    }              \n" /* 11 goto     */\
+	/* 25 26 27 28 29 */"    s = s - 1;     \n" /* s s 1 - =   */\
+	/* 30 31          */"    print(s);      \n" /* s print     */\
+	/* 32 33          */"}                  \n" /* 3 goto      */\
+	""
+	, 0);
+LAB7_TEST_MAKE_lab7(80, "a 10 if b 8 if 3 goto 0 goto",
+	/* 0 1 2 */"while(a) {     \n" /* s 10 if */\
+	/* 3 4 5 */"    while(b) { \n" /* b 8 if  */\
+	/* 6 7   */"    }          \n" /* 3 goto  */\
+	/* 8 9   */"}              \n" /* 0 goto  */\
+	""
+	, 0);
+LAB7_TEST_MAKE_lab7(81, "8 if 6 if 2 goto 0 goto",
+	/* 0 1   */"while() {      \n" /* 8 if   */\
+	/* 2 3   */"    while() {  \n" /* 6 if   */\
+	/* 4 5   */"    }          \n" /* 2 goto */\
+	/* 6 7   */"}              \n" /* 0 goto */\
 	""
 	, 0);
 
@@ -362,7 +376,9 @@ void lab7_runTests(void)
 		LAB7_TEST_GETNAME(76),
 		LAB7_TEST_GETNAME(77),
 		LAB7_TEST_GETNAME(78),
-		LAB7_TEST_GETNAME(79)
+		LAB7_TEST_GETNAME(79),
+		LAB7_TEST_GETNAME(80),
+		LAB7_TEST_GETNAME(81)
 	};
 
 	char prototypeName[] = "lab7_test ";

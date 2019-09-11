@@ -181,7 +181,7 @@ int lab7_switchArg2Arg3End(ArrayList /*lab7_mark*/ anyMarks, ArrayList /*string_
 /*
 Находит парную скобку для текущего индекса.
 ArrayList parenthes - список кобок.
-size_t start - индекс, для какой скобки мы ищем пару.
+size_t start - индекс массива parenthes, для какой скобки мы ищем пару.
 lab7_parenthesInfo * result - указатель, куда отправить результат.
 size_t * indexOfResult - указатель, куда надо поместить индекс результата.
 Возвращает: код ошибки.
@@ -190,15 +190,9 @@ int lab7_findPairParenthes(ArrayList /*lab6_parenthesInfo*/ parenthes, size_t st
 {
 #define LAB7_SAFE(ACT, CODE) if(ACT) { return CODE; }
 	lab6_parenthesInfo current;
+	size_t i = start;
+	LAB7_SAFE(ArrayList_get(parenthes, start, &current), 1);
 	byte_t(*searchEngine)(char);
-	size_t i = parenthes->length - 1;
-	for (; i != SIZE_MAX; i--)
-	{
-		LAB7_SAFE(ArrayList_get(parenthes, i, &current), 1);
-		if (current.i == current.i)
-			break;
-		LAB7_SAFE(i == 0, 5);
-	}
 	if (lab2_isParenthesOpen(current.c))
 		searchEngine = lab2_isParenthesClose;
 	else if (lab2_isParenthesClose(current.c))
@@ -287,19 +281,20 @@ int lab7_findNearMark(ArrayList /*lab7_mark*/ anyMarks, lab7_mark toFind, enum l
 	#define LAB7_FIND_MAKE(CRITERION) \
 	{ \
 		lab7_mark b; \
-		size_t lastFoundPosition = SIZE_MAX; \
-		lab7_mark reslt = {SIZE_MAX, STRING_STATIC0("")}; \
+		lab7_mark reslt = { SIZE_MAX, STRING_STATIC0("") }; \
 		for (size_t i = anyMarks->length - 1; i != SIZE_MAX; i--) \
 		{ \
 			LAB7_SAFE(ArrayList_get(anyMarks, i, &b), 2); \
-			if(string_equal(b.text, toFind.text) && b.position CRITERION toFind.position && LAB7_SIZE_DISTANCE(toFind.position, lastFoundPosition)) \
+			if (string_equal(b.text, toFind.text) \
+				&& b.position CRITERION toFind.position \
+				&& (reslt.position == SIZE_MAX || LAB7_SIZE_DISTANCE(toFind.position, reslt.position) > LAB7_SIZE_DISTANCE(toFind.position, b.position))) \
 			{ \
 				reslt = b; \
-			}\
+			} \
 		} \
-		LAB7_SAFE(reslt.position == SIZE_MAX && lastFoundPosition == SIZE_MAX, 3); \
-		*result = reslt; \
-		LAB7_SAFE(true, 0); \
+			LAB7_SAFE(reslt.position == SIZE_MAX, 3); \
+				*result = reslt; \
+				LAB7_SAFE(true, 0); \
 	}
 	switch (searchType)
 	{
@@ -330,7 +325,7 @@ int lab7_putGotoToEndBodyOfAWhile(ArrayList /*string_t*/ outList, ArrayList /*la
 	size_t indexOfParenthesEndArgsFor;
 	LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &endArgWhile, &indexOfParenthesEndArgsFor), 1);
 	lab7_mark beginArgWhile;
-	LAB7_SAFE(lab7_findNearMark(anyMarks, (lab7_mark) { endArgWhile.i, STRING_STATIC0("<$>_WHILE_ARG1") }, LAB7_FINDNEARMARK_LESS_EQUAL, &beginArgWhile), 2);
+	LAB7_SAFE(lab7_findNearMark(anyMarks, (lab7_mark) { endArgWhile.i, STRING_STATIC0("<$>_WHILE_ARG1") }, LAB7_FINDNEARMARK_LESS, &beginArgWhile), 2);
 	string_t b;
 	LAB7_SAFE(lab6_putSizetToEndString(bufferForOutput, beginArgWhile.position, &b), 3);
 	LAB7_SAFE(ArrayList_addLast(outList, &b), 4);
@@ -542,7 +537,7 @@ int lab7(string_t * output, string_t input)
 			if (*input.first == '}')
 			{
 				lab6_parenthesInfo pair;
-				LAB7_SAFE(lab7_findPairParenthes(parenthes, outList->length, &pair, NULL), 8);
+				LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &pair, NULL), 8);
 				if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_FOR_BODY_BEGIN") }))
 				{
 					LAB7_INSERTMARK("<$>_FOR_BODY_END", 3, 8);
@@ -585,7 +580,7 @@ int lab7(string_t * output, string_t input)
 						// TODO
 						LAB7_SAFE(Stack_pop(&stk, &stk_elm), 10); // while в стеке не нужен.
 						lab6_parenthesInfo pair;
-						LAB7_SAFE(lab7_findPairParenthes(parenthes, outList->length, &pair, NULL), 9);
+						LAB7_SAFE(lab7_findPairParenthes(parenthes, parenthes->length - 1, &pair, NULL), 9);
 						if (lab7_isMakrExists(anyMarks, (lab7_mark) { pair.i, STRING_STATIC0("<$>_DO_ARG1") }))
 						{
 							string_t str;
