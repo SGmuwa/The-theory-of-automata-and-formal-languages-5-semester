@@ -27,7 +27,7 @@ void Array3D_printInt(Array3D this)
 void main()
 {
 	setlocale(LC_ALL, "ru");
-	printf("%s", LAB8_HELP_STR "\nЕсли вы видете трёхмерный массив от 0 до 26, то всё работает хорошо.\n");
+	printf("%s", LAB8_HELP_STR "\nЕсли вы видите трёхмерный массив от 0 до 26, то всё работает хорошо.\n");
 	int a = 0;
 	Array3D test = Array3D_malloc(3, 3, 3, sizeof(int));
 	for (size_t z = 0; z < test->lengthDimension[2]; z++)
