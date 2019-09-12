@@ -2,7 +2,10 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <stdio.h>
+
+#define LAB8_HELP_STR \
+	"Постановка задачи: \"Преобразовать трёхмерный массив в одномерный. " \
+	"Реализовать обращение к нему как трёхмерному, используя обратную польскую запись.\"\n"
 
 typedef struct Array3D {
 	void * array; // Указатель на массив

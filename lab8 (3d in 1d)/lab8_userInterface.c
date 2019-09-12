@@ -1,4 +1,6 @@
 #include "lab8.h"
+#include <locale.h>
+#include "..\UserInterface-CLanguage\UserInterface.h"
 
 void Array3D_printInt(Array3D this)
 {
@@ -24,6 +26,8 @@ void Array3D_printInt(Array3D this)
 
 void main()
 {
+	setlocale(LC_ALL, "ru");
+	printf("%s", LAB8_HELP_STR "\nЕсли вы видете трёхмерный массив от 0 до 26, то всё работает хорошо.\n");
 	int a = 0;
 	Array3D test = Array3D_malloc(3, 3, 3, sizeof(int));
 	for (size_t z = 0; z < test->lengthDimension[2]; z++)
@@ -35,5 +39,5 @@ void main()
 			}
 	Array3D_printInt(test);
 	Array3D_free(test);
-	scanf_s("%*s");
+	UserInterface_Pause("Press key for exit.\n");
 }
