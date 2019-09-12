@@ -11,6 +11,10 @@
 	minctest_equal(ERROR, lab2(&out, STRING_STATIC(INPUT)));\
 	if(ERROR == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
+	if(ERROR == 0) \
+		printf("%s\n", "table: \"" INPUT "\"\t\"" EXPECT "\""); \
+	else \
+		printf("%s%d\n", "table: \"" INPUT "\"\t" "Ошибка ", ERROR); \
 }
 
 
@@ -35,7 +39,7 @@ LAB2_TEST_MAKE_lab2(7, "iju34098gu25gug", "iju34098gu25gug", 0);
 LAB2_TEST_MAKE_lab2(8, "0", "0", 0);
 LAB2_TEST_MAKE_lab2(9, "-1", "-1", 0);
 LAB2_TEST_MAKE_lab2(10, "2 -1 *", "2 * -1", 0);
-LAB2_TEST_MAKE_lab2(11, (char*)NULL, "2 * -)1", 2);
+LAB2_TEST_MAKE_lab2(11, "", "2 * -)1", 2);
 LAB2_TEST_MAKE_lab2(12, "2 -1 *", "2 * - 1", 0);
 LAB2_TEST_MAKE_lab2(13, "10 15 - 3 *", "(10 - 15) * 3", 0);
 LAB2_TEST_MAKE_lab2(14, "2 2 2 ^ ^", "2^2^2", 0);
