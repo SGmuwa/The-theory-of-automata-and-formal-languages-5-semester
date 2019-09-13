@@ -12,6 +12,10 @@
 	minctest_equal(ERROR, err);\
 	if(ERROR == 0 && err == 0) minctest_sequal(EXPECT, out.first);\
 	string_free(out);\
+	if(ERROR == 0) \
+		printf("%s\n", "table: \"" INPUT "\"\t\"" EXPECT "\""); \
+	else \
+		printf("%s%d\n", "table: \"" INPUT "\"\t" "Ошибка ", ERROR); \
 }
 
 // Получает имя функции по номеру
@@ -28,7 +32,7 @@ LAB6_TEST_MAKE_lab6(7, "iju34098gu25gug", "iju34098gu25gug", 0);
 LAB6_TEST_MAKE_lab6(8, "0", "0", 0);
 LAB6_TEST_MAKE_lab6(9, "-1", "-1", 0);
 LAB6_TEST_MAKE_lab6(10, "2 -1 *", "2 * -1", 0);
-LAB6_TEST_MAKE_lab6(11, (char*)NULL, "2 * -)1", 2);
+LAB6_TEST_MAKE_lab6(11, "", "2 * -)1", 2);
 LAB6_TEST_MAKE_lab6(12, "2 -1 *", "2 * - 1", 0);
 LAB6_TEST_MAKE_lab6(13, "10 15 - 3 *", "(10 - 15) * 3", 0);
 LAB6_TEST_MAKE_lab6(14, "2 2 2 ^ ^", "2^2^2", 0);

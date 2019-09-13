@@ -16,6 +16,10 @@
 	minctest_equal(ERROR, lab3_runFloat(&outFloat, out, (string_t){" ", 1}));\
 	if(ERROR == 0) minctest_fequal(EXPECT, outFloat, 0.00001);\
 	string_free(out);\
+	if(ERROR == 0) \
+		printf("%s%lf\n", "table: \"" INPUT "\"\t", (double)EXPECT); \
+	else \
+		printf("%s%d\n", "table: \"" INPUT "\"\t" "Ошибка ", ERROR); \
 }
 
 // Получает имя функции по номеру

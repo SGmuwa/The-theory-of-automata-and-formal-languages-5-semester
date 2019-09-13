@@ -9,6 +9,10 @@
 	long double out;\
 	minctest_equal(ERROR, lab5_runFloat(&out, STRING_STATIC(INPUT), (string_t){" ", 1}));\
 	if(ERROR == 0) minctest_fequal(EXPECT, out, 0.001);\
+	if(ERROR == 0) \
+		printf("%s%lf\n", "table: \"" INPUT "\"\t", (double)EXPECT); \
+	else \
+		printf("%s%d\n", "table: \"" INPUT "\"\t" "Ошибка ", ERROR); \
 }
 
 // Получает имя функции по номеру
